@@ -69,7 +69,7 @@ namespace Windows.UI.Xaml
                 // Height:
                 if (!double.IsNaN(element.Height))
                     style.height = element.Height.ToInvariantString() + "px";
-                else if (element.VerticalAlignment == VerticalAlignment.Stretch && !(element.INTERNAL_VisualParent is Canvas) && !(element is CheckBox))
+                else if (element.VerticalAlignment == VerticalAlignment.Stretch && !(element is CheckBox) && (!(element.INTERNAL_VisualParent is Canvas) || element is Canvas))
                     style.height = "100%";
                 else
                     style.height = "auto";
@@ -77,7 +77,7 @@ namespace Windows.UI.Xaml
                 // Width:
                 if (!double.IsNaN(element.Width))
                     style.width = element.Width.ToInvariantString() + "px";
-                else if (element.HorizontalAlignment == HorizontalAlignment.Stretch && !(element is CheckBox))
+                else if (element.HorizontalAlignment == HorizontalAlignment.Stretch && !(element is CheckBox) && (!(element.INTERNAL_VisualParent is Canvas) || element is Canvas))
                     style.width = "100%";
                 else
                     style.width = "auto";
@@ -410,6 +410,8 @@ namespace Windows.UI.Xaml
                         styleOfOuterDomElement.marginRight = "0px"; // Default value
                         styleOfOuterDomElement.display = "block"; // Default value
                         styleOfOuterDomElement.width = "100%";
+                        styleOfOuterDomElement.maxWidth = "none";
+                        styleOfOuterDomElement.maxHeight = "none";
                         return;
                     }
 
