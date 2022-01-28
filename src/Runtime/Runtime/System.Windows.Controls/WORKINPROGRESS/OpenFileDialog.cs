@@ -98,7 +98,7 @@ namespace Windows.UI.Xaml.Controls
                     function readNext(i) {
                         var file = input.files[i];
                         reader.onload = function() {
-                            var array = new Uint8Array(reader.result);
+                            var array = JSON.stringify(new Uint8Array(reader.result));
                             callback(file.name, array);
 
                             if (input.files.length > i + 1) {
