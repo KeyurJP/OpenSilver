@@ -27,10 +27,13 @@ namespace System.IO
         public MemoryFileInfo(string filename, byte[] content)
         {
             Name = filename;
+            Extension = System.IO.Path.GetExtension(filename);
             _content = content;
         }
 
         public string Name { get; }
+
+        public string Extension { get; }
 
         public Stream OpenRead()
         {
