@@ -43,8 +43,8 @@ namespace Windows.UI.Xaml.Controls
         {
             this.Loaded += DatePicker_Loaded;
         }
-        
-        
+
+
         public double FontSize
         {
             get { return (double)GetValue(FontSizeProperty); }
@@ -55,7 +55,7 @@ namespace Windows.UI.Xaml.Controls
         /// <summary>
         /// Identifies the <see cref="Control.FontSize"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty FontSizeProperty;
+        public static readonly DependencyProperty FontSizeProperty = DependencyProperty.Register(nameof(FontSize), typeof(double), typeof(Calendar), new PropertyMetadata());
 
 
         private void DatePicker_Loaded(object sender, RoutedEventArgs e)
