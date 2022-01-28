@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 namespace System.Windows.Controls.Primitives
 #else
-using Windows.UI.Xaml
+using Windows.UI.Xaml;
 namespace Windows.UI.Xaml.Controls.Primitives
 #endif
 {
