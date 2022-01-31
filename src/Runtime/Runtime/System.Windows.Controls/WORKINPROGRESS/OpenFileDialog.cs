@@ -1,3 +1,5 @@
+
+
 /*===================================================================================
 * 
 *   Copyright (c) Userware/OpenSilver.net
@@ -34,6 +36,7 @@ namespace Windows.UI.Xaml.Controls
 {
     public sealed partial class OpenFileDialog
     {
+        private object _windowFocusCallback;
         private readonly object _inputElement;
 
         public OpenFileDialog()
@@ -43,52 +46,47 @@ namespace Windows.UI.Xaml.Controls
                 (function() {
                     var inputElement = document.createElement(""input"");
                     inputElement.type = ""file"";
-                    inputElement.style.display ='none';
                     return inputElement;
                 })()");
         }
 
-        private void AddFileChangeCallback(TaskCompletionSource<bool> showDialogTaskCompletionSource)
+        private void AddFileChangeCallback(TaskCompletionSource<bool?> showDialogTaskCompletionSource)
         {
             // For each file selected in the dialog, this will be called back
-            Action<string,string> onFileOpened = (filename, content) =>
+            Action<string, object> onFileChanged = (filename, content) =>
             {
-                OpenSilver.Interop.ExecuteJavaScript("console.log('OpenFileContent :" + content.ToString() + "')");
-                //Dictionary<string, byte> indexedBytes = JsonSerializer.Deserialize<Dictionary<string, byte>>(content.ToString());
-                byte[] values = Convert.FromBase64String(content);
+                Dictionary<string, byte> indexedBytes = JsonSerializer.Deserialize<Dictionary<string, byte>>(content.ToString());
+                byte[] values = indexedBytes.Values.ToArray();
                 Files.Add(new MemoryFileInfo(filename, values));
             };
 
-            Action onFileOpenFinished = () =>
+            Action onFinishedReading = () =>
             {
-                System.Diagnostics.Debug.WriteLine("OpenFileDialog->AddFileChangeCallback->onFileOpenFinished.");
-                showDialogTaskCompletionSource.SetResult(true);
-            };
-
-            Action onFileOpenCanceled = () =>
-            {
-                System.Diagnostics.Debug.WriteLine("OpenFileDialog->AddFileChangeCallback->onFileOpenCanceled.");
-                showDialogTaskCompletionSource.SetResult(false);
+                try
+                {
+                    // Setting result of Task returned by ShowDialog()
+                    showDialogTaskCompletionSource.SetResult(true);
+                }
+                catch (Exception ex)
+                {
+                    showDialogTaskCompletionSource.SetException(ex);
+                }
             };
 
             // Listen to the "change" property of the "input" element, and call the callback:
             OpenSilver.Interop.ExecuteJavaScript(@"
-                    $0.addEventListener(""click"", function(e) {
-                        document.body.onfocus = function() {
-                        document.body.onfocus = null;
-                        setTimeout(() => { 
-                            if ($0.value.length) {
-                            }
-                            else
-                            {
-                                var cancelCallback = $3;
-                                cancelCallback();
-                            }
-                            $0.remove();
-                        }, 1000);
+                $0.addEventListener(""change"", function(e) {
+                    var isRunningInTheSimulator = $2;
+                    if (isRunningInTheSimulator) {
+                        alert(""The file open dialog is not supported in the Simulator. Please test in the browser instead."");
                     }
-                });
-                $0.addEventListener(""change"", function(e) {                    
+
+                    window.isOpenFileDialogOpen = false;
+
+                    // Removing window focus handler to detect cancels, otherwise we could have multiple handlers
+                    // after calling multiple ShowDialog()
+                    window.removeEventListener('focus', $3);
+
                     if(!e) {
                       e = window.event;
                     }
@@ -99,27 +97,23 @@ namespace Windows.UI.Xaml.Controls
                     // Reading each file sequentially, some results were null when running concurrently
                     function readNext(i) {
                         var file = input.files[i];
-                        reader.onload = function(e) {    
-                            var result = new Uint8Array(e.target.result);                                
-                            var binaryString = btoa(String.fromCharCode.apply(null, result));
-                            callback(file.name, binaryString);
+                        reader.onload = function() {
+                            var array = new Uint8Array(reader.result);
+                            callback(file.name, array);
 
                             if (input.files.length > i + 1) {
                                 readNext(i + 1);
                             } else {
                                 // Triggers finished callback
-                                $2();
+                                $4();
                             }
                         };
 
                         reader.readAsArrayBuffer(file);
-                        var isRunningInTheSimulator = $4;
-                        if (isRunningInTheSimulator) {
-                          alert(""The file open dialog is not supported in the Simulator. Please test in the browser instead."");
-                        }
                     }
                     readNext(0);
-                });", _inputElement, onFileOpened, onFileOpenFinished, onFileOpenCanceled, OpenSilver.Interop.IsRunningInTheSimulator);
+                });", _inputElement, onFileChanged, OpenSilver.Interop.IsRunningInTheSimulator,
+                    _windowFocusCallback, onFinishedReading);
         }
 
         private void SetFilter(string filter)
@@ -216,8 +210,7 @@ namespace Windows.UI.Xaml.Controls
         /// This is because it is not possible to wait for the dialog to conclude, since the process is single-threaded.
         /// </summary>
         /// <returns>A Task that will have the result of the file dialog. True for files selected, false for cancel/exit.</returns>
-        /// 
-        public Task<bool> ShowDialog()
+        public Task<bool?> ShowDialog()
         {
             return ShowDialog(null);
         }
@@ -228,14 +221,21 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         /// <param name="owner"></param>
         /// <returns>A Task that will have the result of the file dialog. True for files selected, false for cancel/exit.</returns>
-        internal Task<bool> ShowDialog(Window owner)
+        public Task<bool?> ShowDialog(Window owner)
         {
             ClearFiles();
+
             // This wraps a task to return to the caller and have a result asynchronously
-            TaskCompletionSource<bool> showDialogTaskCompletionSource = new TaskCompletionSource<bool>();
+            TaskCompletionSource<bool?> showDialogTaskCompletionSource = new TaskCompletionSource<bool?>();
+
+            AddCancelCallback(showDialogTaskCompletionSource);
+
             AddFileChangeCallback(showDialogTaskCompletionSource);
+
             // Triggers 'click' on <input>, even though it is not on the DOM
-            OpenSilver.Interop.ExecuteJavaScript(@"$0.click();", _inputElement);
+            OpenSilver.Interop.ExecuteJavaScript(@"
+                window.isOpenFileDialogOpen = true;
+                $0.dispatchEvent(new MouseEvent(""click""));", _inputElement);
 
             return showDialogTaskCompletionSource.Task;
         }
@@ -243,6 +243,62 @@ namespace Windows.UI.Xaml.Controls
         private void ClearFiles()
         {
             ((IList<MemoryFileInfo>)Files).Clear();
+        }
+
+        private void AddCancelCallback(TaskCompletionSource<bool?> showDialogTaskCompletionSource)
+        {
+            Action<object> onDialogCancel = (result) =>
+            {
+                try
+                {
+                    // Setting result of Task returned by ShowDialog()
+                    showDialogTaskCompletionSource.SetResult(false);
+                }
+                catch (Exception ex)
+                {
+                    showDialogTaskCompletionSource.SetException(ex);
+                }
+            };
+
+            _windowFocusCallback = OpenSilver.Interop.ExecuteJavaScript(@"
+                (function() {
+                    var isChrome = !!window.chrome;
+
+                    var windowFocusCallbackForFileDialogCancel = function(e) {
+                        if (isChrome) {
+                            // If on Chrome, verifies flag after timeout because the window 'focus' is called before
+                            // the 'change' event, timeout should be enough to make sure 'change' hasn't been triggered
+                            setTimeout(function() {
+                                if (window.isOpenFileDialogOpen) {
+                                    window.isOpenFileDialogOpen = false;
+
+                                    // Removing window focus handler to detect cancels, otherwise we could have multiple handlers
+                                    // after calling multiple ShowDialog()
+                                    window.removeEventListener('focus', windowFocusCallbackForFileDialogCancel);
+
+                                    // Calls cancel callback
+                                    $0();
+                                }
+                            }, 1000);
+                        } else {
+                            if (window.isOpenFileDialogOpen) {
+                                window.isOpenFileDialogOpen = false;
+
+                                // Removing window focus handler to detect cancels, otherwise we could have multiple handlers
+                                // after calling multiple ShowDialog()
+                                window.removeEventListener('focus', windowFocusCallbackForFileDialogCancel);
+
+                                // Calls cancel callback
+                                $0();
+                            }
+                        }
+                    }
+
+                    window.addEventListener('focus', windowFocusCallbackForFileDialogCancel);
+
+                    return windowFocusCallbackForFileDialogCancel;
+                })()
+            ", onDialogCancel);
         }
     }
 }
