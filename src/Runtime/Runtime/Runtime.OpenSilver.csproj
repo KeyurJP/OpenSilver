@@ -88,6 +88,13 @@
 		<Compile Include="System.Windows.Controls.Primitives\WORKINPROGRESS\LinearClipper.cs" />
 		<Compile Include="System.Windows.Controls\CalendarDayButton.cs" />
 		<Compile Include="System.Windows.Controls\CleanUpVirtualizedItemEventArgs.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\DataPager.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\DataPagerAutomationPeer.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\Extensions.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\PagerDisplayMode.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\PagerResources.Designer.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\Resource.Designer.cs" />
+		<Compile Include="System.Windows.Controls\DataPager\WeakEventListener.cs" />
 		<Compile Include="System.Windows.Controls\ISelectionAdapter.cs" />
 		<Compile Include="System.Windows.Controls\ItemsControl.ItemInfo.cs" />
 		<Compile Include="System.Windows.Controls\LayoutTransformer.cs" />
@@ -1101,6 +1108,10 @@
 		<Compile Include="__SPECIFIC__\IJavaScriptExecutionHandler.cs" />
 	</ItemGroup>
 	<ItemGroup>
+		<Content Include="DefaultStyles\INTERNAL_DefaultDataPagerStyle_Internal.xaml">
+		  <SubType>Designer</SubType>
+		  <Generator>MSBuild:Compile</Generator>
+		</Content>
 		<Content Include="Themes\generic.xaml">
 			<SubType>Designer</SubType>
 			<Generator>MSBuild:Compile</Generator>
@@ -1240,6 +1251,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="PagedCollectionView\PagedCollectionViewResources.resx" />
+		<EmbeddedResource Include="System.Windows.Controls\DataPager\PagerResources.resx" />
+		<EmbeddedResource Include="System.Windows.Controls\DataPager\Resource.resx" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Include="Runtime.licenseheader" />
