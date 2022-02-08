@@ -7,12 +7,14 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using OpenSilver.DataPager;
 
 #if MIGRATION
 using System.Windows.Automation;
@@ -23,7 +25,6 @@ using System.Windows.Media;
 #else
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
-using Windows.UI.Xaml.Controls.Common;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
@@ -76,7 +77,7 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Constants
+        #region Constants
 
         // Automation Id constants
         private const string DATAPAGER_currentPageTextBoxAutomationId = "CurrentPage";
@@ -148,9 +149,9 @@ namespace Windows.UI.Xaml.Controls
         private const int DATAPAGER_defaultNumericButtonCount = 5;
         private const int DATAPAGER_defaultPageIndex = -1;
 
-#endregion Constants
+        #endregion Constants
 
-#region Static Fields
+        #region Static Fields
 
         /// <summary>
         /// Identifies the AutoEllipsis dependency property.
@@ -271,7 +272,7 @@ namespace Windows.UI.Xaml.Controls
                 typeof(int),
                 typeof(DataPager),
                 new PropertyMetadata(OnReadOnlyPropertyChanged));
-        
+
         /// <summary>
         /// Identifies the PageIndex dependency property.
         /// </summary>
@@ -314,7 +315,7 @@ namespace Windows.UI.Xaml.Controls
                 typeof(DataPager),
                 new PropertyMetadata(OnSourcePropertyChanged));
 
-#endregion Static Fields
+        #endregion Static Fields
 
         ////------------------------------------------------------
         ////
@@ -322,7 +323,7 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Private Fields
+        #region Private Fields
 
         /// <summary>
         /// Private accessor for the text block appearing before the current page text box.
@@ -410,7 +411,7 @@ namespace Windows.UI.Xaml.Controls
         /// <returns>Boolean value for whether the operation succeeded</returns>
         private delegate bool PageMoveOperationDelegate();
 
-#endregion Private Fields
+        #endregion Private Fields
 
         ////------------------------------------------------------
         ////
@@ -418,7 +419,7 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Constructors
+        #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the DataPager class.
@@ -437,7 +438,7 @@ namespace Windows.UI.Xaml.Controls
             this.SetBinding(DataPager.PrivateForegroundProperty, foregroundBinding);
         }
 
-#endregion Constructors
+        #endregion Constructors
 
         ////------------------------------------------------------
         ////
@@ -445,7 +446,7 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Events
+        #region Events
 
         /// <summary>
         /// EventHandler for when PageIndex is changing.
@@ -457,7 +458,7 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         public event EventHandler<EventArgs> PageIndexChanged;
 
-#endregion Events
+        #endregion Events
 
         ////------------------------------------------------------
         ////
@@ -465,7 +466,7 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Public Properties
+        #region Public Properties
 
         /// <summary>
         /// Gets or sets a value that indicates whether or not to use an ellipsis as the last button.
@@ -715,7 +716,7 @@ namespace Windows.UI.Xaml.Controls
             }
         }
 
-#endregion Public Properties
+        #endregion Public Properties
 
         ////------------------------------------------------------
         ////
@@ -723,7 +724,7 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Internal Properties
+        #region Internal Properties
 
         /// <summary>
         /// Gets the TextBox holding the current PageIndex value, if any.
@@ -747,7 +748,7 @@ namespace Windows.UI.Xaml.Controls
             }
         }
 
-#endregion Internal Properties
+        #endregion Internal Properties
 
 
         /// <summary>
@@ -772,13 +773,18 @@ namespace Windows.UI.Xaml.Controls
         ////
         ////------------------------------------------------------ 
 
-#region Public Methods
+        #region Public Methods
 
         /// <summary>
         /// Applies the control's template, retrieves the elements
         /// within it, and sets up events.
         /// </summary>
+
+#if MIGRATION
         public override void OnApplyTemplate()
+#else
+        protected override void OnApplyTemplate()
+#endif
         {
             base.OnApplyTemplate();
 
@@ -805,7 +811,11 @@ namespace Windows.UI.Xaml.Controls
 
             if (this._currentPageTextBox != null)
             {
+#if MIGRATION
                 this._currentPageTextBox.KeyDown -= new System.Windows.Input.KeyEventHandler(this.OnCurrentPageTextBoxKeyDown);
+#else
+                this._currentPageTextBox.KeyDown -= new Windows.UI.Xaml.Input.KeyEventHandler(this.OnCurrentPageTextBoxKeyDown);
+#endif
                 this._currentPageTextBox.LostFocus -= new RoutedEventHandler(this.OnCurrentPageTextBoxLostFocus);
             }
 
@@ -864,7 +874,11 @@ namespace Windows.UI.Xaml.Controls
 
             if (this._currentPageTextBox != null)
             {
+#if MIGRATION
                 this._currentPageTextBox.KeyDown += new System.Windows.Input.KeyEventHandler(this.OnCurrentPageTextBoxKeyDown);
+#else
+                this._currentPageTextBox.KeyDown += new Windows.UI.Xaml.Input.KeyEventHandler(this.OnCurrentPageTextBoxKeyDown);
+#endif                
                 this._currentPageTextBox.LostFocus += new RoutedEventHandler(this.OnCurrentPageTextBoxLostFocus);
                 AutomationProperties.SetAutomationId(this._currentPageTextBox, DATAPAGER_currentPageTextBoxAutomationId);
             }
@@ -1000,7 +1014,7 @@ namespace Windows.UI.Xaml.Controls
                 pager.UpdateNumericButtonsForeground();
             }
         }
-        
+
         /// <summary>
         /// PageIndex property changed handler.
         /// </summary>
@@ -1038,7 +1052,7 @@ namespace Windows.UI.Xaml.Controls
                 {
                     if (newPageIndex != pager.PagedSource.PageIndex)
                     {
-                        pager.PageMoveHandler((int) e.OldValue, newPageIndex, null);
+                        pager.PageMoveHandler((int)e.OldValue, newPageIndex, null);
                     }
                 }
                 else if (pager.Source != null)
@@ -1295,9 +1309,19 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         /// <param name="sender">The object firing this event.</param>
         /// <param name="e">The event args for this event.</param>
+#if MIGRATION
         private void OnCurrentPageTextBoxKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+#else
+        private void OnCurrentPageTextBoxKeyDown(object sender, Windows.UI.Xaml.Input.KeyRoutedEventArgs e)
+#endif
+
         {
-            if (e.Key == System.Windows.Input.Key.Enter)
+#if MIGRATION
+        if (e.Key == System.Windows.Input.Key.Enter)
+#else
+        if (e.Key == Windows.System.VirtualKey.Enter)
+#endif
+
             {
                 this.MoveCurrentPageToTextboxValue();
             }
@@ -1585,7 +1609,7 @@ namespace Windows.UI.Xaml.Controls
                 ToggleButton button = sender as ToggleButton;
                 int uiIndex = this._numericButtonPanel.Children.IndexOf(button);
                 int pageIndex = this.GetButtonStartIndex() + uiIndex - 1;
-                
+
                 this.PageMoveHandler(this.PageIndex, pageIndex, null);
 
                 if (this.PagedSource.PageIndex != pageIndex)
@@ -1764,7 +1788,7 @@ namespace Windows.UI.Xaml.Controls
                         }
                         else
                         {
-                            if ((bool) button.IsChecked)
+                            if ((bool)button.IsChecked)
                             {
                                 try
                                 {
@@ -1847,8 +1871,8 @@ namespace Windows.UI.Xaml.Controls
             this.UpdatePageModeDisplay();
             this.UpdateButtonCount();
 
-            bool needPage = this.Source != null && 
-                ((this.PagedSource == null && this.PageSize > 0) || 
+            bool needPage = this.Source != null &&
+                ((this.PagedSource == null && this.PageSize > 0) ||
                  (this.PagedSource != null && this.PagedSource.PageSize > 0));
 
             this.CanMoveToFirstPage = needPage && this.PageIndex > 0;
@@ -1858,7 +1882,7 @@ namespace Windows.UI.Xaml.Controls
             this.CanMoveToNextPage = needPage && this.PagedSource != null &&
                 (!this.IsTotalItemCountFixed || this.PagedSource.TotalItemCount == -1 || this.PageIndex < this.PageCount - 1);
 
-            this.CanMoveToLastPage = needPage && this.PagedSource != null && 
+            this.CanMoveToLastPage = needPage && this.PagedSource != null &&
                 this.PagedSource.TotalItemCount != -1 && this.PageIndex < this.PageCount - 1;
 
             this.CanChangePage = needPage && (this.PagedSource == null || this.PagedSource.CanChangePage);

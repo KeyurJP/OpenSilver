@@ -8,13 +8,15 @@
 //-----------------------------------------------------------------------
 
 using System.Globalization;
-
+using OpenSilver.DataPager;
+using System;
 #if MIGRATION
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 #else
 using Windows.UI.Xaml.Automation.Provider;
 using Windows.UI.Xaml.Controls;
+using Windows.Foundation;
 #endif
 
 #if MIGRATION
