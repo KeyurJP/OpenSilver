@@ -94,6 +94,20 @@ namespace Windows.UI.Xaml.Controls
             return false;
         }
 
+        internal static void SetValueNoCallback_Pager(this DependencyObject obj, DependencyProperty property, object value)
+        {
+            ExtensionProperties.SetAreHandlersSuspended(obj, true);
+            try
+            {
+                obj.SetValue(property, value);
+            }
+            finally
+            {
+                ExtensionProperties.SetAreHandlersSuspended(obj, false);
+            }
+        }
+
+
         /// <summary>
         /// Walks the visual tree to determine if the currently focused element is contained within
         /// a parent DependencyObject.  The FocusManager's GetFocusedElement method is used to determine

@@ -495,7 +495,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(CanChangePageProperty, value);
+                this.SetValueNoCallback_Pager(CanChangePageProperty, value);
             }
         }
 
@@ -512,7 +512,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(CanMoveToFirstPageProperty, value);
+                this.SetValueNoCallback_Pager(CanMoveToFirstPageProperty, value);
             }
         }
 
@@ -529,7 +529,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(CanMoveToLastPageProperty, value);
+                this.SetValueNoCallback_Pager(CanMoveToLastPageProperty, value);
             }
         }
 
@@ -546,7 +546,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(CanMoveToNextPageProperty, value);
+                this.SetValueNoCallback_Pager(CanMoveToNextPageProperty, value);
             }
         }
 
@@ -563,7 +563,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(CanMoveToPreviousPageProperty, value);
+                this.SetValueNoCallback_Pager(CanMoveToPreviousPageProperty, value);
             }
         }
 
@@ -612,7 +612,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(ItemCountProperty, value);
+                this.SetValueNoCallback_Pager(ItemCountProperty, value);
             }
         }
 
@@ -677,7 +677,7 @@ namespace Windows.UI.Xaml.Controls
 
             private set
             {
-                this.SetValueNoCallback(PageCountProperty, value);
+                this.SetValueNoCallback_Pager(PageCountProperty, value);
             }
         }
 
@@ -924,7 +924,7 @@ namespace Windows.UI.Xaml.Controls
             {
                 if (!Enum.IsDefined(typeof(PagerDisplayMode), e.NewValue))
                 {
-                    pager.SetValueNoCallback(e.Property, e.OldValue);
+                    pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                     throw new ArgumentException(
                         string.Format(CultureInfo.InvariantCulture,
                             Resource.InvalidEnumArgumentException_InvalidEnumArgument,
@@ -961,7 +961,7 @@ namespace Windows.UI.Xaml.Controls
             {
                 if ((int)e.NewValue < 0)
                 {
-                    pager.SetValueNoCallback(e.Property, e.OldValue);
+                    pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                     throw new ArgumentOutOfRangeException(
                         "value",
                         string.Format(
@@ -1016,7 +1016,7 @@ namespace Windows.UI.Xaml.Controls
 
                 if ((pager.Source == null || pager.PageSize == 0) && newPageIndex != -1)
                 {
-                    pager.SetValueNoCallback(e.Property, e.OldValue);
+                    pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                     throw new ArgumentOutOfRangeException(
                         "value",
                         PagerResources.PageIndexMustBeNegativeOne);
@@ -1024,7 +1024,7 @@ namespace Windows.UI.Xaml.Controls
 
                 if (pager.Source != null && pager.PageSize != 0 && newPageIndex < 0)
                 {
-                    pager.SetValueNoCallback(e.Property, e.OldValue);
+                    pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                     throw new ArgumentOutOfRangeException(
                         "value",
                         string.Format(
@@ -1046,7 +1046,7 @@ namespace Windows.UI.Xaml.Controls
                     if (pager.PageSize != 0 && newPageIndex != 0)
                     {
                         // When the Source is an IEnumerable the PageIndex must be 0
-                        pager.SetValueNoCallback(e.Property, e.OldValue);
+                        pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                     }
                     else
                     {
@@ -1062,7 +1062,7 @@ namespace Windows.UI.Xaml.Controls
                 else
                 {
                     // keep value set to -1 if there is no source
-                    pager.SetValueNoCallback(e.Property, -1);
+                    pager.SetValueNoCallback_Pager(e.Property, -1);
                 }
             }
         }
@@ -1082,7 +1082,7 @@ namespace Windows.UI.Xaml.Controls
 
                 if (newPageSize < 0)
                 {
-                    pager.SetValueNoCallback(e.Property, e.OldValue);
+                    pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                     throw new ArgumentOutOfRangeException(
                         "value",
                         string.Format(
@@ -1100,7 +1100,7 @@ namespace Windows.UI.Xaml.Controls
                     }
                     catch
                     {
-                        pager.SetValueNoCallback(e.Property, e.OldValue);
+                        pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                         throw;
                     }
                 }
@@ -1135,7 +1135,7 @@ namespace Windows.UI.Xaml.Controls
             DataPager pager = d as DataPager;
             if (pager != null && !pager.AreHandlersSuspended())
             {
-                pager.SetValueNoCallback(e.Property, e.OldValue);
+                pager.SetValueNoCallback_Pager(e.Property, e.OldValue);
                 throw new InvalidOperationException(
                     string.Format(
                         CultureInfo.InvariantCulture,
@@ -1187,7 +1187,7 @@ namespace Windows.UI.Xaml.Controls
                         // Avoid ArgumentOutOfRangeException in situation where the 
                         // IPagedCollectionView's PageIndex is still set to -1 while 
                         // a page move is in progress
-                        pager.SetValueNoCallback(DataPager.PageIndexProperty, -1);
+                        pager.SetValueNoCallback_Pager(DataPager.PageIndexProperty, -1);
                     }
                     else
                     {
@@ -1409,7 +1409,7 @@ namespace Windows.UI.Xaml.Controls
             if (cancelArgs.Cancel)
             {
                 // Revert back to old value, since operation was canceled
-                this.SetValueNoCallback(DataPager.PageIndexProperty, oldPageIndex);
+                this.SetValueNoCallback_Pager(DataPager.PageIndexProperty, oldPageIndex);
             }
             else
             {
@@ -1426,7 +1426,7 @@ namespace Windows.UI.Xaml.Controls
                 if (!pageMoveOperationResult)
                 {
                     // Revert back to old value, since operation failed
-                    this.SetValueNoCallback(DataPager.PageIndexProperty, oldPageIndex);
+                    this.SetValueNoCallback_Pager(DataPager.PageIndexProperty, oldPageIndex);
                     // The PageIndexChanged needs to be raised even though no move occurred, 
                     // because of the PageIndexChanging notification above.
                     this.RaisePageIndexChanged();
