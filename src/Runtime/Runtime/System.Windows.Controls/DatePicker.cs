@@ -14,15 +14,16 @@
 
 using System;
 using System.Globalization;
-using System.Windows.Automation.Peers;
 
 #if MIGRATION
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using System.Windows.Automation.Peers;
 #else
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.System;
+using Windows.UI.Xaml.Automation.Peers
 #endif
 
 #if MIGRATION
