@@ -14,6 +14,7 @@
 
 using System;
 using System.Globalization;
+using System.Windows.Automation.Peers;
 
 #if MIGRATION
 using System.Windows.Controls.Primitives;
@@ -236,6 +237,25 @@ namespace Windows.UI.Xaml.Controls
 
                 if (newDate == null)
                     datePicker.SetWaterMarkText();
+                if (datePicker.SelectedDate.HasValue)
+                {
+                    datePicker.Text = datePicker.DateTimeToString(datePicker.SelectedDate.Value);
+                }
+            }
+        }
+
+
+        private string DateTimeToString(DateTime d)
+        {
+            DateTimeFormatInfo currentDateFormat = DateTimeHelper.GetCurrentDateFormat();
+            switch (SelectedDateFormat)
+            {
+                case DatePickerFormat.Short:
+                    return string.Format(CultureInfo.CurrentCulture, d.ToString(currentDateFormat.ShortDatePattern, currentDateFormat));
+                case DatePickerFormat.Long:
+                    return string.Format(CultureInfo.CurrentCulture, d.ToString(currentDateFormat.LongDatePattern, currentDateFormat));
+                default:
+                    return null;
             }
         }
 
@@ -387,7 +407,7 @@ namespace Windows.UI.Xaml.Controls
                 DateTime? date = ParseText(text);
                 if (date != null)
                 {
-                    SetValue(TextProperty, text);
+                    SetValue(TextProperty, DateTimeToString(date.Value));
                     return date;
                 }
                 else
