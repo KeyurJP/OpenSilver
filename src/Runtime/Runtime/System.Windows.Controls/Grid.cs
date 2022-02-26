@@ -882,6 +882,7 @@ namespace Windows.UI.Xaml.Controls
                 // NOTE: The two following lines were commented and replaced by "CreateDomElementAppendItAndGetStyle" because of a bug of JSIL that resulted in bad JavaScript code:
                 object outerDiv;
                 var outerDivStyle = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", parentRef, this, out outerDiv);
+                
                 outerDivStyle.position = "absolute";
                 outerDivStyle.height = "100%";
                 outerDivStyle.width = "100%";

@@ -144,13 +144,13 @@ namespace Windows.UI.Xaml
             object windowRootDiv;
 
             var windowRootDivStyle = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", rootDomElement, this, out windowRootDiv);
-
+            windowRootDivStyle.BeginUpdate();
             windowRootDivStyle.position = "absolute";
             windowRootDivStyle.width = "100%";
             windowRootDivStyle.height = "100%";
             windowRootDivStyle.overflowX = "hidden";
             windowRootDivStyle.overflowY = "hidden";
-
+            windowRootDivStyle.EndUpdate();
             this.INTERNAL_OuterDomElement = windowRootDiv;
             this.INTERNAL_InnerDomElement = windowRootDiv;
 

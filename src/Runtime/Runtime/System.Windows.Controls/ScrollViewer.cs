@@ -545,6 +545,7 @@ namespace Windows.UI.Xaml.Controls
         {
             object outerDiv;
             var outerDivStyle = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", parentRef, this, out outerDiv);
+            outerDivStyle.BeginUpdate();
             outerDivStyle.height = "100%";
             outerDivStyle.width = "100%";
 
@@ -553,7 +554,7 @@ namespace Windows.UI.Xaml.Controls
                 outerDivStyle.overflowX = "scroll";
                 outerDivStyle.overflowY = "scroll";
             }
-
+          
             //Update the scrollviewer position when we insert again the scrollviewer in the visual tree
             if (_verticalOffset != 0)
             {
@@ -567,13 +568,15 @@ namespace Windows.UI.Xaml.Controls
 
             object innerDiv;
             var innerDivStyle = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", outerDiv, this, out innerDiv);
+            innerDivStyle.BeginUpdate();
             innerDivStyle.position = "relative";
 
             // Note: the "height" and "width" of the innerDiv are handled in the methods "INTERNAL_ApplyHorizontalSettings" and "INTERNAL_ApplyVerticalSettings".
 
             INTERNAL_ApplyHorizontalSettings(this.HorizontalScrollBarVisibility, outerDivStyle, innerDivStyle);
             INTERNAL_ApplyVerticalSettings(this.VerticalScrollBarVisibility, outerDivStyle, innerDivStyle);
-
+            innerDivStyle.EndUpdate();
+            outerDivStyle.EndUpdate();
             domElementWhereToPlaceChildren = innerDiv;
             return outerDiv;
         }

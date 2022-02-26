@@ -133,7 +133,7 @@ namespace Windows.UI.Xaml.Controls
                     MakeGridPositionCorrect(ref elementLastColumn, maxColumn);
 
                     var style = INTERNAL_HtmlDomManager.GetFrameworkElementBoxSizingStyleForModification(uiElement);
-
+                    style.BeginUpdate();
                     style.position = "relative";
 
                     bool isMsGrid = Grid_InternalHelpers.isMSGrid();
@@ -158,7 +158,7 @@ namespace Windows.UI.Xaml.Controls
                     //style.position = "absolute";
                     //lastElements[elementRow, elementColumn] = uiElement;
 
-
+                    style.EndUpdate();
                     //---------------------------------------------------------------
                     // Handle the column visibility (mainly changed by the DataGrid)
                     //---------------------------------------------------------------
@@ -356,6 +356,8 @@ namespace Windows.UI.Xaml.Controls
         {
             object div1;
             var div1style = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", (object)_innerDiv, this, out div1);
+            div1style.BeginUpdate();
+            div1style.width = "100%";            
             div1style.width = "100%";
             div1style.height = "100%";
             div1style.opacity = "0";
@@ -372,7 +374,7 @@ namespace Windows.UI.Xaml.Controls
                 div1style.msGridColumn = (columnIndex + 1).ToString(); //Note: +1 because columns start from 1 instead of 0 in js.
                 div1style.msGridRow = (rowIndex + 1).ToString(); //Note: +1 because columns start from 1 instead of 0 in js.
             }
-
+            div1style.EndUpdate();
             return div1;
         }
     }
