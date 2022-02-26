@@ -152,10 +152,12 @@ namespace Windows.UI.Xaml.Controls
             // Create "<table>" element:
             var table = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("table", parentRef, grid);
             var tableStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(table);
+            tableStyle.BeginUpdate();
             tableStyle.borderCollapse = "collapse";
             tableStyle.position = "relative";
             tableStyle.height = "100%";
             tableStyle.width = "100%";
+            tableStyle.EndUpdate();
             //the line below doesn't allow for Row.Height = Auto: We use another solution: make as if any fixed-size row/column is Auto with a div the size of what is expected.
             //table.style.tableLayout = "fixed";
 
@@ -515,7 +517,7 @@ namespace Windows.UI.Xaml.Controls
                 if (!cell.IsOverlapped)
                 {
                     var domElementStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(cell.DomElement);
-
+                    domElementStyle.BeginUpdate();
                     string domElementStyleAppliedValue = internalElementForRowHeight;
 
                     //domElementStyle.height = internalElementForRowHeight;
@@ -556,6 +558,7 @@ namespace Windows.UI.Xaml.Controls
                     }
 
                     domElementStyle.height = domElementStyleAppliedValue;
+                    domElementStyle.EndUpdate();
                 }
             }
         }
@@ -673,7 +676,7 @@ namespace Windows.UI.Xaml.Controls
 
             if (!cell.IsOverlapped)
             {
-                var tdStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(cell.ColumnDomElement);
+                var tdStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(cell.ColumnDomElement);              
                 string columnWidth = ConvertGridLengthToCssString(normalizedColumnDefinition.Width, normalizedColumnDefinition.MinWidth);
                 string internalElementForColumnWidth = "100%";
                 if (columnWidth.EndsWith("px"))
@@ -686,12 +689,13 @@ namespace Windows.UI.Xaml.Controls
                     internalElementForColumnWidth = grid.Width.ToInvariantString() + "px";
                     columnWidth = "auto";
                 }
-
+                tdStyle.BeginUpdate();
                 tdStyle.width = columnWidth;
                 tdStyle.position = "relative";
                 tdStyle.padding = "0px";
-
+                tdStyle.EndUpdate();
                 var domElementStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(cell.DomElement);
+                domElementStyle.BeginUpdate();
                 domElementStyle.width = internalElementForColumnWidth;
 
                 if (internalElementForColumnWidth.EndsWith("px"))//todo: check if this should be if(columnwidth != "auto") in certain cases
@@ -702,7 +706,8 @@ namespace Windows.UI.Xaml.Controls
                     // We replaced it with the code below, which crops only if "ClipToBounds" is "True" (note: in XAML it works differently because ClipToBounds does not apply to grid cells, but "ClipToBounds" was the existing property that we found had the closest meaning for our users to use).
                     if (clipToBounds)
                         domElementStyle.overflowX = "hidden";
-                }
+                }                
+                domElementStyle.EndUpdate();
             }
         }
 
@@ -885,12 +890,13 @@ namespace Windows.UI.Xaml.Controls
                         internalElementForColumnWidth = grid.Width.ToInvariantString() + "px";
                         columnWidth = "auto";
                     }
-
+                    tdStyle.BeginUpdate();
                     tdStyle.width = columnWidth;
                     tdStyle.position = "relative";
                     tdStyle.padding = "0px";
-
+                    tdStyle.EndUpdate();
                     var domElementStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(cell.DomElement);
+                    domElementStyle.BeginUpdate();
                     domElementStyle.width = internalElementForColumnWidth;
 
                     if (internalElementForColumnWidth.EndsWith("px"))//todo: check if this should be if(columnwidth != "auto") in certain cases
@@ -904,6 +910,7 @@ namespace Windows.UI.Xaml.Controls
 
                         //todo: (?) the same as in RefreshRowHeight_NonCSSVersion with the RowSpan
                     }
+                    domElementStyle.EndUpdate();
                 }
             }
         }
@@ -921,9 +928,10 @@ namespace Windows.UI.Xaml.Controls
                         {
                             var td = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("td", cell.RowDomElement, grid);
                             var tdStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(td);
-
+                            tdStyle.BeginUpdate();
                             tdStyle.display = "table-cell";
                             tdStyle.width = "100%";
+                            tdStyle.EndUpdate();
                         }
                     }
                 }

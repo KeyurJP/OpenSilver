@@ -256,6 +256,15 @@ document.invoke2dContextMethod = function (id, methodName, args) {
             .filter(i => i.length > 0));
 }
 
+document.setStyles = function (styles) {        
+    for (const id in styles) {
+        const element = document.getElementById(id);
+        if (!element)
+            return;
+        Object.assign(element.style, styles[id]);
+    }
+}
+
 document.setDomStyle = function (id, propertyName, value) {
     const element = document.getElementById(id);
     if (!element)

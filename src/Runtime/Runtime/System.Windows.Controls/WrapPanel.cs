@@ -143,9 +143,11 @@ namespace Windows.UI.Xaml.Controls
         {
             var div = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("div", parentRef, this);
             var divStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+            divStyle.BeginUpdate();
             //divStyle.overflow = "auto";
             divStyle.lineHeight = "0px";
             divStyle.whiteSpace = "normal";
+            divStyle.EndUpdate();
             domElementWhereToPlaceChildren = div;
             return div;
         }
@@ -156,10 +158,11 @@ namespace Windows.UI.Xaml.Controls
             {
                 var div = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("div", parentRef, this, index);
                 var divStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+                divStyle.BeginUpdate();
                 divStyle.display = "inline-block";
                 divStyle.lineHeight = "initial";
                 divStyle.verticalAlign = "middle";
-
+                divStyle.EndUpdate();
                 domElementWhereToPlaceChild = div;
                 return div;
             }

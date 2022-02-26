@@ -679,7 +679,7 @@ namespace Windows.UI.Xaml.Controls
                 //-------------------------------------
                 // Handle the "Overflow Y" CSS property:
                 //-------------------------------------
-
+                outerDivStyle.BeginUpdate();
                 switch (verticalScrollBarVisibility)
                 {
                     case ScrollBarVisibility.Disabled:
@@ -713,11 +713,11 @@ namespace Windows.UI.Xaml.Controls
                     default:
                         break;
                 }
-
+                outerDivStyle.EndUpdate();
                 //-----------------------------------------------------------------
                 // Handle the "width" and "height" CSS properties of the Inner DIV:
                 //-----------------------------------------------------------------
-
+                innerDivStyle.BeginUpdate();
                 if ((verticalScrollBarVisibility == ScrollBarVisibility.Visible || verticalScrollBarVisibility == ScrollBarVisibility.Auto)
                     && double.IsNaN(this.Height) //todo: update the ScrollViewer of its "height" changes.
                     )
@@ -737,6 +737,7 @@ namespace Windows.UI.Xaml.Controls
                 {
                     innerDivStyle.height = "100%";
                 }
+                innerDivStyle.EndUpdate();
             }
         }
 

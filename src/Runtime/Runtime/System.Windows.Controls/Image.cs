@@ -519,10 +519,12 @@ $0.style.objectPosition = $2", image._imageDiv, objectFitvalue, objectPosition);
             INTERNAL_HtmlDomManager.SetDomElementAttribute(img, "alt", " "); //the text displayed when the image cannot be found. We set it as an empty string since there is nothing in Xaml
 
             var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(img);
+            style.BeginUpdate();
             style.display = "block"; //this is to avoid a random few pixels wide gap below the image.
             style.width = "0"; // Defaulting to 0 because if there is no source set, we want the 1x1 transparent placeholder image to be sure to take no space. If the source is set, it will then be set to "inherit"
             style.height = "0"; // Same as above.
             style.objectPosition = "center top";
+            style.EndUpdate();
 
             CSHTML5.Interop.ExecuteJavaScriptAsync(@"
 $0.addEventListener('mousedown', function(e) {

@@ -229,6 +229,7 @@ namespace Windows.UI.Xaml.Controls
                     rowSpan = 1;
 
                 var style = INTERNAL_HtmlDomManager.GetFrameworkElementBoxSizingStyleForModification(element);
+                style.BeginUpdate();
                 bool isMsGrid = Grid_InternalHelpers.isMSGrid();
                 if (!isMsGrid)
                 {
@@ -244,6 +245,7 @@ namespace Windows.UI.Xaml.Controls
                     style.msGridRow = (elementRow + 1).ToString(); //Note: +1 because rows start from 1 instead of 0 in js.
                     style.msGridRowSpan = (rowSpan).ToString();
                 }
+                style.EndUpdate();
             }
         }
 

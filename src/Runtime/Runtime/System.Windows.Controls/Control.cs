@@ -515,11 +515,13 @@ namespace Windows.UI.Xaml.Controls
                 if (innerDomElement != null)
                 {
                     var styleOfInnerDomElement = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(innerDomElement);
+                    styleOfInnerDomElement.BeginUpdate();
                     Thickness newPadding = (Thickness)newValue;
                     
                     // todo: if the container has a padding, add it to the margin
                     styleOfInnerDomElement.boxSizing = "border-box";
                     styleOfInnerDomElement.padding = $"{newPadding.Top.ToString(CultureInfo.InvariantCulture)}px {newPadding.Right.ToString(CultureInfo.InvariantCulture)}px {newPadding.Bottom.ToString(CultureInfo.InvariantCulture)}px {newPadding.Left.ToString(CultureInfo.InvariantCulture)}px";
+                    styleOfInnerDomElement.EndUpdate();
                 }
             }
         }

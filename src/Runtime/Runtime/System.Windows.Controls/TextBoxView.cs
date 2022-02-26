@@ -99,6 +99,7 @@ namespace Windows.UI.Xaml.Controls
             {
                 var outerDomStyle = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(this);
                 var contentEditableStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(_contentEditableDiv);
+                contentEditableStyle.BeginUpdate();
                 if (Host.HorizontalContentAlignment == HorizontalAlignment.Stretch)
                 {
                     contentEditableStyle.width = "100%";
@@ -119,6 +120,7 @@ namespace Windows.UI.Xaml.Controls
                         contentEditableStyle.maxWidth = contentEditableMaxWidth.ToInvariantString() + "px";  //note: this might be incorrect as it does not take into consideration any padding, margin, or other elements that happens between outerDomElement and contentEditableDiv.
                     }
                 }
+                contentEditableStyle.EndUpdate();
             }
         }
 
@@ -129,6 +131,7 @@ namespace Windows.UI.Xaml.Controls
             {
                 var outerDomStyle = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(this);
                 var contentEditableStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(_contentEditableDiv);
+                contentEditableStyle.BeginUpdate();
                 if (Host.VerticalContentAlignment == VerticalAlignment.Stretch)
                 {
                     contentEditableStyle.height = "100%";
@@ -148,6 +151,7 @@ namespace Windows.UI.Xaml.Controls
                         contentEditableStyle.maxHeight = outerDomStyle.height; //note: this might be incorrect as it does not take into consideration any padding or margin that happens between outerDomElement and contentEditableDiv.
                     }
                 }
+                contentEditableStyle.EndUpdate();
             }
         }
 

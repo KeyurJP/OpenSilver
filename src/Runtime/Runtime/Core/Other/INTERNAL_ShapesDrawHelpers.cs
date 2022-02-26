@@ -36,15 +36,19 @@ namespace CSHTML5.Internal
             domElementWhereToPlaceChildren = null;
             var div = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("div", parentRef, associatedUIElement);
             var divStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+            divStyle.BeginUpdate();
             //divStyle.overflow = "hidden";
             divStyle.lineHeight = "0"; // Line height is not needed in shapes because it causes layout issues.
             //divStyle.width = "100%";
             //divStyle.height = "100%";
             divStyle.fontSize = "0px"; //this allows this div to be as small as we want (for some reason in Firefox, what contains a canvas has a height of at least about (1 + 1/3) * fontSize)
+            divStyle.EndUpdate();
             canvasDomElement = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("canvas", div, associatedUIElement);
             var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(canvasDomElement);
+            style.BeginUpdate();
             style.width = "0px";
             style.height = "0px";
+            style.EndUpdate();
             return div;
         }
 
@@ -65,7 +69,7 @@ namespace CSHTML5.Internal
         internal static void PrepareStretch(Shape shape, object canvasDomElement, double minX, double maxX, double minY, double maxY, Stretch stretch, out Size shapeActualSize)
         {
             var canvasStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(canvasDomElement);
-
+            canvasStyle.BeginUpdate();
             //Two steps:
             // 1) We get the size the Shape would take if Stretch = None so that we know its prefered size
             // 2) We make the element take the allowed size closest to that prefered size.
@@ -99,6 +103,7 @@ namespace CSHTML5.Internal
 
             //we apply the possible defined size of the outerDomElement of the shape:
             var style = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(shape);
+            style.BeginUpdate();
             bool frameworkElementWidthWasSpecified = false;
             double frameworkElementWidth = shape.Width;
             double frameworkElementHeight = shape.Height;
@@ -180,7 +185,8 @@ namespace CSHTML5.Internal
                     }
                 }
             }
-
+            style.EndUpdate();
+            canvasStyle.EndUpdate();
             var context = INTERNAL_HtmlDomManager.Get2dCanvasContext(canvasDomElement);
             context.translate(0.5, 0.5); //makes is less blurry for some reason.
         }

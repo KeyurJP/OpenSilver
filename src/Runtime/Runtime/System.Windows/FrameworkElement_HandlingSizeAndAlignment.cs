@@ -60,6 +60,7 @@ namespace Windows.UI.Xaml
 #endif
 
             var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(outerDomElement);
+            style.BeginUpdate();
             if (element.IsUnderCustomLayout)
             {
                 INTERNAL_HtmlDomManager.SetPosition(style, element.RenderedVisualBounds, false, true, true);
@@ -82,6 +83,7 @@ namespace Windows.UI.Xaml
                 else
                     style.width = "auto";
             }
+            style.EndUpdate();
 #if PERFSTAT
             Performance.Counter("Size/Alignment: INTERNAL_InitializeOuterDomElementWidthAndHeight", t0);
 #endif
@@ -363,7 +365,7 @@ namespace Windows.UI.Xaml
             {
                 // Gain access to the outer style:
                 var styleOfOuterDomElement = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(fe);
-
+                styleOfOuterDomElement.BeginUpdate();
                 //We check if the element is the direct child of a ViewBox, in which case alignment has no meaning:
                 UIElement currentParent = fe.INTERNAL_VisualParent as UIElement;
                 //the test below is basically: frameworkElement.VisualParent.VisualParent.VisualParent is ViewBox
@@ -401,7 +403,7 @@ namespace Windows.UI.Xaml
                     //-----------------------------
                     // Handle special cases:
                     //-----------------------------
-
+                    styleOfWrapperElement.BeginUpdate();
                     if (fe is ChildWindow)
                     {
                         //we force the Stretch behaviour on ChildWindow so that the Gray background thing can be on the whole window.
@@ -546,8 +548,9 @@ namespace Windows.UI.Xaml
                         default:
                             break;
                     }
-                }
-
+                    styleOfWrapperElement.EndUpdate();
+                }                
+                styleOfOuterDomElement.EndUpdate();
                 //-----------------------------
                 // Handle the "Overflow" CSS property:
                 //-----------------------------
@@ -795,7 +798,7 @@ namespace Windows.UI.Xaml
                     var styleOfWrapperElement = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(wrapperElement);
                     var parentOfTheWrapperElement = INTERNAL_HtmlDomManager.GetParentDomElement(wrapperElement);
                     var styleOfParentOfTheWrapperElement = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(parentOfTheWrapperElement);
-
+                    styleOfWrapperElement.BeginUpdate();
                     //-----------------------------
                     // Handle special cases:
                     //-----------------------------
@@ -805,6 +808,7 @@ namespace Windows.UI.Xaml
                         //we force the Stretch behaviour on ChildWindow so that the Gray background thing can be on the whole window.
                         styleOfWrapperElement.verticalAlign = "middle"; // This might be useless.
                         styleOfOuterDomElement.height = "100%";
+                        styleOfWrapperElement.EndUpdate();
                         return;
                     }
 
@@ -839,6 +843,7 @@ namespace Windows.UI.Xaml
                                     {
                                         //we get the box sizing element and set the top and bottom margin to auto (see if that could hinder the margins' functionning)
                                         var boxSizingStyle = INTERNAL_HtmlDomManager.GetFrameworkElementBoxSizingStyleForModification(fe);
+                                        boxSizingStyle.BeginUpdate();
                                         if (!isMsGrid)
                                         {
                                             boxSizingStyle.marginTop = "0px";
@@ -850,6 +855,7 @@ namespace Windows.UI.Xaml
                                         {
                                             boxSizingStyle.msGridRowAlign = "start";
                                         }
+                                        boxSizingStyle.EndUpdate();
                                     }
                                 }
                                 styleOfWrapperElement.verticalAlign = "top";
@@ -863,6 +869,7 @@ namespace Windows.UI.Xaml
                                 {
                                     //we get the box sizing element and set the top and bottom margin to auto (see if that could hinder the margins' functionning)
                                     var boxSizingStyle = INTERNAL_HtmlDomManager.GetFrameworkElementBoxSizingStyleForModification(fe);
+                                    boxSizingStyle.BeginUpdate();
                                     if (!isMsGrid)
                                     {
                                         boxSizingStyle.marginTop = "auto";
@@ -875,6 +882,7 @@ namespace Windows.UI.Xaml
                                     {
                                         boxSizingStyle.msGridRowAlign = "center";
                                     }
+                                    boxSizingStyle.EndUpdate();
                                 }
                                 else
                                 {
@@ -892,6 +900,7 @@ namespace Windows.UI.Xaml
                                 {
                                     //we get the box sizing element and set the top and bottom margin to auto (see if that could hinder the margins' functionning)
                                     var boxSizingStyle = INTERNAL_HtmlDomManager.GetFrameworkElementBoxSizingStyleForModification(fe);
+                                    boxSizingStyle.BeginUpdate();
                                     if (!isMsGrid)
                                     {
                                         boxSizingStyle.marginTop = "auto";
@@ -904,6 +913,7 @@ namespace Windows.UI.Xaml
                                     {
                                         boxSizingStyle.msGridRowAlign = "end";
                                     }
+                                    boxSizingStyle.EndUpdate();
                                 }
                                 else
                                 {
@@ -932,6 +942,7 @@ namespace Windows.UI.Xaml
                         default:
                             throw new NotSupportedException();
                     }
+                    styleOfWrapperElement.EndUpdate();
                 }
 
                 //-----------------------------
@@ -1204,7 +1215,8 @@ namespace Windows.UI.Xaml
                 var boxSizingElement = frameworkElement.INTERNAL_AdditionalOutsideDivForMargins;
                 var styleOfBoxSizingElement = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(boxSizingElement);
                 var styleOfOuterDomElement = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(frameworkElement);
-
+                styleOfOuterDomElement.BeginUpdate();
+                styleOfBoxSizingElement.BeginUpdate();
                 // todo: if the container has a padding, add it to the margin?
                 // Note: positive margins are achieved by setting the "padding" of the outer
                 // "box-sizing" element. Negative margins are achieved by setting negative
@@ -1290,6 +1302,8 @@ namespace Windows.UI.Xaml
                     // to apply vertical alignment.
                     styleOfOuterDomElement.marginBottom = newMargin.Bottom.ToInvariantString() + "px"; 
                 }
+                styleOfOuterDomElement.EndUpdate();
+                styleOfBoxSizingElement.EndUpdate();
             }
 
 #if PERFSTAT

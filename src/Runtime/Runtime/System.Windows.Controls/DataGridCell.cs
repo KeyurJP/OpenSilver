@@ -161,8 +161,10 @@ namespace Windows.UI.Xaml.Controls
         {
             var div = base.CreateDomElement(parentRef, out domElementWhereToPlaceChildren);
             var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+            style.BeginUpdate();
             style.overflow = "hidden";
             style.boxSizing = "border-box";
+            style.EndUpdate();
             //Why do we need the box-sizing here:
             // the cell for this has width: 100% and height: 100%
             // BUT it doesn't naturally include the border-width (at least in Firefox)

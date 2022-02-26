@@ -496,6 +496,7 @@ namespace Windows.UI.Xaml
             {
                 object div2;
                 var div2style = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", div1, this, out div2);
+                div2style.BeginUpdate();
                 div2style.width = "100%";
                 div2style.height = "100%";
                 if (INTERNAL_ForceEnableAllPointerEvents)
@@ -506,6 +507,7 @@ namespace Windows.UI.Xaml
                 {
                     div1style.position = "relative";
                 }
+                div2style.EndUpdate();
             }
             else
             {
@@ -527,11 +529,13 @@ namespace Windows.UI.Xaml
             var div1style = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", parentRef, this, out div1);
             object div2;
             var div2style = INTERNAL_HtmlDomManager.CreateDomElementAppendItAndGetStyle("div", div1, this, out div2);
+            div2style.BeginUpdate();
             div2style.width = "100%";
             div2style.height = "100%";
             if (INTERNAL_ForceEnableAllPointerEvents)
                 div2style.pointerEvents = "all";
             domElementWhereToPlaceChildren = div2;
+            div2style.EndUpdate();
             return div1;
         }
 #if BRIDGE

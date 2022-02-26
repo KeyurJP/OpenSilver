@@ -152,7 +152,7 @@ namespace Windows.UI.Xaml.Shapes
             if (INTERNAL_VisualTreeManager.IsElementInVisualTree(shape))
             {
                 var shapeDom = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(shape);
-
+                shapeDom.BeginUpdate();
                 Stretch newValue = (Stretch)e.NewValue;
                 if (double.IsNaN(shape.Width))
                 {
@@ -194,7 +194,7 @@ namespace Windows.UI.Xaml.Shapes
                             break;
                     }
                 }
-
+                shapeDom.EndUpdate();
                 shape.ScheduleRedraw();
             }
         }

@@ -284,10 +284,12 @@ namespace Windows.UI.Xaml.Controls
         {
             var border = (Border)d;
             var domElement = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(border);
+            domElement.BeginUpdate();
             var thickness = (Thickness)newValue;
             domElement.boxSizing = "border-box";
             domElement.borderStyle = "solid"; //todo: see if we should put this somewhere else
             domElement.borderWidth = $"{thickness.Top.ToString(CultureInfo.InvariantCulture)}px {thickness.Right.ToString(CultureInfo.InvariantCulture)}px {thickness.Bottom.ToString(CultureInfo.InvariantCulture)}px {thickness.Left.ToString(CultureInfo.InvariantCulture)}px";
+            domElement.EndUpdate();
         }
 
         /// <summary>
@@ -351,10 +353,11 @@ namespace Windows.UI.Xaml.Controls
                 var newPadding = (Thickness)newValue;
                 var innerDomElement = border.INTERNAL_InnerDomElement;
                 var styleOfInnerDomElement = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(innerDomElement);
-
+                styleOfInnerDomElement.BeginUpdate();
                 // todo: if the container has a padding, add it to the margin
                 styleOfInnerDomElement.boxSizing = "border-box";
                 styleOfInnerDomElement.padding = $"{newPadding.Top.ToString(CultureInfo.InvariantCulture)}px {newPadding.Right.ToString(CultureInfo.InvariantCulture)}px {newPadding.Bottom.ToString(CultureInfo.InvariantCulture)}px {newPadding.Left.ToString(CultureInfo.InvariantCulture)}px";
+                styleOfInnerDomElement.EndUpdate();
             }
         }
 

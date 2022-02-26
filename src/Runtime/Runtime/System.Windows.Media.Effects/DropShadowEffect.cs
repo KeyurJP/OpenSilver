@@ -54,6 +54,7 @@ namespace System.Windows.Media.Effects
             if (_parentUIElement != null && INTERNAL_VisualTreeManager.IsElementInVisualTree(_parentUIElement))
             {
                 var domStyle = INTERNAL_HtmlDomManager.GetFrameworkElementOuterStyleForModification(_parentUIElement);
+                domStyle.BeginUpdate();
                 double x, y;
                 GetXYPositionFromDirectionAndDepth(out x, out y);
                 double opacity = Math.Max(Math.Min(1.0, this.Opacity), 0.0);
@@ -74,6 +75,7 @@ namespace System.Windows.Media.Effects
                     domStyle.borderCollapse = "separate"; // This is required for IE only. If this property is not set or equal to "collapse", the shadow does not render at all on IE. See: http://stackoverflow.com/questions/9949396/css-box-shadow-not-working-in-ie
                     domStyle.borderSpacing = "0px"; // This is required to fix a bug that comes with the line above: a 2 px margin appears around the children of the element, which can lead to some elements overflowing relative to those children when they shouldn't.
                 }
+                domStyle.EndUpdate();
             }
         }
 

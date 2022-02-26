@@ -217,11 +217,12 @@ namespace Windows.UI.Xaml.Controls
 
                 var div = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("div", parentRef, this, index);
                 var divStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+                divStyle.BeginUpdate();
                 divStyle.position = "relative";
                 divStyle.display = "table-cell";
                 divStyle.height = "100%"; //this allow the stretched items to actually be stretched to the size of the tallest element when the stackpanel's size is only defined by this element.
                 divStyle.verticalAlign = "middle"; // We use this as a default value for elements that have a "stretch" vertical alignment
-
+                divStyle.EndUpdate();
                 domElementWhereToPlaceChild = div;
 
 
@@ -238,9 +239,10 @@ namespace Windows.UI.Xaml.Controls
 
                 var div = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("div", parentRef, this, index);
                 var divStyle = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+                divStyle.BeginUpdate();
                 divStyle.position = "relative";
                 divStyle.width = "100%"; // Makes it possible to do horizontal alignment of the element that will be the child of this div.
-
+                divStyle.EndUpdate();
                 domElementWhereToPlaceChild = div;
                 return div;
             }

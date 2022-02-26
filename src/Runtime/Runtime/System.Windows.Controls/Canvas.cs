@@ -198,9 +198,10 @@ namespace Windows.UI.Xaml.Controls
         {
             var div = INTERNAL_HtmlDomManager.CreateDomElementAndAppendIt("div", parentRef, this);
             var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);
+            style.BeginUpdate();
             style.overflow = "display";
             style.position = "relative";
-
+            style.EndUpdate();
             domElementWhereToPlaceChildren = div;
             return div;
 

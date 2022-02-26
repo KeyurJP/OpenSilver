@@ -440,6 +440,7 @@ namespace Windows.UI.Xaml
             UIElement uiElement = (UIElement)d;
             var outerDomElement = uiElement.INTERNAL_OuterDomElement;
             var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(outerDomElement);
+            style.BeginUpdate();
             if ((bool)newValue)
             {
                 style.overflow = "hidden"; //todo: ? if this is a ScrollViewer do not do anything?
@@ -450,6 +451,7 @@ namespace Windows.UI.Xaml
                 style.overflow = "auto";
                 style.tableLayout = "auto";
             }
+            style.EndUpdate();
         }
 
 #endregion

@@ -18,6 +18,7 @@
 
 #if !BRIDGE
 using JSIL.Meta;
+using Newtonsoft.Json;
 #else
 using Bridge;
 #endif
@@ -100,23 +101,89 @@ namespace CSHTML5.Internal
 
             return true;
         }
+        #region Performance
+        Dictionary<string, Dictionary<string, object>> styleCollection = new Dictionary<string, Dictionary<string, object>>();
 
+        bool IsBulkModeActive = false;
+        public void BeginUpdate() { IsBulkModeActive = true; }
+        public void EndUpdate()
+        {
+            Interop.ExecuteJavaScript(@"document.setStyles(JSON.parse($0));", JsonConvert.SerializeObject(styleCollection));
+            IsBulkModeActive = false;
+        }
+        #endregion
         void SetStylePropertyValue(string propertyName, string propertyValue)
         {
-            string javaScriptCodeToExecute = $@"document.setDomStyle(""{Uid}"", ""{propertyName}"", ""{propertyValue}"")";
-            INTERNAL_SimulatorExecuteJavaScript.ExecuteJavaScriptAsync(javaScriptCodeToExecute);
+            if (IsBulkModeActive)
+            {
+                if (!styleCollection.ContainsKey(Uid))
+                {
+                    styleCollection[Uid] = new Dictionary<string, object>() { { propertyName, propertyValue } };
+                }
+                else
+                {
+                    styleCollection[Uid][propertyName] = propertyValue;
+                }
+            }
+            else
+            {
+                string javaScriptCodeToExecute = $@"document.setDomStyle(""{Uid}"", ""{propertyName}"", ""{propertyValue}"")";
+                INTERNAL_SimulatorExecuteJavaScript.ExecuteJavaScriptAsync(javaScriptCodeToExecute);
+            }
         }
 
         void SetTransformPropertyValue(string propertyValue)
         {
-            string javaScriptCodeToExecute = $@"document.setDomTransform(""{Uid}"", ""{propertyValue}"")";
-            INTERNAL_SimulatorExecuteJavaScript.ExecuteJavaScriptAsync(javaScriptCodeToExecute);
+            if (IsBulkModeActive)
+            {
+                if (!styleCollection.ContainsKey(Uid))
+                {
+                    styleCollection[Uid] = new Dictionary<string, object>() {
+                        { "transform", propertyValue } ,
+                        { "msTransform", propertyValue } ,
+                        { "WebkitTransform", propertyValue }
+                    };
+                }
+                else
+                {
+                    var store = styleCollection[Uid];
+                    store["transform"] = propertyValue;
+                    store["msTransform"] = propertyValue;
+                    store["WebkitTransform"] = propertyValue;
+                }
+            }
+            else
+            {
+                string javaScriptCodeToExecute = $@"document.setDomTransform(""{Uid}"", ""{propertyValue}"")";
+                INTERNAL_SimulatorExecuteJavaScript.ExecuteJavaScriptAsync(javaScriptCodeToExecute);
+            }
         }
 
         void SetTransformOriginPropertyValue(string propertyValue)
         {
-            string javaScriptCodeToExecute = $@"document.setDomTransformOrigin(""{Uid}"", ""{propertyValue}"")";
-            INTERNAL_SimulatorExecuteJavaScript.ExecuteJavaScriptAsync(javaScriptCodeToExecute);
+            if (IsBulkModeActive)
+            {
+                if (!styleCollection.ContainsKey(Uid))
+                {
+                    styleCollection[Uid] = new Dictionary<string, object>() {
+                        { "transformOrigin", propertyValue } ,
+                        { "msTransformOrigin", propertyValue } ,
+                        { "WebkitTransformOrigin", propertyValue }
+                    };
+                }
+                else
+                {
+                    var store = styleCollection[Uid];
+                    store["transformOrigin"] = propertyValue;
+                    store["msTransformOrigin"] = propertyValue;
+                    store["WebkitTransformOrigin"] = propertyValue;
+                }
+            }
+            else
+            {
+                string javaScriptCodeToExecute = $@"document.setDomTransformOrigin(""{Uid}"", ""{propertyValue}"")";
+                INTERNAL_SimulatorExecuteJavaScript.ExecuteJavaScriptAsync(javaScriptCodeToExecute);
+            }
         }
 
         //        string GetStylePropertyValue(string propertyName)

@@ -523,6 +523,7 @@ if(nextSibling != undefined) {
 
                 // Style the DIV for handling margins:
                 var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(additionalOutsideDivForMargins);
+                style.BeginUpdate();
                 style.boxSizing = "border-box";
                 if (child is FrameworkElement &&
                     (((FrameworkElement)child).HorizontalAlignment == HorizontalAlignment.Stretch && double.IsNaN(((FrameworkElement)child).Width)))
@@ -533,8 +534,9 @@ if(nextSibling != undefined) {
                 if (child is FrameworkElement &&
                     (((FrameworkElement)child).VerticalAlignment == VerticalAlignment.Stretch && double.IsNaN(((FrameworkElement)child).Height)))
                     style.height = "100%";
+                style.EndUpdate();
             }
-
+            
 #if PERFSTAT
             Performance.Counter("VisualTreeManager: Create the DIV for the margin", t1);
 #endif
