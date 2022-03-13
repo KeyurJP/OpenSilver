@@ -526,7 +526,7 @@ namespace DotNetForHtml5.Compiler
                         parametersDictionaryDefinition +=
                             string.Format("{{ \"{0}\", {1} }}",
                                           trimmedParamName,
-                                          parameterDefinition);
+                                          isOutParam ? "null" : parameterDefinition);
                         isFirst = false;
                     }
                     parametersDictionaryDefinition += "};" + Environment.NewLine;
