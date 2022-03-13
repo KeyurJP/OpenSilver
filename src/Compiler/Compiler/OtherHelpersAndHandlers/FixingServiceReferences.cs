@@ -545,8 +545,8 @@ namespace DotNetForHtml5.Compiler
                     if ((methodType == MethodType.AsyncWithoutReturnType || methodType == MethodType.AsyncWithReturnType || methodType == MethodType.NotAsyncWithReturnType || methodType == MethodType.AsyncBegin || methodType == MethodType.AsyncEndWithReturnType)) 
                     {
                         bodyFormat = @"
-            {4}            var result = System.ServiceModel.INTERNAL_WebMethodsCaller.{8}CallWebMethod{0}{7}<{1}{2}>({9}, ""{3}"", data, ""{10}"");{11}
-            return result;
+            {4}            var webMethodResult = System.ServiceModel.INTERNAL_WebMethodsCaller.{8}CallWebMethod{0}{7}<{1}{2}>({9}, ""{3}"", data, ""{10}"");{11}
+            return webMethodResult;
         ";
                     }
                     newBody = string.Format(
