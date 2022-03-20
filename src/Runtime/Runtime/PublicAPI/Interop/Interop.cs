@@ -30,6 +30,14 @@ namespace OpenSilver
     /// </summary>
     public static class Interop
     {
+
+
+
+        public static int RegisterCallback(Delegate callback)
+        {
+            return CSHTML5.INTERNAL_InteropImplementation.RegisterCallback(callback);
+        }
+
         /// <summary>
         /// Allows calling JavaScript code from within C#.
         /// </summary>
