@@ -47,6 +47,14 @@ namespace CSHTML5
             };
         }
 
+
+        internal static int RegisterCallback(Delegate callback)
+        {
+            int callbackId = ReferenceIDGenerator.GenerateId();
+            CallbacksDictionary.Add(callbackId, callback);
+            return callbackId;
+        }
+
 #if BRIDGE
         [Bridge.Template("null")]
 #endif
@@ -145,8 +153,7 @@ namespace CSHTML5
                     Delegate callback = (Delegate)variable;
 
                     // Add the callback to the document:
-                    int callbackId = ReferenceIDGenerator.GenerateId();
-                    CallbacksDictionary.Add(callbackId, callback);
+                    int callbackId = RegisterCallback(callback);                    
 
                     var isVoid = callback.Method.ReturnType == typeof(void);
 
