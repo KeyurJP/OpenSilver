@@ -172,6 +172,18 @@ namespace Windows.UI.Xaml.Controls
                 _textBox.KeyDown += OnTextBoxKeyDown;
                 _textBox.LostFocus += OnTextBoxLostFocus;
             }
+            if (!SelectedDate.HasValue)
+            {
+                if (!string.IsNullOrEmpty(_defaultText))
+                {
+                    _textBox.Text = _defaultText;
+                    SetSelectedDate();
+                }
+            }
+            else
+            {
+                _textBox.Text = DateTimeToString(SelectedDate.Value);
+            }
         }
 
         private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
