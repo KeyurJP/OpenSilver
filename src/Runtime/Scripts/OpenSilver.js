@@ -180,16 +180,14 @@ function getArrayBufferFromFileAsync(elem, fileId, startOffset, count) {
     var file = getFileById(elem, fileId);
 
     // On the first read, convert the FileReader into a Promise<ArrayBuffer>
-    if (!file.readPromise) {
-        file.readPromise = new Promise(function (resolve, reject) {
-            var reader = new FileReader();
-            reader.onload = function () { resolve(reader.result); };
-            reader.onerror = function (err) { reject(err); };
-            reader.readAsArrayBuffer(file.blob.slice(startOffset, startOffset + count));
-        });
-    }
+    var readPromise = new Promise(function (resolve, reject) {
+        var reader = new FileReader();
+        reader.onload = function () { resolve(reader.result); };
+        reader.onerror = function (err) { reject(err); };
+        reader.readAsArrayBuffer(file.blob.slice(startOffset, startOffset + count));
+    });
 
-    return file.readPromise;
+    return readPromise;
 };
 
 window.uint8ToBase64 = (function () {
