@@ -776,10 +776,14 @@ namespace Windows.UI.Xaml.Shapes
 
                 if (fillAsLinearGradientBrush.MappingMode == BrushMappingMode.RelativeToBoundingBox)
                 {
-                    x0 = fillAsLinearGradientBrush.StartPoint.X * (xOffsetToApplyBeforeMultiplication + maxX - minX) * horizontalMultiplicator + minX;
-                    x1 = fillAsLinearGradientBrush.EndPoint.X * (xOffsetToApplyBeforeMultiplication + maxX - minX) * horizontalMultiplicator + minX;
-                    y0 = fillAsLinearGradientBrush.StartPoint.Y * (yOffsetToApplyBeforeMultiplication + maxY - minY) * verticalMultiplicator + minY;
-                    y1 = fillAsLinearGradientBrush.EndPoint.Y * (yOffsetToApplyBeforeMultiplication + maxY - minY) * verticalMultiplicator + minY;
+                    x0 = (minX + maxX) / 2;
+                    x1 = (minX + maxX) / 2;
+                    y0 = minY;
+                    y1 = maxY;
+                    //x0 = fillAsLinearGradientBrush.StartPoint.X * (xOffsetToApplyBeforeMultiplication + maxX - minX) * horizontalMultiplicator + minX;
+                    //x1 = fillAsLinearGradientBrush.EndPoint.X * (xOffsetToApplyBeforeMultiplication + maxX - minX) * horizontalMultiplicator + minX;
+                    //y0 = fillAsLinearGradientBrush.StartPoint.Y * (yOffsetToApplyBeforeMultiplication + maxY - minY) * verticalMultiplicator + minY;
+                    //y1 = fillAsLinearGradientBrush.EndPoint.Y * (yOffsetToApplyBeforeMultiplication + maxY - minY) * verticalMultiplicator + minY;
                 }
 
                 if (fillAsLinearGradientBrush.SpreadMethod == GradientSpreadMethod.Pad)
