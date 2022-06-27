@@ -15,7 +15,7 @@
 using CSHTML5.Internal;
 #endif
 
-using System;
+
 using System.Reflection;
 
 #if MIGRATION
