@@ -86,14 +86,7 @@ namespace Windows.UI.Xaml.Media.Imaging
         /// <param name="streamSource">The stream source that sets the image source value.</param>
         public void SetSource(Stream streamSource) //note: this is supposed to be a IRandomAccessStream
         {
-            // Copying the original stream because it could be disposed by the user before it is consumed
-            // by the target image
-            MemoryStream streamCopy = new MemoryStream();
-            streamSource.CopyTo(streamCopy);
-            streamCopy.Seek(0, SeekOrigin.Begin);
-
-            INTERNAL_StreamSource = streamCopy;
-            _isStreamAsBase64StringValid = false; //in case we set the source after having already set it and used it.
+            SetSourceInternal(streamSource);
         }
 
 
@@ -114,7 +107,7 @@ namespace Windows.UI.Xaml.Media.Imaging
         [OpenSilver.NotImplemented]
         public int PixelHeight
         {
-            get { return (int)this.GetValue(BitmapSource.PixelHeightProperty); }
+            get { return PixelHeightInternal; }
         }
 
         /// <summary>
@@ -131,7 +124,7 @@ namespace Windows.UI.Xaml.Media.Imaging
         [OpenSilver.NotImplemented]
         public int PixelWidth
         {
-            get { return (int)this.GetValue(BitmapSource.PixelWidthProperty); }
+            get { return PixelWidthInternal; }
         }
 
         /// <summary>
@@ -141,8 +134,8 @@ namespace Windows.UI.Xaml.Media.Imaging
         /// </summary>
         [OpenSilver.NotImplemented]
         public static readonly DependencyProperty PixelWidthProperty = DependencyProperty.Register("PixelWidth", typeof(int), typeof(BitmapSource), new PropertyMetadata(0));
-        
-        
+
+
         ////
         //// Summary:
         ////     Sets the source image for a BitmapSource by accessing a stream and processing
@@ -156,5 +149,77 @@ namespace Windows.UI.Xaml.Media.Imaging
         ////     An asynchronous handler called when the operation is complete.
         //public IAsyncAction SetSourceAsync(IRandomAccessStream streamSource);
         #endregion
+
+
+        internal virtual int PixelHeightInternal
+        {
+            get
+            {
+                return (int)this.GetValue(PixelHeightProperty);
+            }
+        }
+
+        internal virtual int PixelWidthInternal
+        {
+            get
+            {
+                return (int)this.GetValue(PixelWidthProperty);
+            }
+        }
+
+        /// <summary>Sets the source of the <see cref="T:System.Windows.Media.Imaging.BitmapSource" />.</summary>
+        /// <param name="streamSource">The stream to set the source to.</param>
+
+        internal virtual void SetSourceInternal(Stream streamSource)
+        {
+            // Copying the original stream because it could be disposed by the user before it is consumed
+            // by the target image
+            MemoryStream streamCopy = new MemoryStream();
+            streamSource.CopyTo(streamCopy);
+            streamCopy.Seek(0, SeekOrigin.Begin);
+
+            INTERNAL_StreamSource = streamCopy;
+            _isStreamAsBase64StringValid = false; //in case we set the source after having already set it and used it.
+        }
+
+        internal static void ReadStream(Stream streamSource, out byte[] buffer, out int position)
+        {
+            if (streamSource == null)
+                throw new ArgumentNullException(nameof(streamSource));
+            int length;
+            try
+            {
+                length = (int)streamSource.Length;
+                buffer = new byte[length];
+                streamSource.Position = 0L;
+            }
+            catch
+            {
+                buffer = new byte[10240];
+                length = 0;
+            }
+            position = 0;
+            int num = streamSource.Read(buffer, position, length == 0 ? 10240 : length);
+            position = num;
+            if (length != 0 && num >= length)
+                return;
+            while (num != 0)
+            {
+                buffer = BitmapSource.EnsureArray(buffer, position, 10240);
+                num = streamSource.Read(buffer, position, 10240);
+                position += num;
+            }
+        }
+
+        private static byte[] EnsureArray(byte[] arr, int currentPosition, int additionalSize)
+        {
+            int num1 = arr.Length - currentPosition;
+            if (num1 >= additionalSize)
+                return arr;
+            int num2 = additionalSize - num1;
+            byte[] numArray = new byte[num2 < arr.Length ? arr.Length * 2 : arr.Length + num2];
+            arr.CopyTo((Array)numArray, 0);
+            return numArray;
+        }
     }
 }
