@@ -417,6 +417,7 @@ namespace Windows.UI.Xaml.Shapes
             _redrawWhenBecomeVisible = false;
         }
 
+        internal override object INTENRAL_CanvasDom { get { return _canvasDomElement; } }
         internal protected virtual void ManageStrokeChanged()
         {
             ScheduleRedraw();
