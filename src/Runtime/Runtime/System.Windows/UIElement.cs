@@ -506,8 +506,13 @@ namespace Windows.UI.Xaml
             }
         }
 
+        #region Canvas related
+        internal virtual object INTENRAL_CanvasDom { get; } = null;      
+        #endregion
 
-#region Effect
+
+
+        #region Effect
 
         // todo: we may add the support for multiple effects on the same 
         // UIElement since it is possible in html (but not in wpf). If we 
