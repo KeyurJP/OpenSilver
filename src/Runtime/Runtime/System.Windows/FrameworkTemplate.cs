@@ -15,6 +15,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Markup;
+using OpenSilver.Internal;
 using OpenSilver.Internal.Xaml.Context;
 
 #if MIGRATION
@@ -129,6 +130,13 @@ namespace Windows.UI.Xaml
                 throw new InvalidOperationException($"Cannot modify a sealed '{GetType().Name}'. Please create a new one instead.");
             }
         }
+
+        internal static readonly DependencyProperty TemplateNameScopeProperty =
+            DependencyProperty.RegisterAttached(
+                "TemplateNameScope",
+                typeof(INameScope),
+                typeof(FrameworkTemplate),
+                null);
     }
 
     internal class TemplateContent
@@ -149,7 +157,23 @@ namespace Windows.UI.Xaml
 
         internal FrameworkElement LoadContent(FrameworkElement owner)
         {
-            return _factory(owner, new XamlContext(_xamlContext));
+            XamlContext context = new XamlContext(_xamlContext)
+            {
+                ExternalNameScope = new NameScope(),
+            };
+
+            FrameworkElement rootElement = _factory(owner, context);
+            
+            if (owner == null)
+            {
+                NameScope.SetNameScope(rootElement, context.ExternalNameScope);
+            }
+            else
+            {
+                owner.SetValue(FrameworkTemplate.TemplateNameScopeProperty, context.ExternalNameScope);
+            }
+
+            return rootElement;
         }
     }
 }
