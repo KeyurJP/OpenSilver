@@ -35,6 +35,7 @@
         <ResourceDictionary Source="../DefaultStyles/INTERNAL_DefaultTreeViewStyle.xaml" />
         <ResourceDictionary Source="../DefaultStyles/INTERNAL_DefaultTreeViewItemStyle.xaml" />
         <ResourceDictionary Source="../DefaultStyles/INTERNAL_DefaultCalendarDayButtonStyle.xaml" />
+        <ResourceDictionary Source="../DefaultStyles/INTERNAL_DefaultRichTextBoxStyle.xaml" />
         <ResourceDictionary Source="../DefaultStyles/INTERNAL_DefaultDragDecoratorStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
