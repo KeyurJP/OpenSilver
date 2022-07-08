@@ -1,6 +1,10 @@
 #if MIGRATION
+using System.Windows.Controls;
+
 namespace System.Windows.Documents
 #else
+using Windows.UI.Xaml.Controls;
+
 namespace Windows.UI.Xaml.Documents
 #endif
 {
@@ -8,9 +12,18 @@ namespace Windows.UI.Xaml.Documents
 	// Summary:
 	//     Encapsulates the selection state for the System.Windows.Controls.RichTextBox
 	//     control.
-    [OpenSilver.NotImplemented]
 	public sealed class TextSelection
 	{
+		private IRichTextBoxPresenter _presenter;
+		private int _start, _length;
+
+        internal TextSelection(IRichTextBoxPresenter presenter, int start, int length)
+        {
+			_presenter = presenter;
+			_start = start;
+			_length = length;
+        }
+		
 		//
 		// Summary:
 		//     Gets a System.Windows.Documents.TextPointer that represents the end of the current
@@ -21,6 +34,7 @@ namespace Windows.UI.Xaml.Documents
 		//     selection.
         [OpenSilver.NotImplemented]
 		public TextPointer End { get; }
+
 		//
 		// Summary:
 		//     Gets a System.Windows.Documents.TextPointer that represents the beginning of
@@ -31,14 +45,18 @@ namespace Windows.UI.Xaml.Documents
 		//     selection.
         [OpenSilver.NotImplemented]
 		public TextPointer Start { get; }
+
 		//
 		// Summary:
 		//     Gets or sets the plain text contents of the current selection.
 		//
 		// Returns:
 		//     A string that contains the plain text contents of the current selection.
-        [OpenSilver.NotImplemented]
-		public string Text { get; set; }
+		public string Text {
+			get => _presenter.GetText(_start, _length);
+			set => _presenter.SetText(_start, _length, value);
+		}
+
 		//
 		// Summary:
 		//     Gets or sets the XAML representation of the current selection.
@@ -47,8 +65,17 @@ namespace Windows.UI.Xaml.Documents
 		//     A System.String that is a XAML representation of the current selection. This
 		//     XAML representation is the same XAML that is applied to the clipboard for a copy
 		//     operation.
-        [OpenSilver.NotImplemented]
-		public string Xaml { get; set; }
+		public string Xaml 
+		{
+            get
+            {
+				return _presenter.GetContents(_start, _length);
+            }
+            set
+            {
+				//TODO: implement
+            }
+		}
 
 		//
 		// Summary:
@@ -60,10 +87,9 @@ namespace Windows.UI.Xaml.Documents
 		//
 		//   value:
 		//     The value for the formatting property.
-        [OpenSilver.NotImplemented]
 		public void ApplyPropertyValue(DependencyProperty formattingProperty, object value)
 		{
-			
+			_presenter.SetPropertyValue(formattingProperty, value, _start, _length);
 		}
 		
 		//
@@ -77,10 +103,9 @@ namespace Windows.UI.Xaml.Documents
 		// Returns:
 		//     An object that indicates the value of the specified formatting property on the
 		//     current selection.
-        [OpenSilver.NotImplemented]
 		public object GetPropertyValue(DependencyProperty formattingProperty)
 		{
-			return default(object);
+			return _presenter.GetPropertyValue(formattingProperty, _start, _length);
 		}
 		
 		//
@@ -90,10 +115,13 @@ namespace Windows.UI.Xaml.Documents
 		// Parameters:
 		//   element:
 		//     The System.Windows.Documents.TextElement to be inserted.
-        [OpenSilver.NotImplemented]
 		public void Insert(TextElement element)
 		{
-			
+			//TODO: support other TextElements
+			if(element is Run run)
+            {
+				_presenter.SetText(_start, _length, run.Text);
+            }
 		}
 		
 		//
