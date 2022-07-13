@@ -55,6 +55,9 @@
 		<Compile Include="Core\Main\WeakReferenceListEnumerator.cs" />
 		<Compile Include="Diagnostics\DebugInfo.cs" />
 		<Compile Include="OpenSilver\Controls\OpenFileDialog.cs" />
+		<Compile Include="OpenSilver\Internal\Clipboard.cs" />
+		<Compile Include="OpenSilver\Internal\DebounceDispatcher.cs" />
+		<Compile Include="OpenSilver\Internal\INameResolver.cs" />
 		<Compile Include="OpenSilver\Internal\NativeEventsManager.cs" />
 		<Compile Include="OpenSilver\Internal\InheritedPropertyChangedEventArgs.cs" />
 		<Compile Include="OpenSilver\Internal\ResizeObserver.cs" />
@@ -102,6 +105,8 @@
 		<Compile Include="PublicAPI\Internal\KnownTypesHelper.cs" />
 		<Compile Include="PublicAPI\Internal\WebRequestsHelper.cs" />
 		<Compile Include="PublicAPI\Interop\Interop.Obsolete.cs" />
+		<Compile Include="PublicAPI\Interop\OnCallBackImpl.cs" />
+		<Compile Include="PublicAPI\Interop\OnCallbackSimulator.cs" />
 		<Compile Include="PublicAPI\Native.Html.Controls\NativeComboBox.cs" />
 		<Compile Include="System.Collections.Generic\WORKINPROGRESS\PriorityQueue.cs" />
 		<Compile Include="System.ComponentModel.Composition.Hosting\WORKINPROGRESS\CompositionHost.cs" />
@@ -124,6 +129,7 @@
 		<Compile Include="System.Windows.Controls\CalendarDayButton.cs" />
 		<Compile Include="System.Windows.Controls\CleanUpVirtualizedItemEventArgs.cs" />
 		<Compile Include="System.Windows.Controls\DateTimeHelper.cs" />
+		<Compile Include="System.Windows.Controls\DragDecorator.cs" />
 		<Compile Include="System.Windows.Controls\ItemsControl.ItemInfo.cs" />
 		<Compile Include="System.Windows.Controls\PasswordBoxView.cs" />
 		<Compile Include="System.Windows.Controls\RichTextBox\INTERNAL_TextContainerRichTextBox.cs" />
@@ -135,6 +141,7 @@
 		<Compile Include="System.Windows.Controls\RichTextBox\RichTextFormatParser.cs" />
 		<Compile Include="System.Windows.Controls\RoutedPropertyChangingEventHandler.cs" />
 		<Compile Include="System.Windows.Controls\SelectedItemCollection.cs" />
+		<Compile Include="System.Windows.Controls\TreeViewItemCheckBox.cs" />
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\CalendarButton.cs" />
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\CalendarDateChangedEventArgs.cs" />
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\CalendarMode.cs" />
@@ -151,7 +158,7 @@
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\RatingItem.cs" />
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\ShortTimeFormat.cs" />
 		<Compile Include="System.Windows.Controls\WORKINPROGRESS\TreeViewConnectingLines.cs" />
-		<Compile Include="System.Windows.Controls\WORKINPROGRESS\TreeViewExtensions.cs" />
+		<Compile Include="System.Windows.Controls\TreeViewExtensions.cs" />
 		<Compile Include="System.ComponentModel\ReflectedPropertyCollection.cs" />
 		<Compile Include="System.ComponentModel\ReflectedPropertyData.cs" />
 		<Compile Include="OpenSilver\Internal\Xaml\RuntimeHelpers.cs" />
@@ -1220,6 +1227,9 @@
 		<Content Include="DefaultStyles\INTERNAL_DefaultProgressBarStyle.xaml">
 			<Generator>MSBuild:Compile</Generator>
 		</Content>
+    <Content Include="DefaultStyles\INTERNAL_DefaultDragDecoratorStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Content>
 	</ItemGroup>
 	<ItemGroup>
 		<EmbeddedResource Include="PagedCollectionView\PagedCollectionViewResources.resx" />

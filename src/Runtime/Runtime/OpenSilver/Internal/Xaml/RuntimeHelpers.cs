@@ -20,9 +20,11 @@ using OpenSilver.Internal.Xaml.Context;
 #if MIGRATION
 using System.Windows;
 using System.Windows.Markup;
+using System.Windows.Media.Animation;
 #else
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Markup;
+using Windows.UI.Xaml.Media.Animation;
 #endif
 
 namespace OpenSilver.Internal.Xaml
@@ -121,6 +123,17 @@ namespace OpenSilver.Internal.Xaml
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void XamlContext_RegisterName(XamlContext context, string name, object scopedElement)
+        {
+            Debug.Assert(context != null && context.ExternalNameScope != null);
+
+            if (scopedElement is DependencyObject)
+            {
+                context.ExternalNameScope.RegisterName(name, scopedElement);
+            }
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static void SetTemplatedParent(FrameworkElement element, DependencyObject templatedParent)
         {
             element.TemplatedParent = templatedParent;
@@ -179,6 +192,18 @@ namespace OpenSilver.Internal.Xaml
             Debug.Assert(markupExtension != null);
 
             return markupExtension.ProvideValue(new ServiceProviderContext(context));
+        }
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void XamlContext_SetAnimationContext(XamlContext context, Timeline timeline)
+        {
+            Debug.Assert(context != null);
+            Debug.Assert(timeline != null);
+
+            if (!(timeline is Storyboard))
+            {
+                timeline.NameResolver = context.NameResolver;
+            }
         }
     }
 }
