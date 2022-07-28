@@ -31,6 +31,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Automation.Peers;
+using System.Globalization;
 #else
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
@@ -547,6 +548,25 @@ $0.style.objectPosition = $2", image._imageDiv, objectFitvalue, objectPosition);
             {
                 return _imageDiv;
             }
+        }
+
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            var size = Convert.ToString(OpenSilver.Interop.ExecuteJavaScript("(function(element){ return  element.naturalWidth + '|' + element.naturalHeight})($0);", _imageDiv));
+            Size measuredSize;
+            int sepIndex = size != null ? size.IndexOf('|') : -1;
+            if (sepIndex > -1)
+            {
+                double actualWidth = double.Parse(size.Substring(0, sepIndex), CultureInfo.InvariantCulture);
+                double actualHeight = double.Parse(size.Substring(sepIndex + 1), CultureInfo.InvariantCulture);
+                measuredSize = new Size(actualWidth + 1, actualHeight);
+            }
+            else
+            {
+                measuredSize = new Size(0, 0);
+            }
+
+            return measuredSize;
         }
 
         protected override AutomationPeer OnCreateAutomationPeer()
