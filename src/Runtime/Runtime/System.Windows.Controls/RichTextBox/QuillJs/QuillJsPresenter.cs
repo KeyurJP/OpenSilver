@@ -92,7 +92,7 @@ namespace Windows.UI.Xaml.Controls
                 return;
 
             string script = $"$0.deleteText({start}, {length}, 'api');"
-                + $"$0.insertText({start}, '{text}');";
+                + $"$0.insertText({start}, {System.Web.HttpUtility.JavaScriptStringEncode(text, true)});";
             OpenSilver.Interop.ExecuteJavaScript(script, _instance);
         }
 
@@ -101,7 +101,16 @@ namespace Windows.UI.Xaml.Controls
             if (_instance == null)
                 return;
 
-            string script = $"$0.setText('{text}', 'api')";
+            string script = $"$0.setText({System.Web.HttpUtility.JavaScriptStringEncode(text, true)}, 'api')";
+            OpenSilver.Interop.ExecuteJavaScript(script, _instance);
+        }
+
+        public void SetText(string text, IDictionary<String, Object> formats)
+        {
+            if (_instance == null)
+                return;
+
+            string script = $"$0.insertText($0.getLength(),{System.Web.HttpUtility.JavaScriptStringEncode(text, true)},{System.Text.Json.JsonSerializer.Serialize(formats)}, 'api')";
             OpenSilver.Interop.ExecuteJavaScript(script, _instance);
         }
 
@@ -110,7 +119,7 @@ namespace Windows.UI.Xaml.Controls
             if (_instance == null)
                 return;
 
-            string script = $"$0.insertText($0.getLength(), '{text}', 'api')";
+            string script = $"$0.insertText($0.getLength(), {System.Web.HttpUtility.JavaScriptStringEncode(text, true)}, 'api')";
             OpenSilver.Interop.ExecuteJavaScript(script, _instance);
         }
 
@@ -257,8 +266,12 @@ namespace Windows.UI.Xaml.Controls
 
         public string GetContents()
         {
-            var content = OpenSilver.Interop.ExecuteJavaScript("JSON.stringify($0.getContents())", _instance);
-            return GetXamlContents(content?.ToString());
+            if (_instance != null)
+            {
+                var content = OpenSilver.Interop.ExecuteJavaScript("JSON.stringify($0.getContents())", _instance);
+                return GetXamlContents(content?.ToString());
+            }
+            return null;
         }
 
         public string GetContents(int start, int length)
@@ -269,6 +282,8 @@ namespace Windows.UI.Xaml.Controls
 
         public void Clear()
         {
+            if (_instance == null)
+                return;
             string script = "$0.setText('','api');";
             OpenSilver.Interop.ExecuteJavaScript(script, _instance);
         }
@@ -321,7 +336,7 @@ namespace Windows.UI.Xaml.Controls
 
             OpenSilver.Interop.ExecuteJavaScript("$0.on('text-change', function(delta, oldDelta, source){ if(source === 'user' || source === 'api'){$1();}})", _instance, onTextChange);
 #endif
-        }       
+        }
 
         private void LoadExtensions()
         {
@@ -357,7 +372,7 @@ namespace Windows.UI.Xaml.Controls
                 new FontFamily("Webdings"),
                 new FontFamily("Wingdings"),
             };
-                
+
             return string.Join(",", supportedFonts.Select(f => $"'{f.ToString().ToLower().Replace(" ", "-")}'"));
         }
 
@@ -416,6 +431,11 @@ namespace Windows.UI.Xaml.Controls
                 + "};"
                 + "new Quill($0, options);";
             _instance = OpenSilver.Interop.ExecuteJavaScript(script, "#" + _parent.GetEditorId());
+        }
+
+        public void SetText(string text, IDictionary<string, string> formats)
+        {
+            throw new NotImplementedException();
         }
     }
 }
