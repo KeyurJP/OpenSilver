@@ -1052,7 +1052,7 @@ namespace Windows.UI.Xaml
                 nameof(AllowDrop),
                 typeof(bool),
                 typeof(UIElement),
-                new PropertyMetadata(false));
+                new PropertyMetadata(false) { Inherits = true });
 
 #endregion
 
