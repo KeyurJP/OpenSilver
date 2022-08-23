@@ -736,9 +736,6 @@ namespace Windows.UI.Xaml
 
             // The IsVisible property depends on this property.
             uie.UpdateIsVisible();
-
-            uie.InvalidateParentMeasure();
-            uie.InvalidateParentArrange();
         }
 
         internal static void INTERNAL_ApplyVisibility(UIElement uiElement, Visibility newValue)
@@ -826,6 +823,9 @@ namespace Windows.UI.Xaml
             uie.InvalidateForceInheritPropertyOnChildren(e.Property);
 
             uie.IsVisibleChanged?.Invoke(d, e);
+
+            uie.InvalidateParentMeasure();
+            uie.InvalidateParentArrange();
         }
 
         private static object CoerceIsVisible(DependencyObject d, object baseValue)

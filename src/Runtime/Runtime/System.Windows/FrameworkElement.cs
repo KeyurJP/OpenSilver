@@ -480,6 +480,8 @@ namespace Windows.UI.Xaml
             }
         }
 
+        internal bool IsLoadedInResourceDictionary { get; set; }
+
         /// <summary>
         /// Provides a base implementation for creating the dom elements designed to represent an instance of a FrameworkElement and defines the place where its child(ren) will be added.
         /// </summary>
@@ -896,7 +898,7 @@ namespace Windows.UI.Xaml
                     return nameScope;
                 }
 
-                fe = (fe.TemplatedParent ?? fe.Parent ?? VisualTreeHelper.GetParent(fe)) as FrameworkElement;
+                fe = (fe.TemplatedParent ?? fe.Parent ?? VisualTreeHelper.GetParent(fe) ?? fe.InheritanceContext) as FrameworkElement;
             }
 
             return null;
@@ -1275,15 +1277,16 @@ namespace Windows.UI.Xaml
         //     The actual size that is used after the element is arranged in layout.
         protected virtual Size ArrangeOverride(Size finalSize)
         {
-            IEnumerable<DependencyObject> childElements = VisualTreeHelper.GetVisualChildren(this);
+            int count = VisualChildrenCount;
 
-            if (childElements.Count() > 0)
+            if (count > 0)
             {
-                UIElement elementChild = ((UIElement)childElements.ElementAt(0));
-                elementChild.Arrange(new Rect(finalSize));
-                return finalSize;
+                UIElement child = GetVisualChild(0);
+                if (child != null)
+                {
+                    child.Arrange(new Rect(finalSize));
+                }
             }
-
             return finalSize;
         }
 
@@ -1805,12 +1808,14 @@ namespace Windows.UI.Xaml
         /// </summary>
         public event RoutedEventHandler Loaded;
 
-        internal void INTERNAL_RaiseLoadedEvent()
-        {
-            if (Loaded != null)
-                Loaded(this, new RoutedEventArgs());
+        internal void RaiseLoadedEvent() => Loaded?.Invoke(this, new RoutedEventArgs());
 
-            InvalidateMeasure();
+        internal void LoadResources()
+        {
+            if (HasResources)
+            {
+                Resources.LoadResources();
+            }
         }
 
         /// <summary>
@@ -1818,10 +1823,14 @@ namespace Windows.UI.Xaml
         /// </summary>
         public event RoutedEventHandler Unloaded;
 
-        internal void INTERNAL_RaiseUnloadedEvent()
+        internal void RaiseUnloadedEvent() => Unloaded?.Invoke(this, new RoutedEventArgs());
+
+        internal void UnloadResources()
         {
-            if (Unloaded != null)
-                Unloaded(this, new RoutedEventArgs());
+            if (HasResources)
+            {
+                Resources.UnloadResources();
+            }
         }
 
 #endregion
