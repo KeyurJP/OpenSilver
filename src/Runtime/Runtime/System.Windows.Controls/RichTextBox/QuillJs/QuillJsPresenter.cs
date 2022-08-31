@@ -1,4 +1,5 @@
 ﻿#if MIGRATION
+using CSHTML5.Internal;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -36,15 +37,20 @@ namespace Windows.UI.Xaml.Controls
                 if (_instance == null)
                     return null;
 
-                string script = @"let range = $0.getSelection(true);
+                string script = @"$0.focus();let range = $0.getSelection(true);
                                  if(range){
                                     JSON.stringify({
                                         start: range.index,
                                         length: range.length
                                     });
-                                 }";
+                                 }
+                                else{
+                                        JSON.stringify({
+                                        start: 0,
+                                        length: 0
+                                    });}";
                 var range = OpenSilver.Interop.ExecuteJavaScript(script, _instance);
-                if(range != null)
+                if(range != null && !OpenSilver.Interop.IsNull(range) && !OpenSilver.Interop.IsUndefined(range))
                 {
                     var quillRange = JsonSerializer.Deserialize<QuillRange>(range.ToString());
                     var selection = new TextSelection(this, quillRange.Start, quillRange.Length);
@@ -408,14 +414,19 @@ namespace Windows.UI.Xaml.Controls
                         run.SetAttribute("FontStyle", "Italic");
                     if (delta.Attributes.Underline)
                         run.SetAttribute("TextDecorations", "Underline");
-                    if (!string.IsNullOrEmpty(delta.Attributes.FontName))
-                        run.SetAttribute("FontFamily", GetFontName(delta.Attributes.FontName));
+                    //if (!string.IsNullOrEmpty(delta.Attributes.FontName))
+                    //    run.SetAttribute("FontFamily", GetFontName(delta.Attributes.FontName));
+
+                    run.SetAttribute("FontFamily", !string.IsNullOrEmpty(delta.Attributes.FontName) ? GetFontName(delta.Attributes.FontName) : INTERNAL_FontsHelper.DefaultCssFontFamily);
                     if (!string.IsNullOrEmpty(delta.Attributes.FontSize))
                         run.SetAttribute("FontSize", delta.Attributes.FontSize.Replace("px", ""));
                     if (delta.Attributes.Color != null)
                     {
                         run.SetAttribute("Foreground", delta.Attributes.Color.ToString());
                     }
+                }
+                else {
+                    run.SetAttribute("FontFamily", INTERNAL_FontsHelper.DefaultCssFontFamily);
                 }
 
                 paragraph.AppendChild(run);
@@ -427,7 +438,7 @@ namespace Windows.UI.Xaml.Controls
         private void CreateInstance()
         {
             string script = "let options = {"
-                + $"readOnly: {(_parent.IsReadOnly ? "true" : "false")},"
+                + $"readOnly: {(_parent.IsReadOnly ? "true" : "false")},modules: {{clipboard: {{matchVisual:false}}}}"
                 + "};"
                 + "new Quill($0, options);";
             _instance = OpenSilver.Interop.ExecuteJavaScript(script, "#" + _parent.GetEditorId());

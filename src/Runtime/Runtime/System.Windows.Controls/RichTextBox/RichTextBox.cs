@@ -15,6 +15,7 @@ using System.Windows.Markup;
 using CSHTML5.Internal;
 using System.Collections.Generic;
 using System.Globalization;
+using OpenSilver.Internal;
 
 #if MIGRATION
 using System.Windows.Documents;
@@ -73,7 +74,11 @@ namespace Windows.UI.Xaml.Controls
         #region Private Events
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            this.ApplyTemplate();
             _presenter.Init();
+            var elem = GetTemplateChild("ContentElement") as UIElement;
+            var style = INTERNAL_HtmlDomManager.GetDomElementStyleForModification(elem.INTERNAL_OuterDomElement);
+            style.pointerEvents = "auto";
             SetContentsFromBlocks();
         }
         #endregion
@@ -312,6 +317,11 @@ namespace Windows.UI.Xaml.Controls
             set { this.SetValue(LineStackingStrategyProperty, value); }
         }
 
+        internal void RaiseEventInternal(object args)
+        {            
+            UIElement.NativeEventCallback(this, this, args);
+        }        
+
         /// <summary>
         /// Identifies the <see cref="RichTextBox.TextAlignment"/> dependency property.
         /// </summary>
@@ -455,6 +465,7 @@ namespace Windows.UI.Xaml.Controls
         [OpenSilver.NotImplemented]
         protected override void OnGotFocus(RoutedEventArgs e)
         {
+            base.OnGotFocus(e);
         }
 
         /// <summary>
@@ -496,6 +507,7 @@ namespace Windows.UI.Xaml.Controls
         [OpenSilver.NotImplemented]
         protected override void OnLostFocus(RoutedEventArgs e)
         {
+            base.OnLostFocus(e);
         }
 
         /// <summary>
@@ -636,7 +648,7 @@ namespace Windows.UI.Xaml.Controls
 
         internal string GetEditorId()
         {
-            return ((INTERNAL_HtmlDomElementReference)OpenSilver.Interop.GetDiv(this)).UniqueIdentifier;
+            return ((INTERNAL_HtmlDomElementReference)OpenSilver.Interop.GetDiv(GetTemplateChild("ContentElement") as UIElement)).UniqueIdentifier;
         }
 
         internal string GetRawText()
