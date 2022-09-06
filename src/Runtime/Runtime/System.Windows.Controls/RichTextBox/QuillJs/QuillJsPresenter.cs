@@ -116,7 +116,7 @@ namespace Windows.UI.Xaml.Controls
             if (_instance == null)
                 return;
 
-            string script = $"$0.insertText($0.getLength(),{System.Web.HttpUtility.JavaScriptStringEncode(text, true)},{System.Text.Json.JsonSerializer.Serialize(formats)}, 'api')";
+            string script = $"$0.insertText($0.getLength() - 1,{System.Web.HttpUtility.JavaScriptStringEncode(text, true)},{System.Text.Json.JsonSerializer.Serialize(formats)}, 'api')";
             OpenSilver.Interop.ExecuteJavaScript(script, _instance);
         }
 
@@ -404,7 +404,7 @@ namespace Windows.UI.Xaml.Controls
             foreach (var delta in deltas.Operations)
             {
                 var run = xaml.CreateElement("Run", xaml.DocumentElement.NamespaceURI);
-                run.InnerText = delta.Text;
+                run.InnerText = delta.Text.TrimEnd('\n');
 
                 if (delta.Attributes != null)
                 {
