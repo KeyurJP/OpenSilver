@@ -91,6 +91,8 @@
     <file src="../../src/Runtime/Scripts/ResizeObserver.js" target="js_css/ResizeObserver.js" />
 	<file src="../../src/Runtime/Scripts/quill.min.js" target="js_css/quill.min.js" />
 	<file src="../../src/Runtime/Scripts/quill.core.css" target="js_css/quill.core.css" />
+	<file src="../../src/Runtime/Scripts/html2canvas.min.js" target="js_css/html2canvas.min.js" />
+	<file src="../../src/Runtime/Scripts/dom-to-image-more.js" target="js_css/dom-to-image-more.js" />
 	
     <!-- OpenSilver icon -->
     <file src="OpenSilver_icon.png" target="images\OpenSilver_icon.png" />

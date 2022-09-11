@@ -52,6 +52,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{99A3
 	ProjectSection(SolutionItems) = preProject
 		Runtime\Scripts\cshtml5.css = Runtime\Scripts\cshtml5.css
 		Runtime\Scripts\cshtml5.js = Runtime\Scripts\cshtml5.js
+		C:\Users\Admin\Desktop\domtoimage\dom-to-image-more.js = C:\Users\Admin\Desktop\domtoimage\dom-to-image-more.js
 		Runtime\Scripts\fastclick.js = Runtime\Scripts\fastclick.js
 		Runtime\Scripts\flatpickr.css = Runtime\Scripts\flatpickr.css
 		Runtime\Scripts\flatpickr.js = Runtime\Scripts\flatpickr.js
