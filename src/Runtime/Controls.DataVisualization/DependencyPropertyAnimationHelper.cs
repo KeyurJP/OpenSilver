@@ -148,6 +148,9 @@ namespace Windows.UI.Xaml.Controls.DataVisualization
                     doubleAnimation.To = ValueHelper.ToDouble(toValue);
                     toValue = doubleAnimation.To;
 
+                    Storyboard.SetTarget(doubleAnimation, target);
+                    Storyboard.SetTargetProperty(doubleAnimation, new PropertyPath(propertyPath));
+
                     storyBoard.Children.Add(doubleAnimation);
                 }
                 else if (ValueHelper.TryConvert(fromValue, out fromDateTime) && ValueHelper.TryConvert(toValue, out toDateTime))

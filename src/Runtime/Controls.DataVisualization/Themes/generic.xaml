@@ -594,7 +594,7 @@
 
                                 <datavis:Legend x:Name="Legend" Header="{TemplateBinding LegendTitle}" Style="{TemplateBinding LegendStyle}" Grid.Column="1" />
                                 <chartingprimitives:EdgePanel x:Name="ChartArea" Style="{TemplateBinding ChartAreaStyle}">
-                                    <Grid Canvas.ZIndex="-1" Style="{TemplateBinding PlotAreaStyle}" />
+                                    <Grid Canvas.ZIndex="0" Style="{TemplateBinding PlotAreaStyle}" />
                                     <Border Canvas.ZIndex="10" BorderBrush="#FF919191" BorderThickness="1" />
                                 </chartingprimitives:EdgePanel>
                             </Grid>

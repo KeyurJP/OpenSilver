@@ -76,6 +76,11 @@ namespace Windows.UI.Xaml.Controls.DataVisualization.Charting
                 return;
             }
 
+            if (ActualDependentRangeAxis == null)
+            {
+                return;
+            }
+
             object category = dataPoint.ActualIndependentValue ?? (this.ActiveDataPoints.IndexOf(dataPoint) + 1);
             Range<UnitValue> coordinateRange = GetCategoryRange(category);
 

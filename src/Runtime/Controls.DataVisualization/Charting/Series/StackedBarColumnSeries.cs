@@ -255,6 +255,7 @@ namespace Windows.UI.Xaml.Controls.DataVisualization.Charting
                         double floor = 0;
                         foreach (DataItem dataItem in group.DataItems)
                         {
+                            if (dataItem.DataPoint == null) continue;
                             DataPoint dataPoint = dataItem.DataPoint;
                             double value = IsStacked100 ? (ValueHelper.ToDouble(dataPoint.ActualDependentValue) * (100 / sum)) : ValueHelper.ToDouble(dataPoint.ActualDependentValue);
                             if (ValueHelper.CanGraph(value))
