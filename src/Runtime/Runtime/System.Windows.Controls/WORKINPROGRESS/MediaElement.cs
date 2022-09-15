@@ -37,7 +37,17 @@ namespace Windows.UI.Xaml.Controls
         [OpenSilver.NotImplemented]
         public void Stop()
         {
-            throw new NotImplementedException();
+            if (CSHTML5.Internal.INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
+            {
+                if (_mediaElement != null)
+                {
+                    OpenSilver.Interop.ExecuteJavaScript("$0.pause();$0.currentTime=0;", _mediaElement);
+                }
+                else if (_mediaElement_ForAudioOnly_ForSimulatorOnly != null)
+                {
+                    _mediaElement_ForAudioOnly_ForSimulatorOnly.Stop();
+                }
+            }
         }
 
         /// <summary>
