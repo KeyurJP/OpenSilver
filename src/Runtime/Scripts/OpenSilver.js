@@ -79,6 +79,13 @@ html2CanvasScript.setAttribute('type', 'application/javascript');
 html2CanvasScript.setAttribute('src', 'libs/html2canvas.min.js');
 document.getElementsByTagName('head')[0].appendChild(html2CanvasScript);
 
+//new Element("script", { src: "dom-to-image-more.js", type: "application/javascript" });
+var domtoimagemore = document.createElement('script');
+domtoimagemore.setAttribute('type', 'application/javascript');
+domtoimagemore.setAttribute('src', 'libs/dom-to-image-more.js');
+document.getElementsByTagName('head')[0].appendChild(domtoimagemore);
+
+
 let quillJsScript = document.createElement('script');
 quillJsScript.setAttribute('type', 'application/javascript');
 quillJsScript.setAttribute('src', 'libs/quill.min.js');
