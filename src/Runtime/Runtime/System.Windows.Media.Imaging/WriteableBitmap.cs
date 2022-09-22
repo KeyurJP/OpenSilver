@@ -96,7 +96,7 @@ namespace Windows.UI.Xaml.Media.Imaging
             {
                 var outerDiv = (INTERNAL_HtmlDomElementReference)OpenSilver.Interop.GetDiv(element);
                 var javascript = @"
-                    html2canvas(document.querySelector('#' + $0)).then(function (canvas) {
+                domtoimage.toCanvas(document.querySelector('#' + $0)).then(function (canvas) {
                     try {
                         let dataUrl = canvas.toDataURL();
                         let ctx = canvas.getContext('2d');
@@ -128,10 +128,11 @@ namespace Windows.UI.Xaml.Media.Imaging
 
         private void OnImageDataLoadedCallback(int width, int height, string dataUrl, string bytes)
         {
+            Console.WriteLine("width:" + width + " height:" + height + "dataUrl:" + dataUrl + " , bytes" + String.Join(",", bytes));
             int startIdx = dataUrl.IndexOf(',');
             if (startIdx >= 0)
             {
-                dataUrl = dataUrl.Remove(0, startIdx + 1);
+                //dataUrl = dataUrl.Remove(0, startIdx + 1);
                 SetSource(dataUrl);
             }
 
@@ -214,6 +215,12 @@ namespace Windows.UI.Xaml.Media.Imaging
 
         private void OnRenderDataLoadedCallback(int width, int height, string dataUrl, string bytes)
         {
+            int startIdx = dataUrl.IndexOf(',');
+            if (startIdx >= 0)
+            {
+                //dataUrl = dataUrl.Remove(0, startIdx + 1);
+                SetSource(dataUrl);
+            }
             var parts = bytes.Split(new char[] { ',' });
             var pixels = new int[parts.Length / 4];
             byte[] rgba = { 0, 0, 0, 0 };
@@ -270,7 +277,7 @@ namespace Windows.UI.Xaml.Media.Imaging
             {
                 var outerDiv = (INTERNAL_HtmlDomElementReference)OpenSilver.Interop.GetDiv(element);
                 var javascript = @"
-                    html2canvas(document.querySelector('#' + $0)).then(function (canvas) {
+                domtoimage.toCanvas(document.querySelector('#' + $0)).then(function (canvas) {
                     try {
                         let dataUrl = canvas.toDataURL();
                         let ctx = canvas.getContext('2d');
