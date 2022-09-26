@@ -128,7 +128,6 @@ namespace Windows.UI.Xaml.Media.Imaging
 
         private void OnImageDataLoadedCallback(int width, int height, string dataUrl, string bytes)
         {
-            Console.WriteLine("width:" + width + " height:" + height + "dataUrl:" + dataUrl + " , bytes" + String.Join(",", bytes));
             int startIdx = dataUrl.IndexOf(',');
             if (startIdx >= 0)
             {
