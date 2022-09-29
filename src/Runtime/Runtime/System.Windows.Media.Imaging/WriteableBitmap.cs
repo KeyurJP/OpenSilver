@@ -278,48 +278,20 @@ namespace Windows.UI.Xaml.Media.Imaging
                 var javascript = @"
                 domtoimage.toCanvas(document.querySelector('#' + $0)).then(function (canvas) {
                     try {
-                        let ctx = canvas.getContext('2d');						                                          
-						var img = new Image();
-						img.src = canvas.toDataURL();
-						img.onload = function(){
-								const dummyCanvas = document.createElement('canvas');
-								dummyCanvas.width = $3;
-								dummyCanvas.height = $2;
-								const dummtctx = dummyCanvas.getContext('2d');
-								
-								const meta = {
-									ratio: img.width / img.height,
-									width: 0,
-									height: 0,
-									offsetX: 0,
-									offsetY: 0,
-								};
-								
-								if (meta.ratio >= 1) {
-									meta.width = dummyCanvas.width > img.width ? img.width : dummyCanvas.width;
-									meta.height = meta.width / meta.ratio;
-								} else {
-									meta.height = dummyCanvas.height > img.height ? img.height : dummyCanvas.height;
-									meta.width = meta.height * meta.ratio;
-								}
-								
-								meta.offsetX = dummyCanvas.width > meta.width ? (dummyCanvas.width - meta.width) / 2 : 0;
-								meta.offsetY = dummyCanvas.height > meta.height ? (dummyCanvas.height - meta.height) / 2 : 0;							
-								dummtctx.drawImage(img, meta.offsetX, meta.offsetY, meta.width, meta.height);							
-								let dataUrl = dummyCanvas.toDataURL();
-								let imgData = dummtctx.getImageData(0, 0,$3,$2);
-								var bytes = '';
-								for (var i = 0; i < imgData.data.length;i++) {
-									bytes += ','; bytes += imgData.data[i].toString();
-								}                        
-								$1(imgData.width, imgData.height, dataUrl, bytes.substring(1));
-						}
+                        let dataUrl = canvas.toDataURL();
+                        let ctx = canvas.getContext('2d');
+                        let imgData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                        var bytes = '';
+                        for (var i = 0; i < imgData.data.length;i++) {
+                            bytes += ','; bytes += imgData.data[i].toString();
+                        }                        
+                        $1(imgData.width, imgData.height, dataUrl, bytes.substring(1));
                     }
                     catch (err) {
                         console.error(err);
                     }
                 });";
-                OpenSilver.Interop.ExecuteJavaScript(javascript, outerDiv.UniqueIdentifier, callback, PixelHeight, PixelWidth);
+                OpenSilver.Interop.ExecuteJavaScript(javascript, outerDiv.UniqueIdentifier, callback);
             }
         }
 
