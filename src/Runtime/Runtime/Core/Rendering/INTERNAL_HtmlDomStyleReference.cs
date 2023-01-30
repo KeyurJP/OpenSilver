@@ -215,6 +215,8 @@ namespace CSHTML5.Internal
         public string flexWrap { set { SetStylePropertyValue("flexWrap", value); } }
         public string flexDirection { set { SetStylePropertyValue("flexDirection", value); } }
 
+        public string wordBreak { set { SetStylePropertyValue("wordBreak", value); } }
+
         //-----------------------------------------------------------------------
         // Usage stats for To-Do Calendar (number of types each property is set):
         //-----------------------------------------------------------------------

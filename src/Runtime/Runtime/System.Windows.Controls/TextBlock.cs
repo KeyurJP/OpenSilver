@@ -80,6 +80,8 @@ namespace Windows.UI.Xaml.Controls
         public override object CreateDomElement(object parentRef, out object domElementWhereToPlaceChildren)
         {
             var div = INTERNAL_HtmlDomManager.CreateTextBlockDomElementAndAppendIt(parentRef, this, TextWrapping == TextWrapping.NoWrap ? "pre" : "pre-wrap");
+            var style = CSHTML5.Internal.INTERNAL_HtmlDomManager.GetDomElementStyleForModification(div);            
+            style.wordBreak = "break-all";
             domElementWhereToPlaceChildren = div;
             return div;
         }
