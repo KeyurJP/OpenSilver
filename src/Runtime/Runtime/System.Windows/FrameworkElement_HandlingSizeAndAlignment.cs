@@ -358,18 +358,18 @@ namespace Windows.UI.Xaml
                     // Handle special cases:
                     //-----------------------------
 
-                    if (fe is ChildWindow)
-                    {
-                        //we force the Stretch behaviour on ChildWindow so that the Gray background thing can be on the whole window.
-                        styleOfWrapperElement.width = "100%";
-                        styleOfOuterDomElement.marginLeft = "0px"; // Default value
-                        styleOfOuterDomElement.marginRight = "0px"; // Default value
-                        styleOfOuterDomElement.display = "block"; // Default value
-                        styleOfOuterDomElement.width = "100%";
-                        styleOfOuterDomElement.maxWidth = "none";
-                        styleOfOuterDomElement.maxHeight = "none";
-                        return;
-                    }
+                    //if (fe is ChildWindow)
+                    //{
+                    //    //we force the Stretch behaviour on ChildWindow so that the Gray background thing can be on the whole window.
+                    //    styleOfWrapperElement.width = "100%";
+                    //    styleOfOuterDomElement.marginLeft = "0px"; // Default value
+                    //    styleOfOuterDomElement.marginRight = "0px"; // Default value
+                    //    styleOfOuterDomElement.display = "block"; // Default value
+                    //    styleOfOuterDomElement.width = "100%";
+                    //    styleOfOuterDomElement.maxWidth = "none";
+                    //    styleOfOuterDomElement.maxHeight = "none";
+                    //    return;
+                    //}
 
                     // If the alignment is "Stretch" AND a size in pixels is specified, the behavior is similar to "Center".
                     // Also, if the alignment is "Stretch" AND the element is an Image with Stretch = None this same case applies since it has a fixed size too:
@@ -671,13 +671,13 @@ namespace Windows.UI.Xaml
                     // Handle special cases:
                     //-----------------------------
 
-                    if (fe is ChildWindow)
-                    {
-                        //we force the Stretch behaviour on ChildWindow so that the Gray background thing can be on the whole window.
-                        styleOfWrapperElement.verticalAlign = "middle"; // This might be useless.
-                        styleOfOuterDomElement.height = "100%";
-                        return;
-                    }
+                    //if (fe is ChildWindow)
+                    //{
+                    //    //we force the Stretch behaviour on ChildWindow so that the Gray background thing can be on the whole window.
+                    //    styleOfWrapperElement.verticalAlign = "middle"; // This might be useless.
+                    //    styleOfOuterDomElement.height = "100%";
+                    //    return;
+                    //}
 
 
                     // If the alignment is "Stretch" AND a size in pixels is specified, the behavior is similar to "Center".

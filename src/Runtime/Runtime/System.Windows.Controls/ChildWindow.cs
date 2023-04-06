@@ -20,6 +20,10 @@ using System;
 using System.Collections;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using static System.Windows.Automation.AutomationIdentifierConstants;
+using System.Diagnostics;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation;
 #if MIGRATION
 using System.Windows;
 using System.Windows.Controls;
@@ -50,7 +54,6 @@ namespace Windows.UI.Xaml.Controls
     /// interaction with the parent window.
     /// </summary>
     /// <QualityBand>Preview</QualityBand>
-#if SILVERLIGHT
     [TemplatePart(Name = PART_Chrome, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PART_CloseButton, Type = typeof(ButtonBase))]
     [TemplatePart(Name = PART_ContentPresenter, Type = typeof(FrameworkElement))]
@@ -59,8 +62,7 @@ namespace Windows.UI.Xaml.Controls
     [TemplatePart(Name = PART_Root, Type = typeof(FrameworkElement))]
     [TemplateVisualState(Name = VSMSTATE_StateClosed, GroupName = VSMGROUP_Window)]
     [TemplateVisualState(Name = VSMSTATE_StateOpen, GroupName = VSMGROUP_Window)]
-#endif
-    public partial class ChildWindow : ContentControl
+    public class ChildWindow : ContentControl
     {
         #region Static Fields and Constants
 
@@ -109,11 +111,21 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         private const string VSMSTATE_StateOpen = "Open";
 
+        /// <summary>
+        /// Stores the previous value of RootVisual.IsEnabled.
+        /// </summary>
+        private static bool RootVisual_PrevEnabledState = true;
+
+        /// <summary>
+        /// Stores a count of the number of open ChildWindow instances.
+        /// </summary>
+        private static int OpenChildWindowCount = 0;
+
         #region public bool HasCloseButton
 
         /// <summary>
         /// Gets or sets a value indicating whether the
-        /// ChildWindow has a close
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> has a close
         /// button.
         /// </summary>
         /// <value>
@@ -127,11 +139,13 @@ namespace Windows.UI.Xaml.Controls
         }
 
         /// <summary>
-        /// Identifies the HasCloseButton
+        /// Identifies the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.HasCloseButton" />
         /// dependency property.
         /// </summary>
         /// <value>
-        /// The identifier for the HasCloseButton
+        /// The identifier for the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.HasCloseButton" />
         /// dependency property.
         /// </value>
         public static readonly DependencyProperty HasCloseButtonProperty =
@@ -139,8 +153,7 @@ namespace Windows.UI.Xaml.Controls
             "HasCloseButton",
             typeof(bool),
             typeof(ChildWindow),
-            new PropertyMetadata(true, OnHasCloseButtonPropertyChanged)
-            { CallPropertyChangedWhenLoadedIntoVisualTree = WhenToCallPropertyChangedEnum.IfPropertyIsSet });
+            new PropertyMetadata(true, OnHasCloseButtonPropertyChanged));
 
         /// <summary>
         /// HasCloseButtonProperty PropertyChangedCallback call back static function.
@@ -174,7 +187,7 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         /// <value>
         /// The visual brush that is used to cover the parent window when the
-        /// ChildWindow is open. The
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> is open. The
         /// default is null.
         /// </value>
         public Brush OverlayBrush
@@ -184,11 +197,13 @@ namespace Windows.UI.Xaml.Controls
         }
 
         /// <summary>
-        /// Identifies the OverlayBrush
+        /// Identifies the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.OverlayBrush" />
         /// dependency property.
         /// </summary>
         /// <value>
-        /// The identifier for the OverlayBrush
+        /// The identifier for the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.OverlayBrush" />
         /// dependency property.
         /// </value>
         public static readonly DependencyProperty OverlayBrushProperty =
@@ -196,8 +211,7 @@ namespace Windows.UI.Xaml.Controls
             "OverlayBrush",
             typeof(Brush),
             typeof(ChildWindow),
-            new PropertyMetadata(OnOverlayBrushPropertyChanged)
-            { CallPropertyChangedWhenLoadedIntoVisualTree = WhenToCallPropertyChangedEnum.IfPropertyIsSet });
+            new PropertyMetadata(OnOverlayBrushPropertyChanged));
 
         /// <summary>
         /// OverlayBrushProperty PropertyChangedCallback call back static function.
@@ -224,7 +238,7 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         /// <value>
         /// The opacity of the overlay brush that is used to cover the parent
-        /// window when the ChildWindow
+        /// window when the <see cref="T:System.Windows.Controls.ChildWindow" />
         /// is open. The default is 1.0.
         /// </value>
         public double OverlayOpacity
@@ -234,11 +248,13 @@ namespace Windows.UI.Xaml.Controls
         }
 
         /// <summary>
-        /// Identifies the OverlayOpacity
+        /// Identifies the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.OverlayOpacity" />
         /// dependency property.
         /// </summary>
         /// <value>
-        /// The identifier for the OverlayOpacity
+        /// The identifier for the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.OverlayOpacity" />
         /// dependency property.
         /// </value>
         public static readonly DependencyProperty OverlayOpacityProperty =
@@ -246,8 +262,7 @@ namespace Windows.UI.Xaml.Controls
             "OverlayOpacity",
             typeof(double),
             typeof(ChildWindow),
-            new PropertyMetadata(OnOverlayOpacityPropertyChanged)
-            { CallPropertyChangedWhenLoadedIntoVisualTree = WhenToCallPropertyChangedEnum.IfPropertyIsSet });
+            new PropertyMetadata(OnOverlayOpacityPropertyChanged));
 
         /// <summary>
         /// OverlayOpacityProperty PropertyChangedCallback call back static function.
@@ -285,7 +300,7 @@ namespace Windows.UI.Xaml.Controls
 
         /// <summary>
         /// Gets or sets the title that is displayed in the frame of the
-        /// ChildWindow.
+        /// <see cref="T:System.Windows.Controls.ChildWindow" />.
         /// </summary>
         /// <value>
         /// The title displayed at the top of the window. The default is null.
@@ -297,11 +312,13 @@ namespace Windows.UI.Xaml.Controls
         }
 
         /// <summary>
-        /// Identifies the ChildWindow.Title" />
+        /// Identifies the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.Title" />
         /// dependency property.
         /// </summary>
         /// <value>
-        /// The identifier for the ChildWindow
+        /// The identifier for the
+        /// <see cref="P:System.Windows.Controls.ChildWindow.Title" />
         /// dependency property.
         /// </value>
         public static readonly DependencyProperty TitleProperty =
@@ -312,69 +329,6 @@ namespace Windows.UI.Xaml.Controls
             null);
 
         #endregion public object Title
-
-
-
-         #region public bool IsModal
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the ChildWindow is modal.
-        /// </summary>
-        public bool IsModal
-        {
-            get { return (bool)GetValue(IsModalProperty); }
-            set { SetValue(IsModalProperty, value); }
-        }
-
-        /// <summary>
-        /// Idetifies the <see cref="IsModal"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty IsModalProperty =
-            DependencyProperty.Register(
-                nameof(IsModal),
-                typeof(bool),
-                typeof(ChildWindow),
-                new PropertyMetadata(true, IsModal_Changed));
-
-        private static void IsModal_Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var childWindow = (ChildWindow)d;
-
-            if ((bool)e.NewValue)
-            {
-                childWindow.GotFocus -= childWindow.ChildWindow_GotFocus;
-            }
-            else
-            {
-                childWindow.GotFocus += childWindow.ChildWindow_GotFocus;
-            }
-
-            childWindow.UpdateIsModalVisualState();
-        }
-
-        private void ChildWindow_GotFocus(object sender, RoutedEventArgs e)
-        {
-            if (this.ChildWindowPopup != null)
-            {
-                ChildWindowPopup.PutPopupInFront();
-            }
-        }
-
-        private void UpdateIsModalVisualState()
-        {
-            if (IsModal)
-            {
-                VisualStateManager.GoToState(this, "Modal", false);
-            }
-            else
-            {
-                VisualStateManager.GoToState(this, "NotModal", false);
-            }
-        }
-
-        #endregion
-
-
 
         #endregion Static Fields and Constants
 
@@ -415,18 +369,6 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         private double _desiredContentHeight;
 
-#if !SILVERLIGHT
-        /// <summary>
-        /// The width that was specified when the ChildWindow was created.
-        /// </summary>
-        private double _widthThatWasInitiallySpecified;
-
-        /// <summary>
-        /// The height that was specified when the ChildWindow was created.
-        /// </summary>
-        private double _heightThatWasInitiallySpecified;
-#endif
-
         /// <summary>
         /// Desired margin for the window.
         /// </summary>
@@ -437,12 +379,10 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         private bool? _dialogresult;
 
-#if SILVERLIGHT
         /// <summary>
         /// Private accessor for the ChildWindow InteractionState.
         /// </summary>
         private WindowInteractionState _interactionState;
-#endif
 
         /// <summary>
         /// Boolean value that specifies whether the application is exit or not.
@@ -470,6 +410,11 @@ namespace Windows.UI.Xaml.Controls
         private bool _isMouseCaptured;
 
         /// <summary>
+        /// Boolean value that specifies whether we are listening to RootVisual.GotFocus.
+        /// </summary>
+        private bool _attachedRootVisualListener;
+
+        /// <summary>
         /// Private accessor for the Root of the window.
         /// </summary>
         private FrameworkElement _root;
@@ -485,17 +430,12 @@ namespace Windows.UI.Xaml.Controls
 
         /// <summary>
         /// Initializes a new instance of the
-        /// ChildWindow class.
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> class.
         /// </summary>
         public ChildWindow()
         {
-#if SILVERLIGHT
             this.DefaultStyleKey = typeof(ChildWindow);
             this.InteractionState = WindowInteractionState.NotResponding;
-#else
-            // Set default style:
-            this.DefaultStyleKey = typeof(ChildWindow);
-#endif
         }
 
         #endregion Constructors
@@ -503,13 +443,13 @@ namespace Windows.UI.Xaml.Controls
         #region Events
 
         /// <summary>
-        /// Occurs when the ChildWindow
+        /// Occurs when the <see cref="T:System.Windows.Controls.ChildWindow" />
         /// is closed.
         /// </summary>
         public event EventHandler Closed;
 
         /// <summary>
-        /// Occurs when the ChildWindow
+        /// Occurs when the <see cref="T:System.Windows.Controls.ChildWindow" />
         /// is closing.
         /// </summary>
         public event EventHandler<CancelEventArgs> Closing;
@@ -529,16 +469,14 @@ namespace Windows.UI.Xaml.Controls
 
         /// <summary>
         /// Gets or sets a value indicating whether the
-        /// ChildWindow was accepted or
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> was accepted or
         /// canceled.
         /// </summary>
         /// <value>
         /// True if the child window was accepted; false if the child window was
         /// canceled. The default is null.
         /// </value>
-#if SILVERLIGHT
         [TypeConverter(typeof(NullableBoolConverter))]
-#endif
         public bool? DialogResult
         {
             get
@@ -574,7 +512,6 @@ namespace Windows.UI.Xaml.Controls
             private set;
         }
 
-#if SILVERLIGHT
         /// <summary>
         /// Gets the InteractionState for the ChildWindow.
         /// </summary>
@@ -599,7 +536,6 @@ namespace Windows.UI.Xaml.Controls
                 }
             }
         }
-#endif
 
         /// <summary>
         /// Gets a value indicating whether the PopUp is open or not.
@@ -625,7 +561,6 @@ namespace Windows.UI.Xaml.Controls
 
         #region Static Methods
 
-#if SILVERLIGHT
         /// <summary>
         /// Inverts the input matrix.
         /// </summary>
@@ -650,109 +585,10 @@ namespace Windows.UI.Xaml.Controls
 
             return true;
         }
-#endif
 
         #endregion Static Methods
 
         #region Methods
-
-        /// <summary>
-        /// Executed when mouse moves on the chrome.
-        /// </summary>
-        /// <param name="sender">Sender object.</param>
-        /// <param name="e">Mouse event args.</param>
-#if MIGRATION
-        private void Chrome_MouseMove(object sender, MouseEventArgs e)
-#else
-        private void Chrome_MouseMove(object sender, PointerRoutedEventArgs e)
-#endif
-        {
-            if (this._isMouseCaptured)
-            {
-                Point posNow = new Point(e._pointerAbsoluteX, e._pointerAbsoluteY);
-
-                Point delta = new Point(posNow.X - this._clickPoint.X, posNow.Y - this._clickPoint.Y);
-
-                if(this._contentRootTransform != this.ContentRoot.RenderTransform) // Note: they can be different if this.ContentRoot.RenderTransform was set by the developper, in which case we want to use that value.
-                {
-                    this._contentRootTransform = this.ContentRoot.RenderTransform as TranslateTransform; // todo: what if it is another type (CompositeTransform for example)
-                }
-
-                if (this._contentRootTransform == null)
-                {
-                    this._contentRootTransform = new TranslateTransform();
-                    this._contentRootTransform.X = delta.X;
-                    this._contentRootTransform.Y = delta.Y;
-                }
-                else
-                {
-                    this._contentRootTransform.X += delta.X;
-                    this._contentRootTransform.Y += delta.Y;
-                }
-
-                this.ContentRoot.RenderTransform = this._contentRootTransform;
-
-                this._clickPoint = posNow;
-            }
-        }
-
-#if MIGRATION
-        private void Chrome_PointerPressed(object sender, MouseEventArgs e)
-#else
-        private void Chrome_PointerPressed(object sender, PointerRoutedEventArgs e)
-#endif
-        {
-            this._clickPoint = new Point(e._pointerAbsoluteX, e._pointerAbsoluteY);
-
-            //this.Focus();
-
-#if MIGRATION
-            this._chrome.CaptureMouse();
-#else
-            this._chrome.CapturePointer();
-#endif
-
-            this._isMouseCaptured = true;
-        }
-
-#if MIGRATION
-        private void Chrome_PointerReleased(object sender, MouseEventArgs e)
-#else
-        private void Chrome_PointerReleased(object sender, PointerRoutedEventArgs e)
-#endif
-        {
-            this._clickPoint = new Point(0, 0);
-
-#if MIGRATION
-            this._chrome.ReleaseMouseCapture();
-#else
-            this._chrome.ReleasePointerCapture();
-#endif
-
-            this._isMouseCaptured = false;
-        }
-
-        private void RegisterEvents()
-        {
-            if (_chrome != null)
-            {
-#if MIGRATION
-                _chrome.MouseMove -= Chrome_MouseMove;
-                _chrome.MouseMove += Chrome_MouseMove;
-                _chrome.MouseLeftButtonUp -= Chrome_PointerReleased;
-                _chrome.MouseLeftButtonUp += Chrome_PointerReleased;
-                _chrome.MouseLeftButtonDown -= Chrome_PointerPressed;
-                _chrome.MouseLeftButtonDown += Chrome_PointerPressed;
-#else
-                _chrome.PointerMoved -= Chrome_MouseMove;
-                _chrome.PointerMoved += Chrome_MouseMove;
-                _chrome.PointerReleased -= Chrome_PointerReleased;
-                _chrome.PointerReleased += Chrome_PointerReleased;
-                _chrome.PointerPressed -= Chrome_PointerPressed;
-                _chrome.PointerPressed += Chrome_PointerPressed;
-#endif
-            }
-        }
 
         /// <summary>
         /// Executed when the application is exited.
@@ -799,12 +635,13 @@ namespace Windows.UI.Xaml.Controls
         {
             if (this.Overlay != null)
             {
-                if (e.NewSize.Height != this.Overlay.Height)
+                Console.WriteLine("ChildWindow_SizeChanged : this.Overlay.ActualHeight : " + this.Overlay.ActualHeight + " | this.Overlay.ActualWidth : " + this.Overlay.ActualWidth + "this.Overlay.Height : " + this.Overlay.Height + " | this.Overlay.Width : " + this.Overlay.Width + " | e.NewSize.Width : " + e.NewSize.Width + " | e.NewSize.Height : " + e.NewSize.Height);
+                if (e.NewSize.Height != this.Overlay.ActualHeight)
                 {
                     this._desiredContentHeight = e.NewSize.Height;
                 }
 
-                if (e.NewSize.Width != this.Overlay.Width)
+                if (e.NewSize.Width != this.Overlay.ActualWidth)
                 {
                     this._desiredContentWidth = e.NewSize.Width;
                 }
@@ -817,24 +654,27 @@ namespace Windows.UI.Xaml.Controls
         }
 
         /// <summary>
-        /// Closes a ChildWindow.
+        /// Closes a <see cref="T:System.Windows.Controls.ChildWindow" />.
         /// </summary>
         public void Close()
         {
-#if SILVERLIGHT
             // AutomationPeer returns "Closing" when Close() is called
             // but the window is not closed completely:
             this.InteractionState = WindowInteractionState.Closing;
-#endif
             CancelEventArgs e = new CancelEventArgs();
             this.OnClosing(e);
 
             // On ApplicationExit, close() cannot be cancelled
             if (!e.Cancel || this._isAppExit)
             {
-                if (RootVisual != null)
+                if (RootVisual != null && this.IsOpen)
                 {
-                    RootVisual.IsEnabled = true;
+                    --OpenChildWindowCount;
+                    if (OpenChildWindowCount == 0)
+                    {
+                        // Restore the value saved when the first window was opened
+                        RootVisual.IsEnabled = RootVisual_PrevEnabledState;
+                    }
                 }
 
                 // Close Popup
@@ -873,6 +713,7 @@ namespace Windows.UI.Xaml.Controls
                     if (Application.Current.RootVisual != null)
                     {
                         Application.Current.RootVisual.GotFocus -= new RoutedEventHandler(this.RootVisual_GotFocus);
+                        _attachedRootVisualListener = false;
                     }
                 }
             }
@@ -880,9 +721,7 @@ namespace Windows.UI.Xaml.Controls
             {
                 // If the Close is cancelled, DialogResult should always be NULL:
                 this._dialogresult = null;
-#if SILVERLIGHT
                 this.InteractionState = WindowInteractionState.Running;
-#endif
             }
         }
 
@@ -908,20 +747,15 @@ namespace Windows.UI.Xaml.Controls
                 this.ChildWindowPopup.IsOpen = false;
             }
 
-#if SILVERLIGHT
             // AutomationPeer returns "NotResponding" when the ChildWindow is closed:
             this.InteractionState = WindowInteractionState.NotResponding;
-#endif
 
             if (this._closed != null)
             {
-#if SILVERLIGHT
                 this._closed.Completed -= new EventHandler(this.Closing_Completed);
-#endif
             }
         }
 
-#if SILVERLIGHT
         /// <summary>
         /// Executed when the a key is presses when the window is open.
         /// </summary>
@@ -941,7 +775,6 @@ namespace Windows.UI.Xaml.Controls
                 e.Handled = true;
             }
         }
-#endif
 
         /// <summary>
         /// Executed when the window loses focus.
@@ -958,14 +791,15 @@ namespace Windows.UI.Xaml.Controls
             // Blocked by Jolt bug #29419
             if (this.IsOpen && Application.Current != null && Application.Current.RootVisual != null)
             {
-#if SILVERLIGHT
                 this.InteractionState = WindowInteractionState.BlockedByModalWindow;
-#endif
-                Application.Current.RootVisual.GotFocus += new RoutedEventHandler(this.RootVisual_GotFocus);
+                if (!_attachedRootVisualListener)
+                {
+                    Application.Current.RootVisual.GotFocus += new RoutedEventHandler(this.RootVisual_GotFocus);
+                    _attachedRootVisualListener = true;
+                }
             }
         }
 
-#if SILVERLIGHT
         /// <summary>
         /// Executed when mouse left button is down on the chrome.
         /// </summary>
@@ -1058,6 +892,14 @@ namespace Windows.UI.Xaml.Controls
 
                     double x = position.X - p.X;
                     double y = position.Y - p.Y;
+
+                    // Take potential RightToLeft layout into account
+                    FrameworkElement fe = Application.Current.RootVisual as FrameworkElement;
+                    if (fe != null && fe.FlowDirection == FlowDirection.RightToLeft)
+                    {
+                        x = -x;
+                    }
+
                     UpdateContentRootTransform(x, y);
                 }
             }
@@ -1127,31 +969,18 @@ namespace Windows.UI.Xaml.Controls
 
             return (((p1.Y - p2.Y) * (x - p1.X)) / (p1.X - p2.X)) + p1.Y;
         }
-#endif
 
         /// <summary>
         /// Builds the visual tree for the
-        /// ChildWindow control when a
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> control when a
         /// new template is applied.
         /// </summary>
-#if SILVERLIGHT
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity", Justification = "No need to split the code into two parts.")]
-#endif
-#if MIGRATION
         public override void OnApplyTemplate()
-#else
-        protected override void OnApplyTemplate()
-#endif
         {
             this.UnsubscribeFromTemplatePartEvents();
 
             base.OnApplyTemplate();
-
-            // We let clicks go through the OuterDomElement so the ChildWindow can be non-Modal:
-            OpenSilver.Interop.ExecuteJavaScriptVoid(
-                $"{CSHTML5.INTERNAL_InteropImplementation.GetVariableStringForJS(INTERNAL_OuterDomElement)}.style.pointerEvents = 'none';");
-
-            UpdateIsModalVisualState();
 
             this.CloseButton = GetTemplateChild(PART_CloseButton) as ButtonBase;
 
@@ -1169,23 +998,18 @@ namespace Windows.UI.Xaml.Controls
 
             if (this._closed != null)
             {
-#if SILVERLIGHT
                 this._closed.Completed -= new EventHandler(this.Closing_Completed);
-#endif
             }
 
             if (this._opened != null)
             {
-#if SILVERLIGHT
                 this._opened.Completed -= new EventHandler(this.Opening_Completed);
-#endif
             }
 
             this._root = GetTemplateChild(PART_Root) as FrameworkElement;
 
             if (this._root != null)
             {
-#if SILVERLIGHT
                 IList groups = VisualStateManager.GetVisualStateGroups(this._root);
 
                 if (groups != null)
@@ -1217,7 +1041,6 @@ namespace Windows.UI.Xaml.Controls
                         }
                     }
                 }
-#endif
             }
 
             this.ContentRoot = GetTemplateChild(PART_ContentRoot) as FrameworkElement;
@@ -1231,30 +1054,22 @@ namespace Windows.UI.Xaml.Controls
             this.SubscribeToTemplatePartEvents();
             this.SubscribeToStoryBoardEvents();
             this._desiredMargin = this.Margin;
-            this.Margin = new Thickness(0);
-
-            //this.ContentRoot.MaxHeight = 600;// like in chrome and firefox
-            //this.ContentRoot.MaxWidth = 800;
-
+            this.Margin = new Thickness(0);            
             // Update overlay size
             if (this.IsOpen)
             {
                 this._desiredContentHeight = this.Height;
                 this._desiredContentWidth = this.Width;
-#if !SILVERLIGHT
-                this._heightThatWasInitiallySpecified = this.Height;
-                this._widthThatWasInitiallySpecified = this.Width;
-#endif
                 this.UpdateOverlaySize();
                 this.UpdateRenderTransform();
                 this.ChangeVisualState();
             }
-
-            RegisterEvents();
+            
         }
 
         /// <summary>
-        /// Raises the ChildWindow.Closed event.
+        /// Raises the
+        /// <see cref="E:System.Windows.Controls.ChildWindow.Closed" /> event.
         /// </summary>
         /// <param name="e">The event data.</param>
         protected virtual void OnClosed(EventArgs e)
@@ -1270,7 +1085,8 @@ namespace Windows.UI.Xaml.Controls
         }
 
         /// <summary>
-        /// Raises the ChildWindow.Closing event.
+        /// Raises the
+        /// <see cref="E:System.Windows.Controls.ChildWindow.Closing" /> event.
         /// </summary>
         /// <param name="e">The event data.</param>
         protected virtual void OnClosing(CancelEventArgs e)
@@ -1283,24 +1099,23 @@ namespace Windows.UI.Xaml.Controls
             }
         }
 
-#if SILVERLIGHT
         /// <summary>
-        /// Returns a ChildWindowAutomationPeer
+        /// Returns a
+        /// <see cref="T:System.Windows.Automation.Peers.ChildWindowAutomationPeer" />
         /// for use by the Silverlight automation infrastructure.
         /// </summary>
         /// <returns>
-        /// Peers.ChildWindowAutomationPeer
-        /// for the ChildWindow object.
+        /// <see cref="T:System.Windows.Automation.Peers.ChildWindowAutomationPeer" />
+        /// for the <see cref="T:System.Windows.Controls.ChildWindow" /> object.
         /// </returns>
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new ChildWindowAutomationPeer(this);
         }
-#endif
 
         /// <summary>
         /// This method is called every time a
-        /// ChildWindow is displayed.
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> is displayed.
         /// </summary>
         protected virtual void OnOpened()
         {
@@ -1313,7 +1128,6 @@ namespace Windows.UI.Xaml.Controls
                 this.Overlay.Background = this.OverlayBrush;
             }
 
-#if SILVERLIGHT
             if (!this.Focus())
             {
                 // If the Focus() fails it means there is no focusable element in the 
@@ -1321,10 +1135,8 @@ namespace Windows.UI.Xaml.Controls
                 this.IsTabStop = true;
                 this.Focus();
             }
-#endif
         }
 
-#if SILVERLIGHT
         /// <summary>
         /// Executed when the opening storyboard finishes.
         /// </summary>
@@ -1341,14 +1153,13 @@ namespace Windows.UI.Xaml.Controls
             this.InteractionState = WindowInteractionState.ReadyForUserInteraction;
             this.OnOpened();
         }
-#endif
 
         /// <summary>
         /// Executed when the page resizes.
         /// </summary>
         /// <param name="sender">Sender object.</param>
         /// <param name="e">Event args.</param>
-        private void Page_Resized(object sender, WindowSizeChangedEventArgs e)
+        private void Page_Resized(object sender, EventArgs e)
         {
             if (this.ChildWindowPopup != null)
             {
@@ -1364,26 +1175,22 @@ namespace Windows.UI.Xaml.Controls
         private void RootVisual_GotFocus(object sender, RoutedEventArgs e)
         {
             this.Focus();
-#if SILVERLIGHT
             this.InteractionState = WindowInteractionState.ReadyForUserInteraction;
-#endif
         }
 
         /// <summary>
-        /// Opens a ChildWindow and
+        /// Opens a <see cref="T:System.Windows.Controls.ChildWindow" /> and
         /// returns without waiting for the
-        /// ChildWindow to close.
+        /// <see cref="T:System.Windows.Controls.ChildWindow" /> to close.
         /// </summary>
         /// <exception cref="T:System.InvalidOperationException">
         /// The child window is already in the visual tree.
         /// </exception>
         public void Show()
-        {
-#if SILVERLIGHT
+        {           
             // AutomationPeer returns "Running" when Show() is called
             // but the ChildWindow is not ready for user interaction:
             this.InteractionState = WindowInteractionState.Running;
-#endif
 
             this.SubscribeToEvents();
             this.SubscribeToTemplatePartEvents();
@@ -1393,50 +1200,44 @@ namespace Windows.UI.Xaml.Controls
             {
                 this.ChildWindowPopup = new Popup();
 
-#if !SILVERLIGHT
-                // CSHTML5 makes it easier to have a full-screen popup by setting the following CSHTML5-specific properties to "Stretch":
-                this.ChildWindowPopup.HorizontalContentAlignment = HorizontalAlignment.Stretch;
-                this.ChildWindowPopup.VerticalContentAlignment = VerticalAlignment.Stretch;
-#endif
                 try
                 {
                     this.ChildWindowPopup.Child = this;
+                    this.ChildWindowPopup.InvalidateArrange();
+                    this.ChildWindowPopup.InvalidateMeasure();
                 }
                 catch (ArgumentException)
                 {
                     // If the ChildWindow is already in the visualtree, we cannot set it to be the child of the popup
                     // we are throwing a friendlier exception for this case:
-#if SILVERLIGHT
                     this.InteractionState = WindowInteractionState.NotResponding;
-                    throw new InvalidOperationException(Properties.Resources.ChildWindow_InvalidOperation);
-#else
-                    throw;
-#endif
+                    throw new InvalidOperationException();
                 }
             }
 
-#if SILVERLIGHT
             // MaxHeight and MinHeight properties should not be overwritten:
             this.MaxHeight = double.PositiveInfinity;
             this.MaxWidth = double.PositiveInfinity;
-#endif
 
-            if (this.ChildWindowPopup != null)
+            // disable the underlying UI
+            if (RootVisual != null && !this.IsOpen)
+            {
+                if (OpenChildWindowCount == 0)
+                {
+                    // Save current value to restore it upon closing the last window
+                    RootVisual_PrevEnabledState = RootVisual.IsEnabled;
+                }
+                ++OpenChildWindowCount;
+                RootVisual.IsEnabled = false;
+            }
+
+            if (this.ChildWindowPopup != null && Application.Current.RootVisual != null)
             {
                 this.ChildWindowPopup.IsOpen = true;
-#if !SILVERLIGHT
-                this.OnOpened();
-#endif
 
                 // while the ChildWindow is open, the DialogResult is always NULL:
                 this._dialogresult = null;
             }
-
-            //// disable the underlying UI
-            //if (IsModal && RootVisual != null)
-            //{
-            //    RootVisual.IsEnabled = false;
-            //}
 
             // if the template is already loaded, display loading visuals animation
             if (this.ContentRoot != null)
@@ -1445,35 +1246,11 @@ namespace Windows.UI.Xaml.Controls
             }
         }
 
-#if !SILVERLIGHT
-        /// <summary>
-        /// Opens a ChildWindow and waits for the ChildWindow to close.
-        /// </summary>
-        /// <exception cref="T:System.InvalidOperationException">
-        /// The child window is already in the visual tree.
-        /// </exception>
-        public Task ShowAndWait()
-        {
-            TaskCompletionSource<object> taskCompletionSource = new TaskCompletionSource<object>();
-            this.Closed += (s, e) => // We do not unsubscribe this event, but we set "taskCompletionSource" to null on closed.
-            {
-                if (taskCompletionSource != null)
-                {
-                    taskCompletionSource.SetResult(null);
-                    taskCompletionSource = null;
-                }
-            };
-            this.Show();
-            return taskCompletionSource.Task;
-        }
-#endif
-
         /// <summary>
         /// Subscribes to events when the ChildWindow is opened.
         /// </summary>
         private void SubscribeToEvents()
         {
-#if SILVERLIGHT
             if (Application.Current != null && Application.Current.Host != null && Application.Current.Host.Content != null)
             {
                 Application.Current.Exit += new EventHandler(this.Application_Exit);
@@ -1483,15 +1260,6 @@ namespace Windows.UI.Xaml.Controls
             this.KeyDown += new KeyEventHandler(this.ChildWindow_KeyDown);
             this.LostFocus += new RoutedEventHandler(this.ChildWindow_LostFocus);
             this.SizeChanged += new SizeChangedEventHandler(this.ChildWindow_SizeChanged);
-#else
-            if (Application.Current != null && Application.Current.Host != null && Application.Current.Host.Content != null)
-            {
-                Application.Current.Exit += new EventHandler(this.Application_Exit);
-                Window.Current.SizeChanged += new WindowSizeChangedEventHandler(this.Page_Resized);
-            }
-
-            this.SizeChanged += new SizeChangedEventHandler(this.ChildWindow_SizeChanged);
-#endif
         }
 
         /// <summary>
@@ -1502,16 +1270,12 @@ namespace Windows.UI.Xaml.Controls
         {
             if (this._closed != null)
             {
-#if SILVERLIGHT
                 this._closed.Completed += new EventHandler(this.Closing_Completed);
-#endif
             }
 
             if (this._opened != null)
             {
-#if SILVERLIGHT
                 this._opened.Completed += new EventHandler(this.Opening_Completed);
-#endif
             }
         }
 
@@ -1527,18 +1291,14 @@ namespace Windows.UI.Xaml.Controls
 
             if (this._chrome != null)
             {
-#if SILVERLIGHT
                 this._chrome.MouseLeftButtonDown += new MouseButtonEventHandler(this.Chrome_MouseLeftButtonDown);
                 this._chrome.MouseLeftButtonUp += new MouseButtonEventHandler(this.Chrome_MouseLeftButtonUp);
                 this._chrome.MouseMove += new MouseEventHandler(this.Chrome_MouseMove);
-#endif
             }
 
             if (this._contentPresenter != null)
             {
-#if SILVERLIGHT
                 this._contentPresenter.SizeChanged += new SizeChangedEventHandler(this.ContentPresenter_SizeChanged);
-#endif
             }
         }
 
@@ -1547,7 +1307,6 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         private void UnSubscribeFromEvents()
         {
-#if SILVERLIGHT
             if (Application.Current != null && Application.Current.Host != null && Application.Current.Host.Content != null)
             {
                 Application.Current.Exit -= new EventHandler(this.Application_Exit);
@@ -1557,16 +1316,6 @@ namespace Windows.UI.Xaml.Controls
             this.KeyDown -= new KeyEventHandler(this.ChildWindow_KeyDown);
             this.LostFocus -= new RoutedEventHandler(this.ChildWindow_LostFocus);
             this.SizeChanged -= new SizeChangedEventHandler(this.ChildWindow_SizeChanged);
-
-#else
-            if (Application.Current != null && Application.Current.Host != null && Application.Current.Host.Content != null)
-            {
-                Application.Current.Exit -= new EventHandler(this.Application_Exit);
-                Window.Current.SizeChanged -= new WindowSizeChangedEventHandler(this.Page_Resized);
-            }
-
-            this.SizeChanged -= new SizeChangedEventHandler(this.ChildWindow_SizeChanged);
-#endif
         }
 
         /// <summary>
@@ -1581,18 +1330,14 @@ namespace Windows.UI.Xaml.Controls
 
             if (this._chrome != null)
             {
-#if SILVERLIGHT
                 this._chrome.MouseLeftButtonDown -= new MouseButtonEventHandler(this.Chrome_MouseLeftButtonDown);
                 this._chrome.MouseLeftButtonUp -= new MouseButtonEventHandler(this.Chrome_MouseLeftButtonUp);
                 this._chrome.MouseMove -= new MouseEventHandler(this.Chrome_MouseMove);
-#endif
             }
 
             if (this._contentPresenter != null)
             {
-#if SILVERLIGHT
                 this._contentPresenter.SizeChanged -= new SizeChangedEventHandler(this.ContentPresenter_SizeChanged);
-#endif
             }
         }
 
@@ -1603,34 +1348,30 @@ namespace Windows.UI.Xaml.Controls
         {
             if (this.Overlay != null && Application.Current != null && Application.Current.Host != null && Application.Current.Host.Content != null)
             {
-#if SILVERLIGHT
+                Console.WriteLine("Start: this.Overlay.ActualHeight:" + this.Overlay.ActualHeight + " this.Overlay.ActualWidth:" + this.Overlay.ActualWidth + "this.Overlay.Height:" + this.Overlay.Height + " this.Overlay.Width:" + this.Overlay.Width + " this.ActualHeight:" + this.ActualHeight + " this.ActualWidth:" + this.ActualWidth + " this.Height:" + this.Height + " this.Width:" + this.Width + " this.ContentRoot.Height:" + this.ContentRoot.Height + " this.ContentRoot.Width:" + this.ContentRoot.Width);
                 this.Height = Application.Current.Host.Content.ActualHeight;
                 this.Width = Application.Current.Host.Content.ActualWidth;
-#endif
-                Rect bounds = Window.Current.Bounds;
-                this.Overlay.Height = bounds.Height;
-                this.Overlay.Width = bounds.Width;
 
-                if (this.ContentRoot == null) return;
-
-#if !SILVERLIGHT
-                // We set the size of the ContentRoot to be the same size that the user specified for the ChildWindow itself (this is due to the fact that the size of the ChildWindow is automatically changed to fit the screen so that the overlay fits the screen):
-
-                if (!double.IsNaN(this._widthThatWasInitiallySpecified))
+                if (Application.Current.Host.Settings.EnableAutoZoom)
+                {
+                    double zoomFactor = Application.Current.Host.Content.ZoomFactor;
+                    if (zoomFactor != 0)
+                    {
+                        this.Height /= zoomFactor;
+                        this.Width /= zoomFactor;
+                    }
+                }
+                Console.WriteLine();
+                this.Overlay.Height = this.Height;
+                this.Overlay.Width = this.Width;
+                
+                if (this.ContentRoot != null)
                 {
                     this.ContentRoot.Width = this._desiredContentWidth;
-                }
-
-                if (!double.IsNaN(this._heightThatWasInitiallySpecified))
-                {
                     this.ContentRoot.Height = this._desiredContentHeight;
+                    this.ContentRoot.Margin = this._desiredMargin;
                 }
-
-#else
-                this.ContentRoot.Width = this._desiredContentWidth;
-                this.ContentRoot.Height = this._desiredContentHeight;
-#endif
-                this.ContentRoot.Margin = this._desiredMargin;
+                Console.WriteLine("END: this.Overlay.ActualHeight:" + this.Overlay.ActualHeight + " this.Overlay.ActualWidth:" + this.Overlay.ActualWidth + "this.Overlay.Height:" + this.Overlay.Height + " this.Overlay.Width:" + this.Overlay.Width + " this.ActualHeight:" + this.ActualHeight + " this.ActualWidth:" + this.ActualWidth + " this.Height:" + this.Height + " this.Width:" + this.Width + " this.ContentRoot.Height:" + this.ContentRoot.Height + " this.ContentRoot.Width:" + this.ContentRoot.Width);
             }
         }
 
@@ -1656,7 +1397,6 @@ namespace Windows.UI.Xaml.Controls
         /// </summary>
         private void UpdateRenderTransform()
         {
-#if SILVERLIGHT
             if (this._root != null && this.ContentRoot != null)
             {
                 // The Overlay part should not be affected by the render transform applied on the
@@ -1707,7 +1447,6 @@ namespace Windows.UI.Xaml.Controls
                     }
                 }
             }
-#endif
         }
 
         /// <summary>
@@ -1717,7 +1456,6 @@ namespace Windows.UI.Xaml.Controls
         /// <param name="Y">Y coordinate of the transform.</param>
         private void UpdateContentRootTransform(double X, double Y)
         {
-#if SILVERLIGHT
             if (this._contentRootTransform == null)
             {
                 this._contentRootTransform = new TranslateTransform();
@@ -1739,7 +1477,6 @@ namespace Windows.UI.Xaml.Controls
                 this._contentRootTransform.X += X;
                 this._contentRootTransform.Y += Y;
             }
-#endif
         }
 
         #endregion Methods
