@@ -3,6 +3,7 @@ using System.ComponentModel.Composition.Primitives;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 
 #if MIGRATION
 using System.Windows;
@@ -18,9 +19,20 @@ namespace System.ComponentModel.Composition.Hosting
     /// </summary>
     public class DeploymentCatalog : ComposablePartCatalog, INotifyComposablePartCatalogChanged
     {
-        private AggregateCatalog _catalog = new AggregateCatalog();
-        private Uri _uri;
-        private bool _isDisposed;
+        static class State
+        {
+            public const int Created = 0;
+            public const int Initialized = 1000;
+            public const int DownloadStarted = 2000;
+            public const int DownloadCompleted = 3000;
+            public const int DownloadCancelled = 4000;
+        }
+
+        private volatile bool _isDisposed = false;
+        private Uri _uri = null;
+        private int _state = State.Created;
+        private AggregateCatalog _catalogCollection = new AggregateCatalog();
+        private WebClient _webClient = null;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeploymentCatalog"/> 
@@ -28,7 +40,8 @@ namespace System.ComponentModel.Composition.Hosting
         /// </summary>
         public DeploymentCatalog()
         {
-            this.Initialize();
+            this.DiscoverParts(Package.CurrentAssemblies);
+            this._state = State.Initialized;
         }
 
         /// <summary>
@@ -36,9 +49,10 @@ namespace System.ComponentModel.Composition.Hosting
         /// class using the XAP file at the specified relative URI.
         /// </summary>
         /// <param name="uriRelative">The URI of the XAP file.</param>
-		[OpenSilver.NotImplemented]
         public DeploymentCatalog(string uriRelative)
         {
+            if (uriRelative.Contains(".xap"))
+                uriRelative = uriRelative.Replace(".xap", ".dll");
             this._uri = new Uri(uriRelative, UriKind.Relative);
         }
 
@@ -47,37 +61,9 @@ namespace System.ComponentModel.Composition.Hosting
         /// class using the XAP file at the specified URI.
         /// </summary>
         /// <param name="uri">The URI of the XAP file.</param>
-		[OpenSilver.NotImplemented]
         public DeploymentCatalog(Uri uri)
         {
             this._uri = uri;
-        }
-
-        /// <summary>
-        /// Gets all the parts contained in the catalog.
-        /// </summary>
-        /// <returns>
-        /// A query enumerating all the parts contained in the catalog.
-        /// </returns>
-        public override IQueryable<ComposablePartDefinition> Parts
-        {
-            get
-            {
-                this.ThrowIfDisposed();
-                return this._catalog.Parts;
-            }
-        }
-
-        /// <summary>
-        /// Gets the URI for the XAP file.
-        /// </summary>
-        public Uri Uri
-        {
-            get
-            {
-                this.ThrowIfDisposed();
-                return this._uri;
-            }
         }
 
         /// <summary>
@@ -94,60 +80,82 @@ namespace System.ComponentModel.Composition.Hosting
 
         /// <summary>
         /// Occurs when the XAP file has finished downloading, or there has been an error.
-        /// </summary>
-		[OpenSilver.NotImplemented]
-        public event EventHandler<AsyncCompletedEventArgs> DownloadCompleted
-        {
-            add
-            {
-                throw new NotImplementedException("The method or operation is not implemented.");
-            }
-            remove
-            {
-                throw new NotImplementedException("The method or operation is not implemented.");
-            }
-        }
+        /// </summary>		
+        public event EventHandler<AsyncCompletedEventArgs> DownloadCompleted;
 
         /// <summary>
         /// Occurs when the download progress of the XAP file changes.
+        /// </summary>		
+        public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChanged;
+
+        /// <summary>
+        /// Gets all the parts contained in the catalog.
         /// </summary>
-		[OpenSilver.NotImplemented]
-        public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgressChanged
+        /// <returns>
+        /// A query enumerating all the parts contained in the catalog.
+        /// </returns>
+        public override IQueryable<ComposablePartDefinition> Parts
         {
-            add
+            get
             {
-                throw new NotImplementedException("The method or operation is not implemented.");
-            }
-            remove
-            {
-                throw new NotImplementedException("The method or operation is not implemented.");
+                this.ThrowIfDisposed();
+                return this._catalogCollection.Parts;
             }
         }
 
         /// <summary>
-        /// Cancels the XAP file download in progress.
+        /// Gets the URI for the XAP file.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        /// The method is called before <see cref="DeploymentCatalog.DownloadAsync"/>
-        /// or after the <see cref="DeploymentCatalog.DownloadCompleted"/> event has occurred.
-        /// </exception>
-		[OpenSilver.NotImplemented]
-        public void CancelAsync()
+        public Uri Uri
         {
-            throw new NotImplementedException("The method or operation is not implemented.");
+            get
+            {
+                this.ThrowIfDisposed();
+                return this._uri;
+            }
         }
 
         /// <summary>
-        /// Begins downloading the XAP file associated with the <see cref="DeploymentCatalog"/>.
         /// </summary>
-        /// <exception cref="InvalidOperationException">
-        /// This method is called more than once, or after the <see cref="DeploymentCatalog.CancelAsync"/>
-        /// method.
+        /// <param name="assemblies">
+        /// </param>
+        /// <exception cref="ObjectDisposedException">
+        ///     The <see cref="DeploymentCatalog"/> has been disposed of.
         /// </exception>
-		[OpenSilver.NotImplemented]
-        public void DownloadAsync()
+        private void DiscoverParts(IEnumerable<Assembly> assemblies)
         {
-            throw new NotImplementedException("The method or operation is not implemented.");
+            this.ThrowIfDisposed();
+
+            var addedDefinitions = new List<ComposablePartDefinition>();
+            var addedCatalogs = new Dictionary<string, ComposablePartCatalog>();
+            foreach (var assembly in assemblies)
+            {
+                if (addedCatalogs.ContainsKey(assembly.FullName))
+                {
+                    // Nothing to do because the assembly has already been added.
+                    continue;
+                }
+
+                var catalog = new AssemblyCatalog(assembly);
+                addedDefinitions.AddRange(catalog.Parts);
+                addedCatalogs.Add(assembly.FullName, catalog);
+            }
+
+            // Generate notifications
+            using (var atomicComposition = new AtomicComposition())
+            {
+                var changingArgs = new ComposablePartCatalogChangeEventArgs(addedDefinitions, Enumerable.Empty<ComposablePartDefinition>(), atomicComposition);
+                this.OnChanging(changingArgs);
+
+                foreach (var item in addedCatalogs)
+                {
+                    this._catalogCollection.Catalogs.Add(item.Value);
+                }
+                atomicComposition.Complete();
+            }
+
+            var changedArgs = new ComposablePartCatalogChangeEventArgs(addedDefinitions, Enumerable.Empty<ComposablePartDefinition>(), null);
+            this.OnChanged(changedArgs);
         }
 
         /// <summary>
@@ -165,8 +173,114 @@ namespace System.ComponentModel.Composition.Hosting
         public override IEnumerable<Tuple<ComposablePartDefinition, ExportDefinition>> GetExports(ImportDefinition definition)
         {
             this.ThrowIfDisposed();
-            return this._catalog.GetExports(definition);
+            return this._catalogCollection.GetExports(definition);
         }
+
+        /// <summary>
+        /// Cancels the XAP file download in progress.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// The method is called before <see cref="DeploymentCatalog.DownloadAsync"/>
+        /// or after the <see cref="DeploymentCatalog.DownloadCompleted"/> event has occurred.
+        /// </exception>
+        [OpenSilver.NotImplemented]
+        public void CancelAsync()
+        {
+            throw new NotImplementedException("The method or operation is not implemented.");
+        }
+
+        /// <summary>
+        /// Begins downloading the XAP file associated with the <see cref="DeploymentCatalog"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// This method is called more than once, or after the <see cref="DeploymentCatalog.CancelAsync"/>
+        /// method.
+        /// </exception>
+        public void DownloadAsync()
+        {
+            Exception error = null;
+            // Possible valid current states are DownloadStarted and DownloadCancelled.
+            int currentState = Interlocked.CompareExchange(ref this._state, State.DownloadCompleted, State.DownloadStarted);
+
+            {
+                try
+                {
+                    var assemblies = Package.LoadPackagedAssembliesInternal(this.Uri);
+                    this.DiscoverParts(assemblies);
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            }
+
+            this.OnDownloadCompleted(new AsyncCompletedEventArgs(error, false, this));
+        }
+
+
+
+        /// <summary>
+        /// Raises the <see cref="DeploymentCatalog.Changed"/>
+        /// event.
+        /// </summary>
+        /// <param name="e">
+        /// A <see cref="ComposablePartCatalogChangeEventArgs"/>
+        /// object that contains the event data.
+        /// </param>
+        protected virtual void OnChanged(ComposablePartCatalogChangeEventArgs e)
+        {
+            EventHandler<ComposablePartCatalogChangeEventArgs> changedEvent = this.Changed;
+            if (changedEvent != null)
+            {
+                changedEvent(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="DeploymentCatalog.Changing"/> event.
+        /// </summary>
+        /// <param name="e">
+        /// A <see cref="ComposablePartCatalogChangeEventArgs"/> object that contains the event data.
+        /// </param>
+        protected virtual void OnChanging(ComposablePartCatalogChangeEventArgs e)
+        {
+            EventHandler<ComposablePartCatalogChangeEventArgs> changingEvent = this.Changing;
+            if (changingEvent != null)
+            {
+                changingEvent(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="DeploymentCatalog.DownloadCompleted"/> event.
+        /// </summary>
+        /// <param name="e">
+        /// A <see cref="AsyncCompletedEventArgs"/> object that contains the event data.
+        /// </param>
+		protected virtual void OnDownloadCompleted(AsyncCompletedEventArgs e)
+        {
+            EventHandler<AsyncCompletedEventArgs> downloadCompletedEvent = this.DownloadCompleted;
+            if (downloadCompletedEvent != null)
+            {
+                downloadCompletedEvent(this, e);
+            }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="DeploymentCatalog.DownloadProgressChanged"/> event.
+        /// </summary>
+        /// <param name="e">
+        /// A <see cref="DownloadProgressChangedEventArgs"/> object that contains the event data.
+        /// </param>
+		protected virtual void OnDownloadProgressChanged(DownloadProgressChangedEventArgs e)
+        {
+            EventHandler<DownloadProgressChangedEventArgs> downloadProgressChangedEvent = this.DownloadProgressChanged;
+            if (downloadProgressChangedEvent != null)
+            {
+                downloadProgressChangedEvent(this, e);
+            }
+        }
+
 
         /// <summary>
         /// Releases the unmanaged resources used by the <see cref="DeploymentCatalog"/>
@@ -187,8 +301,8 @@ namespace System.ComponentModel.Composition.Hosting
                         AggregateCatalog catalog = null;
                         try
                         {
-                            catalog = this._catalog;
-                            this._catalog = null;
+                            catalog = this._catalogCollection;
+                            this._catalogCollection = null;
                             this._isDisposed = true;
                         }
                         finally
@@ -204,144 +318,16 @@ namespace System.ComponentModel.Composition.Hosting
             finally
             {
                 base.Dispose(disposing);
-            }            
-        }
-
-        /// <summary>
-        /// Raises the <see cref="DeploymentCatalog.Changed"/>
-        /// event.
-        /// </summary>
-        /// <param name="e">
-        /// A <see cref="ComposablePartCatalogChangeEventArgs"/>
-        /// object that contains the event data.
-        /// </param>
-        protected virtual void OnChanged(ComposablePartCatalogChangeEventArgs e)
-        {
-            if (this.Changed != null)
-            {
-                this.Changed(this, e);
             }
-        }
-
-        /// <summary>
-        /// Raises the <see cref="DeploymentCatalog.Changing"/> event.
-        /// </summary>
-        /// <param name="e">
-        /// A <see cref="ComposablePartCatalogChangeEventArgs"/> object that contains the event data.
-        /// </param>
-        protected virtual void OnChanging(ComposablePartCatalogChangeEventArgs e)
-        {
-            if (this.Changing != null)
-            {
-                this.Changing(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Raises the <see cref="DeploymentCatalog.DownloadCompleted"/> event.
-        /// </summary>
-        /// <param name="e">
-        /// A <see cref="AsyncCompletedEventArgs"/> object that contains the event data.
-        /// </param>
-		[OpenSilver.NotImplemented]
-        protected virtual void OnDownloadCompleted(AsyncCompletedEventArgs e)
-        {
-            throw new NotImplementedException("The method or operation is not implemented.");
-        }
-
-        /// <summary>
-        /// Raises the <see cref="DeploymentCatalog.DownloadProgressChanged"/> event.
-        /// </summary>
-        /// <param name="e">
-        /// A <see cref="DownloadProgressChangedEventArgs"/> object that contains the event data.
-        /// </param>
-		[OpenSilver.NotImplemented]
-        protected virtual void OnDownloadProgressChanged(DownloadProgressChangedEventArgs e)
-        {
-            throw new NotImplementedException("The method or operation is not implemented.");
-        }
-
-#region Internal Methods
-
-        private void Initialize()
-        {
-            this.ThrowIfDisposed();
-
-            List<AssemblyCatalog> catalogsList = new List<AssemblyCatalog>();
-            List<ComposablePartDefinition> partDefinitionsList = new List<ComposablePartDefinition>();
-
-            foreach (Assembly assembly in this.GetAssemblies())
-            {
-                AssemblyCatalog assemblyCatalog = new AssemblyCatalog(assembly);
-                partDefinitionsList.AddRange(assemblyCatalog.Parts);
-                catalogsList.Add(assemblyCatalog);
-            }
-
-            using (AtomicComposition atomicComposition = new AtomicComposition())
-            {
-                this.RaiseChangingEvent(partDefinitionsList, null, atomicComposition);
-                foreach (AssemblyCatalog catalog in catalogsList)
-                {
-                    this._catalog.Catalogs.Add(catalog);
-                }
-                atomicComposition.Complete();
-            }
-            this.RaiseChangedEvent(partDefinitionsList, null, null);
-        }
-
-        private IEnumerable<Assembly> GetAssemblies()
-        {
-            Assembly applicationAssembly = Application.Current.GetType().Assembly;
-            yield return applicationAssembly;
-            AssemblyName[] referencedAssemblies = applicationAssembly.GetReferencedAssemblies();
-            Assembly assemblyRef = null;
-            for (int i = 0; i < referencedAssemblies.Length; ++i)
-            {
-                bool flag = false;
-                try
-                {
-                    assemblyRef = Assembly.Load(referencedAssemblies[i]);
-                }
-                catch
-                {
-                    flag = true;
-                }
-
-                if (!flag)
-                {
-                    yield return assemblyRef;
-                }
-            }
-        }
-
-        private void RaiseChangingEvent(
-            IEnumerable<ComposablePartDefinition> addedDefinitions,
-            IEnumerable<ComposablePartDefinition> removedDefinitions,
-            AtomicComposition atomicComposition)
-        {
-            var added = (addedDefinitions == null ? Enumerable.Empty<ComposablePartDefinition>() : addedDefinitions);
-            var removed = (removedDefinitions == null ? Enumerable.Empty<ComposablePartDefinition>() : removedDefinitions);
-            this.OnChanging(new ComposablePartCatalogChangeEventArgs(added, removed, atomicComposition));
-        }
-
-        private void RaiseChangedEvent(
-            IEnumerable<ComposablePartDefinition> addedDefinitions,
-            IEnumerable<ComposablePartDefinition> removedDefinitions,
-            AtomicComposition atomicComposition)
-        {
-            var added = (addedDefinitions == null ? Enumerable.Empty<ComposablePartDefinition>() : addedDefinitions);
-            var removed = (removedDefinitions == null ? Enumerable.Empty<ComposablePartDefinition>() : removedDefinitions);
-            this.OnChanged(new ComposablePartCatalogChangeEventArgs(added, removed, atomicComposition));
         }
 
         private void ThrowIfDisposed()
         {
             if (this._isDisposed)
             {
-                throw new InvalidOperationException("Cannot access a disposed object.");
+                throw new ObjectDisposedException("Cannot access a disposed object.");
             }
         }
 
-#endregion Internal Methods
     }
 }

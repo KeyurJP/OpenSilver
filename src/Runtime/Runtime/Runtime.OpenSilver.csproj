@@ -15,7 +15,7 @@
 		<OutputPath>bin\OpenSilver\$(Configuration)\</OutputPath>
 		<NoWarn>1591</NoWarn>
 		<DebugType>full</DebugType>
-		<Optimize>true</Optimize>
+		<Optimize>False</Optimize>
 		<NoCSHTML5Reference>true</NoCSHTML5Reference>
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<!-- This emluates the behavior of NET Framework, which excludes every files by default -->
@@ -125,6 +125,7 @@
 		<Compile Include="PublicAPI\Interop\OnCallbackSimulator.cs" />
 		<Compile Include="PublicAPI\Native.Html.Controls\NativeComboBox.cs" />
 		<Compile Include="System.Collections.Generic\WORKINPROGRESS\PriorityQueue.cs" />
+		<Compile Include="System.ComponentModel.Composition.Hosting\Package.cs" />
 		<Compile Include="System.ComponentModel.Composition.Hosting\WORKINPROGRESS\CompositionHost.cs" />
 		<Compile Include="System.ComponentModel.Composition.Hosting\WORKINPROGRESS\DeploymentCatalog.cs" />
 		<Compile Include="System.ComponentModel.Composition\WORKINPROGRESS\CompositionInitializer.cs" />

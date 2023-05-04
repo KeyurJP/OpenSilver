@@ -12,7 +12,12 @@
 \*====================================================================================*/
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Linq;
+using System.Reflection;
+using System.Windows.Controls;
 
 #if !MIGRATION
 using Windows.UI.Xaml;
@@ -53,7 +58,7 @@ namespace System.Windows
             {
                 if (_current == null)
                 {
-                    _ = new Deployment();
+                    _current = new Deployment();
                 }
 
                 return _current;
@@ -128,10 +133,48 @@ namespace System.Windows
         /// <returns>
         /// The collection of assembly parts. The default is an empty collection.
         /// </returns>
-        [OpenSilver.NotImplemented]
-        public AssemblyPartCollection Parts { get; } = new AssemblyPartCollection();
+        public AssemblyPartCollection Parts
+        {
+            get
+            {
+                AssemblyPartCollection collection = new AssemblyPartCollection();
 
-#region not implemented
+                foreach (Assembly assembly in this.GetAssemblies(Application.Current.GetType().Assembly))
+                {
+                    var assemblyPart = new AssemblyPart() { Assembly = assembly, Source= assembly.CodeBase };                    
+                    collection.Add(assemblyPart);
+                }
+                
+                return collection;
+            }
+        }
+
+        private IEnumerable<Assembly> GetAssemblies(Assembly assembly)
+        {
+            Assembly applicationAssembly = assembly;
+            yield return applicationAssembly;
+            AssemblyName[] referencedAssemblies = applicationAssembly.GetReferencedAssemblies();
+            Assembly assemblyRef = null;
+            for (int i = 0; i < referencedAssemblies.Length; ++i)
+            {
+                bool flag = false;
+                try
+                {
+                    assemblyRef = Assembly.Load(referencedAssemblies[i]);
+                }
+                catch
+                {
+                    flag = true;
+                }
+
+                if (!flag)
+                {
+                    yield return assemblyRef;
+                }
+            }
+        }
+
+        #region not implemented
 
         ////
         //// Summary:
@@ -272,7 +315,7 @@ namespace System.Windows
         //[SecurityCritical]
         //public static void SetCurrentApplication(Application application);
 
-#endregion
+        #endregion
     }
 }
 

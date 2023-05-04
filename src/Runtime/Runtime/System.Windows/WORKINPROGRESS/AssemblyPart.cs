@@ -23,22 +23,20 @@ namespace System.Windows
 namespace Windows.UI.Xaml
 #endif
 {
-	[OpenSilver.NotImplemented]
     public sealed partial class AssemblyPart : DependencyObject
     {
+        internal Assembly Assembly { get; set; } = null;
         //
         // Summary:
         //     Identifies the System.Windows.AssemblyPart.Source dependency property.
         //
         // Returns:
         //     The identifier for the System.Windows.AssemblyPart.Source dependency property.
-		[OpenSilver.NotImplemented]
-        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(AssemblyPart), null);
+        public static readonly DependencyProperty SourceProperty = DependencyProperty.Register("Source", typeof(string), typeof(AssemblyPart), new PropertyMetadata());
 
         //
         // Summary:
         //     Initializes a new instance of the System.Windows.AssemblyPart class.
-		[OpenSilver.NotImplemented]
         public AssemblyPart()
         {
 
@@ -50,7 +48,6 @@ namespace Windows.UI.Xaml
         //
         // Returns:
         //     A System.String that is the assembly, which is identified as an assembly part.
-		[OpenSilver.NotImplemented]
         public string Source
         {
             get { return (string)this.GetValue(SourceProperty); }
@@ -70,10 +67,40 @@ namespace Windows.UI.Xaml
         //     The System.Reflection.Assembly that is subsequently loaded into the current application
         //     domain.
         [SecuritySafeCritical]
-		[OpenSilver.NotImplemented]
         public Assembly Load(Stream assemblyStream)
         {
-            return null;
+            this.Assembly = Assembly.Load(StreamToBuffer(assemblyStream));
+            return this.Assembly;
+        }
+
+        internal static byte[] StreamToBuffer(Stream assemblyStream)
+        {
+            byte[] buffer;
+
+            using (assemblyStream)
+            {
+                // avoid extra step for MemoryStream (but not any stream that inherits from it)
+                if (assemblyStream.GetType() == typeof(MemoryStream))
+                    return (assemblyStream as MemoryStream).ToArray();
+
+                // it's normally bad to depend on Stream.Length since some stream (e.g. NetworkStream)
+                // don't implement them. However it is safe in this case (i.e. SL2 depends on Length too)
+                buffer = new byte[assemblyStream.Length];
+
+                int length = buffer.Length;
+                int offset = 0;
+                while (length > 0)
+                {
+                    int read = assemblyStream.Read(buffer, offset, length);
+                    if (read == 0)
+                        break;
+
+                    length -= read;
+                    offset += read;
+                }
+            }
+
+            return buffer;
         }
     }
 }
