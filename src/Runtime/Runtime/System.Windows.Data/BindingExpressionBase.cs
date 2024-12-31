@@ -26,22 +26,24 @@ public abstract class BindingExpressionBase : Expression
     {
         iSourceToTarget = 0x00000001,
         iTargetToSource = 0x00000002,
-        iInTransfer = 0x00000004,
-        iInUpdate = 0x00000008,
-        iNeedDataTransfer = 0x00000010,   // used by MultiBindingExpression
-        iTransferDeferred = 0x00000020,   // used by MultiBindingExpression
-        iUpdateOnLostFocus = 0x00000040,
-        iUpdateExplicitly = 0x00000080,
-        iUpdateOnPropertyChanged = 0x00000100,
-        iNeedsUpdate = 0x00000200,
-        iDetaching = 0x00000400,
-        iInMultiBindingExpression = 0x00000800,
-        iNotifyOnValidationError = 0x00001000,
-        iAttaching = 0x00002000,
-        iValidatesOnExceptions = 0x00004000,
-        iValidatesOnDataErrors = 0x00008000,
-        iValidatesOnNotifyDataErrors = 0x00010000,
+        iPropDefault = 0x00000004,
+        iInTransfer = 0x00000008,
+        iInUpdate = 0x00000010,
+        iNeedDataTransfer = 0x00000020,   // used by MultiBindingExpression
+        iTransferDeferred = 0x00000040,   // used by MultiBindingExpression
+        iUpdateOnLostFocus = 0x00000080,
+        iUpdateExplicitly = 0x00000100,
+        iUpdateOnPropertyChanged = 0x00000200,
+        iNeedsUpdate = 0x00000400,
+        iDetaching = 0x00000800,
+        iInMultiBindingExpression = 0x00001000,
+        iNotifyOnValidationError = 0x00002000,
+        iAttaching = 0x00004000,
+        iValidatesOnExceptions = 0x00008000,
+        iValidatesOnDataErrors = 0x00010000,
+        iValidatesOnNotifyDataErrors = 0x00020000,
 
+        iPropagationMask = iSourceToTarget | iTargetToSource | iPropDefault,
         iUpdateMask = iUpdateOnPropertyChanged | iUpdateOnLostFocus | iUpdateExplicitly,
     }
 
@@ -59,6 +61,7 @@ public abstract class BindingExpressionBase : Expression
     internal static readonly object DefaultValueObject = new NamedObject("DefaultValue");
 
     private PrivateFlags _flags;
+    private PrivateFlags _defaultFlags;
     private DependencyPropertyChangedListener _targetPropertyListener;
 
     internal BindingExpressionBase(BindingBase binding, BindingExpressionBase parent)
@@ -214,7 +217,6 @@ public abstract class BindingExpressionBase : Expression
         Target = d;
         TargetProperty = dp;
 
-        ResolvePropertyDefaultSettings(ParentBindingBase.UpdateSourceTriggerInternal, Target, TargetProperty);
         DetermineEffectiveValidatesOnNotifyDataErrors();
 
         // Listen to changes on the Target if the Binding is TwoWay:
@@ -258,7 +260,7 @@ public abstract class BindingExpressionBase : Expression
         Target = null;
         TargetProperty = null;
 
-        _flags = (PrivateFlags)ParentBindingBase.Flags;
+        _flags = _defaultFlags;
     }
 
     private void OnTargetLostFocus(object sender, RoutedEventArgs e) => Update();
@@ -317,12 +319,32 @@ public abstract class BindingExpressionBase : Expression
     /// <summary> End a source update </summary>
     internal void EndSourceUpdate() => ChangeFlag(PrivateFlags.iInUpdate | PrivateFlags.iNeedsUpdate, false);
 
-    private void ResolvePropertyDefaultSettings(UpdateSourceTrigger updateTrigger, DependencyObject target, DependencyProperty targetProperty)
+    internal void ResolvePropertyDefaultSettings(
+        BindingMode mode,
+        UpdateSourceTrigger updateTrigger,
+        FrameworkPropertyMetadata fwMetaData,
+        DependencyObject d,
+        DependencyProperty dp)
     {
+        // resolve "property-default" dataflow
+        if (mode == BindingMode.Default)
+        {
+            PrivateFlags f = PrivateFlags.iSourceToTarget;
+            if (fwMetaData is not null && fwMetaData.BindsTwoWayByDefault)
+            {
+                f = PrivateFlags.iSourceToTarget | PrivateFlags.iTargetToSource;
+            }
+
+            ChangeFlag(PrivateFlags.iPropagationMask, false);
+            ChangeFlag(f, true);
+        }
+
+        Debug.Assert((_flags & PrivateFlags.iPropagationMask) != PrivateFlags.iPropDefault, "BindingExpression should not have Default propagation");
+
         // resolve "property-default" update trigger
         if (updateTrigger == UpdateSourceTrigger.Default)
         {
-            UpdateSourceTrigger ust = GetDefaultUpdateSourceTrigger(target, targetProperty);
+            UpdateSourceTrigger ust = GetDefaultUpdateSourceTrigger(d, dp);
 
             SetUpdateSourceTrigger(ust);
         }
@@ -350,6 +372,8 @@ public abstract class BindingExpressionBase : Expression
         ChangeFlag(PrivateFlags.iUpdateMask, false);
         ChangeFlag((PrivateFlags)BindingBase.FlagsFrom(ust), true);
     }
+
+    internal void SaveDefaultFlags() => _defaultFlags = _flags;
 
     internal Type GetEffectiveTargetType()
     {

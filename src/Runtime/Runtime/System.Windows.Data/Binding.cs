@@ -205,6 +205,15 @@ public class Binding : BindingBase
         }
     }
 
+    internal BindingMode GetMode() =>
+        GetFlagsWithinMask(PrivateFlags.PropagationMask) switch
+        {
+            PrivateFlags.OneWay => BindingMode.OneWay,
+            PrivateFlags.TwoWay => BindingMode.TwoWay,
+            PrivateFlags.OneTime => BindingMode.OneTime,
+            _ => BindingMode.Default,
+        };
+
     /// <summary>
     /// Gets or sets the path to the binding source property.
     /// </summary>
@@ -263,11 +272,20 @@ public class Binding : BindingBase
     /// </returns>
     public UpdateSourceTrigger UpdateSourceTrigger
     {
-        get { return UpdateSourceTriggerInternal; }
+        get
+        {
+            return GetFlagsWithinMask(PrivateFlags.UpdateMask) switch
+            {
+                PrivateFlags.UpdateOnPropertyChanged => UpdateSourceTrigger.PropertyChanged,
+                PrivateFlags.UpdateOnLostFocus => UpdateSourceTrigger.LostFocus,
+                PrivateFlags.UpdateExplicitly => UpdateSourceTrigger.Explicit,
+                _ => UpdateSourceTrigger.Default,
+            };
+        }
         set
         {
             CheckSealed();
-            UpdateSourceTriggerInternal = value;
+            ChangeFlagsWithinMask(PrivateFlags.UpdateMask, FlagsFrom(value));
         }
     }
 

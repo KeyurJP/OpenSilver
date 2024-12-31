@@ -35,6 +35,8 @@ public abstract class BindingBase : MarkupExtension
         OneTime = 0,
         /// <summary> Data flows in both directions - source to target and vice-versa </summary>
         TwoWay = BindingExpressionBase.PrivateFlags.iSourceToTarget | BindingExpressionBase.PrivateFlags.iTargetToSource,
+        /// <summary> Data flow obtained from target property default </summary>
+        PropDefault = BindingExpressionBase.PrivateFlags.iPropDefault,
 
         /// <summary> Raise ValidationError event whenever there is a ValidationError on Update</summary>
         NotifyOnValidationError = BindingExpressionBase.PrivateFlags.iNotifyOnValidationError,
@@ -53,13 +55,13 @@ public abstract class BindingBase : MarkupExtension
         ValidatesOnNotifyDataErrors = BindingExpressionBase.PrivateFlags.iValidatesOnNotifyDataErrors,
 
         /// <summary> Flags describing data transfer </summary>
-        PropagationMask = OneWay | TwoWay | OneTime,
+        PropagationMask = OneWay | TwoWay | OneTime | PropDefault,
 
         /// <summary> Flags describing update trigger </summary>
         UpdateMask = UpdateDefault | UpdateOnPropertyChanged | UpdateOnLostFocus | UpdateExplicitly,
 
         /// <summary> Default value</summary>
-        Default = OneWay | UpdateDefault | ValidatesOnNotifyDataErrors,
+        Default = PropDefault | UpdateDefault | ValidatesOnNotifyDataErrors,
     }
 
     private PrivateFlags _flags = PrivateFlags.Default;
@@ -126,21 +128,6 @@ public abstract class BindingBase : MarkupExtension
     {
         get { return TestFlag(PrivateFlags.ValidatesOnNotifyDataErrors); }
         set { ChangeFlag(PrivateFlags.ValidatesOnNotifyDataErrors, value); }
-    }
-
-    internal UpdateSourceTrigger UpdateSourceTriggerInternal
-    {
-        get
-        {
-            return GetFlagsWithinMask(PrivateFlags.UpdateMask) switch
-            {
-                PrivateFlags.UpdateOnPropertyChanged => UpdateSourceTrigger.PropertyChanged,
-                PrivateFlags.UpdateOnLostFocus => UpdateSourceTrigger.LostFocus,
-                PrivateFlags.UpdateExplicitly => UpdateSourceTrigger.Explicit,
-                _ => UpdateSourceTrigger.Default,
-            };
-        }
-        set { ChangeFlagsWithinMask(PrivateFlags.UpdateMask, FlagsFrom(value)); }
     }
 
     internal PrivateFlags Flags => _flags;

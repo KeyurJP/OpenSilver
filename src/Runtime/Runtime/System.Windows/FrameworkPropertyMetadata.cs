@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Windows.Data;
+
 namespace System.Windows
 {
     /// <summary>
@@ -48,6 +50,11 @@ namespace System.Windows
         /// Data binding to this dependency property is not allowed.
         /// </summary>
         NotDataBindable = 0x080,
+
+        /// <summary>
+        /// The <see cref="BindingMode"/> for data bindings on this dependency property defaults to <see cref="BindingMode.TwoWay"/>.
+        /// </summary>
+        BindsTwoWayByDefault = 0x100,
     }
 
     /// <summary>
@@ -353,6 +360,23 @@ namespace System.Windows
         }
 
         /// <summary>
+        /// Gets or sets a value that indicates whether the property binds two-way by default.
+        /// </summary>
+        /// <returns>
+        /// true if the dependency property on which this metadata exists binds two-way by default;
+        /// otherwise, false. The default is false.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// The metadata has already been applied to a dependency property operation, so that metadata
+        /// is sealed and properties of the metadata cannot be set.
+        /// </exception>
+        public bool BindsTwoWayByDefault
+        {
+            get { return ReadFlag(MetadataFlags.FW_BindsTwoWayByDefaultID); }
+            set { CheckSealed(); WriteFlag(MetadataFlags.FW_BindsTwoWayByDefaultID, value); }
+        }
+
+        /// <summary>
         /// Gets a value that indicates whether data binding is supported for the dependency property.
         /// </summary>
         /// <returns>
@@ -414,6 +438,7 @@ namespace System.Windows
                 WriteFlag(MetadataFlags.FW_AffectsParentMeasureID, ReadFlag(MetadataFlags.FW_AffectsParentMeasureID) | fbaseMetadata.AffectsParentMeasure);
                 WriteFlag(MetadataFlags.FW_AffectsParentArrangeID, ReadFlag(MetadataFlags.FW_AffectsParentArrangeID) | fbaseMetadata.AffectsParentArrange);
                 WriteFlag(MetadataFlags.FW_AffectsRenderID, ReadFlag(MetadataFlags.FW_AffectsRenderID) | fbaseMetadata.AffectsRender);
+                WriteFlag(MetadataFlags.FW_BindsTwoWayByDefaultID, ReadFlag(MetadataFlags.FW_BindsTwoWayByDefaultID) | fbaseMetadata.BindsTwoWayByDefault);
                 WriteFlag(MetadataFlags.FW_IsNotDataBindableID, ReadFlag(MetadataFlags.FW_IsNotDataBindableID) | fbaseMetadata.IsNotDataBindable);
 
                 // Override state
@@ -490,6 +515,11 @@ namespace System.Windows
             if (IsFlagSet(FrameworkPropertyMetadataOptions.NotDataBindable, flags))
             {
                 IsNotDataBindable = true;
+            }
+
+            if (IsFlagSet(FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, flags))
+            {
+                BindsTwoWayByDefault = true;
             }
         }
 

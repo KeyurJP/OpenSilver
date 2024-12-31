@@ -64,6 +64,10 @@ namespace System.Windows.Data
             // create the BindingExpression
             var bindExpr = new BindingExpression(binding, parent);
 
+            bindExpr.ResolvePropertyDefaultSettings(binding.GetMode(), binding.UpdateSourceTrigger, fwMetaData, d, dp);
+
+            bindExpr.SaveDefaultFlags();
+
             // Two-way Binding with an empty path makes no sense
             if (bindExpr.IsReflective && (binding.Path.Path == string.Empty || binding.Path.Path == "."))
             {

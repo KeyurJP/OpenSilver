@@ -49,7 +49,13 @@ public sealed class MultiBindingExpression : BindingExpressionBase
         }
 
         // create the BindingExpression
-        return new MultiBindingExpression(binding, owner);
+        var bindExpr = new MultiBindingExpression(binding, owner);
+
+        bindExpr.ResolvePropertyDefaultSettings(binding.GetMode(), binding.UpdateSourceTrigger, fwMetaData, d, dp);
+
+        bindExpr.SaveDefaultFlags();
+
+        return bindExpr;
     }
 
     /// <summary>
