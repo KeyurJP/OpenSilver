@@ -198,15 +198,26 @@ document.createImageManager = function (loadCallback, errorCallback) {
     };
 };
 
-document.createText = function (tagName, id, parentId) {
+document.createInline = function (tagName, id, parentId) {
     const parent = document.getElementById(parentId);
     if (!parent) return;
 
-    const textElement = document.createElement(tagName);
-    textElement.setAttribute('id', id);
-    textElement.classList.add('opensilver-textelement');
+    const inline = document.createElement(tagName);
+    inline.setAttribute('id', id);
+    inline.classList.add('opensilver-inline');
 
-    parent.appendChild(textElement);
+    parent.appendChild(inline);
+};
+
+document.createBlock = function (tagName, id, parentId) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+
+    const block = document.createElement(tagName);
+    block.setAttribute('id', id);
+    block.classList.add('opensilver-block');
+
+    parent.appendChild(block);
 };
 
 document.createShape = function (svgTagName, svgId, shapeId, defsId, parentId) {

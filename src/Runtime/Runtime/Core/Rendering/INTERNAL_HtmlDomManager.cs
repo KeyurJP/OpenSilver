@@ -319,20 +319,41 @@ namespace CSHTML5.Internal // IMPORTANT: if you change this namespace, make sure
             return (new(uid), new(canvasUid));
         }
 
-        internal static INTERNAL_HtmlDomElementReference CreateTextElementDomElementAndAppendIt(object parentRef, TextElement textElement)
+        internal static INTERNAL_HtmlDomElementReference CreateInlineDomElementAndAppendIt(object parentRef, TextElement textElement)
         {
             string uniqueIdentifier = NewId();
 
             if (parentRef is INTERNAL_HtmlDomElementReference parent)
             {
                 OpenSilver.Interop.ExecuteJavaScriptVoidAsync(
-                    $"document.createText('{textElement.TagName}','{uniqueIdentifier}','{parent.UniqueIdentifier}')");
+                    $"document.createInline('{textElement.TagName}','{uniqueIdentifier}','{parent.UniqueIdentifier}')");
             }
             else
             {
                 string sParentRef = OpenSilver.Interop.GetVariableStringForJS(parentRef);
                 OpenSilver.Interop.ExecuteJavaScriptVoidAsync(
-                    $"document.createText('{textElement.TagName}','{uniqueIdentifier}',{sParentRef})");
+                    $"document.createInline('{textElement.TagName}','{uniqueIdentifier}',{sParentRef})");
+            }
+
+            AddToGlobalStore(uniqueIdentifier, textElement);
+
+            return new(uniqueIdentifier);
+        }
+
+        internal static INTERNAL_HtmlDomElementReference CreateBlockDomElementAndAppendIt(object parentRef, TextElement textElement)
+        {
+            string uniqueIdentifier = NewId();
+
+            if (parentRef is INTERNAL_HtmlDomElementReference parent)
+            {
+                OpenSilver.Interop.ExecuteJavaScriptVoidAsync(
+                    $"document.createBlock('{textElement.TagName}','{uniqueIdentifier}','{parent.UniqueIdentifier}')");
+            }
+            else
+            {
+                string sParentRef = OpenSilver.Interop.GetVariableStringForJS(parentRef);
+                OpenSilver.Interop.ExecuteJavaScriptVoidAsync(
+                    $"document.createBlock('{textElement.TagName}','{uniqueIdentifier}',{sParentRef})");
             }
 
             AddToGlobalStore(uniqueIdentifier, textElement);

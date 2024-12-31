@@ -11,6 +11,8 @@
 *  
 \*====================================================================================*/
 
+using CSHTML5.Internal;
+
 namespace System.Windows.Documents;
 
 /// <summary>
@@ -85,4 +87,10 @@ public abstract class Inline : TextElement
     // Defining an implicit conversion from string to Inline allows to
     // support the following usage: TextBlock1.Inlines.Add("test");
     public static implicit operator Inline(string s) => new Run() { Text = s };
+
+    public override object CreateDomElement(object parentRef, out object domElementWhereToPlaceChildren)
+    {
+        domElementWhereToPlaceChildren = null;
+        return INTERNAL_HtmlDomManager.CreateInlineDomElementAndAppendIt(parentRef, this);
+    }
 }

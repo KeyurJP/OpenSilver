@@ -15,7 +15,6 @@ using System.Text;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Xaml.Markup;
-using CSHTML5.Internal;
 using OpenSilver.Internal.Documents;
 using OpenSilver.Internal;
 
@@ -659,11 +658,5 @@ public abstract class TextElement : UIElement
         InvalidateInheritedProperties(this, VisualTreeHelper.GetParent(this));
 
         base.OnVisualParentChanged(oldParent);
-    }
-
-    public override object CreateDomElement(object parentRef, out object domElementWhereToPlaceChildren)
-    {
-        domElementWhereToPlaceChildren = null;
-        return INTERNAL_HtmlDomManager.CreateTextElementDomElementAndAppendIt(parentRef, this);
     }
 }

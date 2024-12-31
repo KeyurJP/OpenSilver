@@ -106,8 +106,18 @@ body {
     overflow: visible;
 }
 
-.opensilver-textelement {
+.opensilver-inline {
+    display: inline;
     line-height: var(--line-stacking-strategy, normal);
+}
+
+.opensilver-block {
+    display: block;
+    box-sizing: border-box;
+    border-style: solid;
+    border-color: transparent; /* CSS default value matches the color property (currentcolor) */
+    border-width: 0px; /* CSS default value is medium */
+    background-clip: padding-box !important;
 }
 
 /* Media query used for printing (cf. "CSHTML5.Native.Html.Printing.PrintManager") */

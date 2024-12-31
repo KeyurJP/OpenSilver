@@ -239,7 +239,7 @@ namespace System.Windows.Controls
                 typeof(Border),
                 new PropertyMetadata(null, OnBorderBrushChanged)
                 {
-                    MethodToUpdateDom2 = static (d, oldValue, newValue) => ChangeBorderColor((Border)d, oldValue as Brush, (Brush)newValue),
+                    MethodToUpdateDom2 = static (d, oldValue, newValue) => ((Border)d).SetBorderColor(oldValue as Brush, (Brush)newValue),
                 });
 
         /// <summary>
@@ -280,47 +280,7 @@ namespace System.Windows.Controls
             if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
             {
                 var brush = (Brush)sender;
-                ChangeBorderColor(this, brush, brush);
-            }
-        }
-
-        private static void ChangeBorderColor(Border border, Brush oldBrush, Brush newBrush)
-        {
-            var cssStyle = border.OuterDiv.Style;
-            switch (oldBrush, newBrush)
-            {
-                case (GradientBrush, SolidColorBrush solid):
-                    cssStyle.borderImageSource = string.Empty;
-                    cssStyle.borderImageSlice = string.Empty;
-                    cssStyle.borderColor = solid.ToHtmlString();
-                    break;
-
-                case (_, SolidColorBrush solid):
-                    cssStyle.borderColor = solid.ToHtmlString();
-                    break;
-
-                case (_, LinearGradientBrush linear):
-                    cssStyle.borderColor = string.Empty;
-                    cssStyle.borderImageSource = linear.ToHtmlString(border);
-                    cssStyle.borderImageSlice = "1";
-                    break;
-
-                case (_, RadialGradientBrush radial):
-                    cssStyle.borderColor = string.Empty;
-                    cssStyle.borderImageSource = radial.ToHtmlString(border);
-                    cssStyle.borderImageSlice = "1";
-                    break;
-
-                case (_, null):
-                    cssStyle.borderColor = "transparent";
-                    cssStyle.borderImageSource = string.Empty;
-                    cssStyle.borderImageSlice = string.Empty;
-                    break;
-
-                default:
-                    // ImageBrush and custom brushes are not supported.
-                    // Keep using old brush.
-                    break;
+                this.SetBorderColor(brush, brush);
             }
         }
 

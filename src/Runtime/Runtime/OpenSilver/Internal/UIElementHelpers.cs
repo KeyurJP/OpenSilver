@@ -135,6 +135,11 @@ internal static class UIElementHelpers
         uie.OuterDiv.Style.padding = CollapseThicknessHelper(padding);
     }
 
+    internal static void SetMargin(this UIElement uie, Thickness margin)
+    {
+        uie.OuterDiv.Style.margin = CollapseThicknessHelper(margin);
+    }
+
     internal static void SetTextAlignment(this UIElement uie, TextAlignment textAlignment)
     {
         uie.OuterDiv.Style.textAlign = FontProperties.ToCssTextAlignment(textAlignment);
@@ -271,6 +276,46 @@ internal static class UIElementHelpers
     {
         Debug.Assert(uie is not null);
         uie.OuterDiv.Style.borderWidth = CollapseThicknessHelper(width);
+    }
+
+    internal static void SetBorderColor(this UIElement uie, Brush oldBrush, Brush newBrush)
+    {
+        var cssStyle = uie.OuterDiv.Style;
+        switch (oldBrush, newBrush)
+        {
+            case (GradientBrush, SolidColorBrush solid):
+                cssStyle.borderImageSource = string.Empty;
+                cssStyle.borderImageSlice = string.Empty;
+                cssStyle.borderColor = solid.ToHtmlString();
+                break;
+
+            case (_, SolidColorBrush solid):
+                cssStyle.borderColor = solid.ToHtmlString();
+                break;
+
+            case (_, LinearGradientBrush linear):
+                cssStyle.borderColor = string.Empty;
+                cssStyle.borderImageSource = linear.ToHtmlString(uie);
+                cssStyle.borderImageSlice = "1";
+                break;
+
+            case (_, RadialGradientBrush radial):
+                cssStyle.borderColor = string.Empty;
+                cssStyle.borderImageSource = radial.ToHtmlString(uie);
+                cssStyle.borderImageSlice = "1";
+                break;
+
+            case (_, null):
+                cssStyle.borderColor = "transparent";
+                cssStyle.borderImageSource = string.Empty;
+                cssStyle.borderImageSlice = string.Empty;
+                break;
+
+            default:
+                // ImageBrush and custom brushes are not supported.
+                // Keep using old brush.
+                break;
+        }
     }
 
     internal static void SetClipPath(this UIElement uie, Geometry geometry)
