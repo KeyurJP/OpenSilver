@@ -25,6 +25,12 @@ namespace System.Windows.Controls
     /// </summary>
     public partial class Control : FrameworkElement, IInternalControl
     {
+        static Control()
+        {
+            EventManager.RegisterClassHandler(typeof(Control), MouseLeftButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
+            EventManager.RegisterClassHandler(typeof(Control), MouseRightButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
+        }
+
         /// <summary>
         /// Represents the base class for UI elements that use a <see cref="ControlTemplate"/>
         /// to define their appearance.
@@ -38,6 +44,54 @@ namespace System.Windows.Controls
             if (defaultValue != null)
             {
                 OnTemplateChanged(this, new DependencyPropertyChangedEventArgs(null, defaultValue, TemplateProperty, metadata));
+            }
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="MouseDoubleClick"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent MouseDoubleClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(MouseDoubleClick),
+                RoutingStrategy.Direct,
+                typeof(MouseButtonEventHandler),
+                typeof(Control));
+
+        /// <summary>
+        /// Occurs when a mouse button is clicked two or more times.
+        /// </summary>
+        public event MouseButtonEventHandler MouseDoubleClick
+        {
+            add => AddHandler(MouseDoubleClickEvent, value);
+            remove => RemoveHandler(MouseDoubleClickEvent, value);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="MouseDoubleClick"/> routed event.
+        /// </summary>
+        /// <param name="e">
+        /// The event data.
+        /// </param>
+        protected virtual void OnMouseDoubleClick(MouseButtonEventArgs e) => RaiseEvent(e);
+
+        private static void HandleDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                var ctrl = (Control)sender;
+                var doubleClick = new MouseButtonEventArgs(e.IsTouchEvent, e.KeyModifiers, e._pointerAbsoluteX, e._pointerAbsoluteY)
+                {
+                    RoutedEvent = MouseDoubleClickEvent,
+                    OriginalSource = e.OriginalSource,
+                };
+
+                ctrl.OnMouseDoubleClick(doubleClick);
+
+                // If MouseDoubleClick event is handled - we delegate the state to original MouseButtonEventArgs
+                if (doubleClick.Handled)
+                {
+                    e.Handled = true;
+                }
             }
         }
 

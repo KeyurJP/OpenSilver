@@ -25,6 +25,19 @@ namespace System.Windows.Input;
 /// </summary>
 public class MouseEventArgs : RoutedEventArgs
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MouseEventArgs"/> class.
+    /// </summary>
+    public MouseEventArgs() { }
+
+    internal MouseEventArgs(bool isTouchDevice, ModifierKeys keyModifiers, double x, double y)
+    {
+        IsTouchEvent = isTouchDevice;
+        KeyModifiers = keyModifiers;
+        _pointerAbsoluteX = x;
+        _pointerAbsoluteY = y;
+    }
+
     /// <inheritdoc />
     protected override void InvokeEventHandler(Delegate genericHandler, object genericTarget) =>
         ((MouseEventHandler)genericHandler)(genericTarget, this);
