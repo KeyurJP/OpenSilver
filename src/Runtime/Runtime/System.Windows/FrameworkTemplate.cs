@@ -117,6 +117,38 @@ namespace System.Windows
             }
         }
 
+        /// <summary>
+        /// Finds the element associated with the specified name defined within this template.
+        /// </summary>
+        /// <param name="name">
+        /// The string name.
+        /// </param>
+        /// <param name="templatedParent">
+        /// The context of the <see cref="FrameworkElement"/> where this template is applied.
+        /// </param>
+        /// <returns>
+        /// The element associated with the specified name.
+        /// </returns>
+        public object FindName(string name, FrameworkElement templatedParent)
+        {
+            if (templatedParent is null)
+            {
+                throw new ArgumentNullException(nameof(templatedParent));
+            }
+
+            if (this != templatedParent.TemplateInternal)
+            {
+                throw new InvalidOperationException(Strings.TemplateFindNameInInvalidElement);
+            }
+
+            if (GetTemplateNameScope(templatedParent) is INameScope nameScope)
+            {
+                return nameScope.FindName(name);
+            }
+
+            return null;
+        }
+
         internal static readonly DependencyProperty TemplateNameScopeProperty =
             DependencyProperty.RegisterAttached(
                 "TemplateNameScope",
@@ -124,24 +156,16 @@ namespace System.Windows
                 typeof(FrameworkTemplate),
                 null);
 
-        internal static INameScope GetTemplateNameScope(IFrameworkElement fe)
+        internal static INameScope GetTemplateNameScope(DependencyObject templatedParent)
         {
-            if (fe is null)
-            {
-                throw new ArgumentNullException(nameof(fe));
-            }
-
-            return (INameScope)fe.GetValue(TemplateNameScopeProperty);
+            Debug.Assert(templatedParent is IFrameworkElement);
+            return (INameScope)templatedParent.GetValue(TemplateNameScopeProperty);
         }
 
-        internal static void SetTemplateNameScope(IFrameworkElement fe, INameScope namescope)
+        internal static void SetTemplateNameScope(DependencyObject templatedParent, INameScope namescope)
         {
-            if (fe is null)
-            {
-                throw new ArgumentNullException(nameof(fe));
-            }
-            
-            fe.SetValue(TemplateNameScopeProperty, namescope);
+            Debug.Assert(templatedParent is IFrameworkElement);
+            templatedParent.SetValue(TemplateNameScopeProperty, namescope);
         }
     }
 }

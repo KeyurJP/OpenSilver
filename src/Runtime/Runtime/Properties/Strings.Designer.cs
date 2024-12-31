@@ -1375,6 +1375,15 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This operation is valid only on elements that have this template applied..
+        /// </summary>
+        internal static string TemplateFindNameInInvalidElement {
+            get {
+                return ResourceManager.GetString("TemplateFindNameInInvalidElement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Property value must be greater than or equal to zero or indefinite..
         /// </summary>
         internal static string Timing_InvalidArgNonNegative {

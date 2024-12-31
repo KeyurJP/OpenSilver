@@ -66,7 +66,7 @@ internal sealed class XamlTemplateContent : ITemplateContent
 
         if (LoadXaml(settings) is IFrameworkElement rootElement)
         {
-            if (owner == null)
+            if (owner is null)
             {
                 if (NameScope.GetNameScope(rootElement) == null)
                 {

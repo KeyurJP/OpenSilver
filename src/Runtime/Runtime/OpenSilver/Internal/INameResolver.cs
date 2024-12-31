@@ -42,7 +42,8 @@ namespace OpenSilver.Internal
         {
             if (_templateRootRef.TryGetTarget(out IInternalFrameworkElement templateRoot))
             {
-                if (templateRoot.TemplatedParent is IFrameworkElement templatedParent)
+                DependencyObject templatedParent = templateRoot.TemplatedParent;
+                if (templatedParent is IFrameworkElement)
                 {
                     return FrameworkTemplate.GetTemplateNameScope(templatedParent);
                 }
