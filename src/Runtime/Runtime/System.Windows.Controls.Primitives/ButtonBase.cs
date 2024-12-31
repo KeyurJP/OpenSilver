@@ -31,6 +31,11 @@ namespace System.Windows.Controls.Primitives
         private Point _mousePosition;
         private bool _suspendStateChanges;
 
+        static ButtonBase()
+        {
+            KeyboardNavigation.AcceptsReturnProperty.OverrideMetadata(typeof(ButtonBase), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox));
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ButtonBase"/> class.
         /// </summary>
@@ -333,7 +338,7 @@ namespace System.Windows.Controls.Primitives
                     }
                 }
                 // The ENTER key forces a click
-                else if (key == Key.Enter)
+                else if (key == Key.Enter && (bool)GetValue(KeyboardNavigation.AcceptsReturnProperty))
                 {
                     _isSpaceKeyDown = false;
                     IsPressed = false;

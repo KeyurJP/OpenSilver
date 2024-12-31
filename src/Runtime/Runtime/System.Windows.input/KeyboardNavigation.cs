@@ -180,6 +180,58 @@ public sealed class KeyboardNavigation
         element.SetValueInternal(TabNavigationProperty, mode);
     }
 
+    /// <summary>
+    /// Identifies the KeyboardNavigation.AcceptsReturn attached property.
+    /// </summary>
+    public static readonly DependencyProperty AcceptsReturnProperty =
+        DependencyProperty.RegisterAttached(
+            "AcceptsReturn",
+            typeof(bool),
+            typeof(KeyboardNavigation),
+            new FrameworkPropertyMetadata(BooleanBoxes.FalseBox));
+
+    /// <summary>
+    /// Gets the value of the KeyboardNavigation.AcceptsReturn attached property for the specified element.
+    /// </summary>
+    /// <param name="element">
+    /// The element from which to read the attached property.
+    /// </param>
+    /// <returns>
+    /// The value of the KeyboardNavigation.AcceptsReturn property.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// element is null.
+    /// </exception>
+    public static bool GetAcceptsReturn(DependencyObject element)
+    {
+        if (element is null)
+        {
+            throw new ArgumentNullException(nameof(element));
+        }
+        return (bool)element.GetValue(AcceptsReturnProperty);
+    }
+
+    /// <summary>
+    /// Sets the value of the KeyboardNavigation.AcceptsReturn attached property for the specified element.
+    /// </summary>
+    /// <param name="element">
+    /// The element to write the attached property to.
+    /// </param>
+    /// <param name="enabled">
+    /// The property value to set.
+    /// </param>
+    /// <exception cref="ArgumentNullException">
+    /// element is null.
+    /// </exception>
+    public static void SetAcceptsReturn(DependencyObject element, bool enabled)
+    {
+        if (element is null)
+        {
+            throw new ArgumentNullException(nameof(element));
+        }
+        element.SetValueInternal(AcceptsReturnProperty, enabled);
+    }
+
     private KeyboardNavigation() { }
 
     internal static KeyboardNavigation Current { get; } = new KeyboardNavigation();

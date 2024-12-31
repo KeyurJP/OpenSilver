@@ -389,11 +389,9 @@ namespace System.Windows.Controls
         /// Identifies the <see cref="AcceptsReturn"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AcceptsReturnProperty =
-            DependencyProperty.Register(
-                nameof(AcceptsReturn),
-                typeof(bool),
+            KeyboardNavigation.AcceptsReturnProperty.AddOwner(
                 typeof(RichTextBox),
-                new PropertyMetadata(BooleanBoxes.TrueBox, OnAcceptsReturnChanged));
+                new FrameworkPropertyMetadata(BooleanBoxes.TrueBox, OnAcceptsReturnChanged));
 
         /// <summary>
         /// Gets or sets a value that determines whether the <see cref="RichTextBox"/>

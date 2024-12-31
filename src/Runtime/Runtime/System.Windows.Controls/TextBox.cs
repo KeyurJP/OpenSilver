@@ -76,14 +76,12 @@ namespace System.Windows.Controls
         }
 
         /// <summary>
-        /// Identifies the AcceptsReturn dependency property.
+        /// Identifies the <see cref="AcceptsReturn"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty AcceptsReturnProperty =
-            DependencyProperty.Register(
-                nameof(AcceptsReturn),
-                typeof(bool),
+            KeyboardNavigation.AcceptsReturnProperty.AddOwner(
                 typeof(TextBox),
-                new PropertyMetadata(false, OnAcceptsReturnChanged));
+                new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, OnAcceptsReturnChanged));
 
         private static void OnAcceptsReturnChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
