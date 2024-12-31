@@ -446,7 +446,13 @@ namespace System.Windows
         /// </summary>
         public event SizeChangedEventHandler SizeChanged;
 
-        internal override void OnRenderSizeChanged(SizeChangedInfo info)
+        /// <summary>
+        /// Raises the <see cref="SizeChanged"/> event, using the specified information as part of the eventual event data.
+        /// </summary>
+        /// <param name="info">
+        /// Details of the old and new size involved in the change.
+        /// </param>
+        protected internal override void OnRenderSizeChanged(SizeChangedInfo info)
         {
             //first, invalidate ActualWidth and/or ActualHeight
             //Note: if any handler of invalidation will dirtyfy layout,
@@ -472,7 +478,7 @@ namespace System.Windows
                         _actualHeightMetadata));
             }
 
-            SizeChanged?.Invoke(this, new SizeChangedEventArgs(info.PreviousSize, info.NewSize));
+            SizeChanged?.Invoke(this, new SizeChangedEventArgs(info));
         }
 
         private Point ComputeAlignmentOffset(Size clientSize, Size inkSize)

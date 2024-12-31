@@ -11,34 +11,61 @@
 *  
 \*====================================================================================*/
 
-using System.Windows;
+using System.ComponentModel;
+using System.Diagnostics;
 
-namespace System.Windows
+namespace System.Windows;
+
+/// <summary>
+/// Provides data related to the <see cref="FrameworkElement.SizeChanged"/> event.
+/// </summary>
+public sealed class SizeChangedEventArgs : RoutedEventArgs
 {
-    /// <summary>
-    /// Provides data related to the SizeChanged event.
-    /// </summary>
-    public sealed partial class SizeChangedEventArgs : RoutedEventArgs
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public SizeChangedEventArgs(Size newSize)
     {
-        public SizeChangedEventArgs(Size newSize)
-        {
-            NewSize = newSize;
-        }
-
-        internal SizeChangedEventArgs(Size previousSize, Size newSize)
-        {
-            PreviousSize = previousSize;
-            NewSize = newSize;
-        }
-
-        /// <summary>
-        /// Gets the new size of the object reporting the size change.
-        /// </summary>
-        public Size NewSize { get; }
-
-        /// <summary>
-        /// Gets the previous size of the object reporting the size change.
-        /// </summary>
-        public Size PreviousSize { get; }
+        NewSize = newSize;
     }
+
+    internal SizeChangedEventArgs(SizeChangedInfo info)
+    {
+        Debug.Assert(info is not null);
+
+        PreviousSize = info.PreviousSize;
+        NewSize = info.NewSize;
+        WidthChanged = info.WidthChanged;
+        HeightChanged = info.HeightChanged;
+    }
+
+    /// <summary>
+    /// Gets the new <see cref="Size"/> of the object.
+    /// </summary>
+    /// <returns>
+    /// The new <see cref="Size"/> of the object.
+    /// </returns>
+    public Size NewSize { get; }
+
+    /// <summary>
+    /// Gets the previous <see cref="Size"/> of the object.
+    /// </summary>
+    /// <returns>
+    /// The previous <see cref="Size"/> of the object.
+    /// </returns>
+    public Size PreviousSize { get; }
+
+    /// <summary>
+    /// Gets a value that indicates whether the <see cref="FrameworkElement.Width"/> component of the size changed.
+    /// </summary>
+    /// <returns>
+    /// true if the <see cref="FrameworkElement.Width"/> component of the size changed; otherwise, false.
+    /// </returns>
+    public bool WidthChanged { get; }
+
+    /// <summary>
+    /// Gets a value that indicates whether the <see cref="FrameworkElement.Height"/> component of the size changed.
+    /// </summary>
+    /// <returns>
+    /// true if the <see cref="FrameworkElement.Height"/> component of the size changed; otherwise, false.
+    /// </returns>
+    public bool HeightChanged { get; }
 }

@@ -561,14 +561,15 @@ namespace System.Windows
         }
 
         /// <summary>
-        /// This is invoked after layout update before rendering if the element's RenderSize
-        /// has changed as a result of layout update.
+        /// When overridden in a derived class, participates in rendering operations that are directed by the 
+        /// layout system. This method is invoked after layout update, and before rendering, if the element's 
+        /// <see cref="RenderSize"/> has changed as a result of layout update.
         /// </summary>
         /// <param name="info">
-        /// Packaged parameters (<seealso cref="SizeChangedInfo"/>, includes old and new sizes 
-        /// and which dimension actually changes.
+        /// The packaged parameters (<see cref="SizeChangedInfo"/>), which includes old and new sizes, and which 
+        /// dimension actually changes.
         /// </param>
-        internal virtual void OnRenderSizeChanged(SizeChangedInfo info) { }
+        protected internal virtual void OnRenderSizeChanged(SizeChangedInfo info) { }
 
         private bool MarkForSizeChangedIfNeeded(Size oldSize, Size newSize)
         {

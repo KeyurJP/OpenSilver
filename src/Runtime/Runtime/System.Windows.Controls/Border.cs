@@ -218,7 +218,8 @@ namespace System.Windows.Controls
             }
         }
 
-        internal override void OnRenderSizeChanged(SizeChangedInfo info)
+        /// <inheritdoc />
+        protected internal override void OnRenderSizeChanged(SizeChangedInfo info)
         {
             base.OnRenderSizeChanged(info);
 
