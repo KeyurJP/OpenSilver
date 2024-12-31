@@ -434,6 +434,7 @@ namespace System.Windows
         /// <summary>
         /// Occurs when the layout of the Silverlight visual tree changes.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public new event EventHandler LayoutUpdated
         {
             add => base.LayoutUpdated += value;

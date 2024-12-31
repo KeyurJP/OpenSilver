@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Threading;
 using CSHTML5.Internal;
 using OpenSilver.Internal;
 
@@ -87,9 +88,9 @@ namespace System.Windows
         }
 
         /// <summary>
-        /// Invalidates the rendering of the element.
+        /// Invalidates the rendering of the element, and forces a complete new layout pass.
         /// </summary>
-        internal void InvalidateVisual()
+        public void InvalidateVisual()
         {
             InvalidateArrange();
             RenderingInvalidated = true;
@@ -435,9 +436,9 @@ namespace System.Windows
         }
 
         /// <summary>
-        /// Occurs when the layout of the Silverlight visual tree changes.
+        /// Occurs when the layout of the various visual elements associated with the current <see cref="Dispatcher"/> changes.
         /// </summary>
-        internal event EventHandler LayoutUpdated
+        public event EventHandler LayoutUpdated
         {
             add
             {
