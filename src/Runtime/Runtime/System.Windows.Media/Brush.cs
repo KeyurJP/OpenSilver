@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Shapes;
 using OpenSilver.Internal;
@@ -22,6 +23,7 @@ namespace System.Windows.Media
     /// Defines objects used to paint graphical objects. Classes that derive from
     /// Brush describe how the area is painted.
     /// </summary>
+    [TypeConverter(typeof(BrushConverter))]
     public class Brush : DependencyObject
     {
         private WeakEventListener<Brush, Transform, EventArgs> _transformChangedListener;

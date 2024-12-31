@@ -15,87 +15,122 @@ using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
-namespace System.Windows.Media
+namespace System.Windows.Media;
+
+/// <summary>
+/// Converts instances of the <see cref="string"/> type to and from <see cref="FontFamily"/> instances.
+/// </summary>
+public class FontFamilyConverter : TypeConverter
 {
     /// <summary>
-    /// FontFamilyConverter - converter class for converting between the FontFamily
-    /// and String types.
+    /// Determines whether a class can be converted from a given type to an instance of <see cref="FontFamily"/>.
     /// </summary>
-    internal sealed class FontFamilyConverter : TypeConverter
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the converter can convert from the specified type to an instance of <see cref="FontFamily"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether an instance of <see cref="FontFamily"/> can be converted to a different type.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="destinationType">
+    /// The desired type that this instance of <see cref="FontFamily"/> is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the converter can convert this instance of <see cref="FontFamily"/> to the specified type; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert a specified object to an instance of <see cref="FontFamily"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural-specific information that should be respected during conversion.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The instance of <see cref="FontFamily"/> that is created from the converted o parameter.
+    /// </returns>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// CanConvertFrom - Returns whether or not the given type can be converted to a
-        /// FontFamily.
-        /// </summary>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is string stringValue)
         {
-            return sourceType == typeof(string);
+            stringValue = stringValue.Trim();
+
+            return new FontFamily(stringValue);
         }
 
-        /// <summary>
-        /// CanConvertTo - Returns whether or not this class can convert to the specified type.
-        /// Conversion is possible only if the source and destination types are FontFamily and
-        /// string, respectively, and the font family is not anonymous (i.e., the Source propery
-        /// is not null).
-        /// </summary>
-        /// <param name="context">ITypeDescriptorContext</param>
-        /// <param name="destinationType">Type to convert to</param>
-        /// <returns>true if conversion is possible</returns>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        throw GetConvertFromException(value);
+    }
+
+    /// <summary>
+    /// Attempts to convert a specified object to an instance of <see cref="FontFamily"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural-specific information that should be respected during conversion.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type that this instance of <see cref="FontFamily"/> is converted to.
+    /// </param>
+    /// <returns>
+    /// The object that is created from the converted instance of <see cref="FontFamily"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// Occurs if value or destinationType is null.
+    /// </exception>
+    /// <exception cref="ArgumentException">
+    /// Occurs if value or destinationType is not a valid type for conversion.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (value is null)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(value));
         }
 
-        /// <summary>
-        /// ConvertFrom - Converts the specified object to a FontFamily.
-        /// </summary>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (value is not FontFamily fontFamily)
         {
-            if (value is string stringValue)
-            {
-                stringValue = stringValue.Trim();
-
-                return new FontFamily(stringValue);
-            }
-
-            throw GetConvertFromException(value);
+            throw new ArgumentException(string.Format(Strings.General_Expected_Type, nameof(FontFamily)), nameof(value));
         }
 
-        /// <summary>
-        /// ConvertTo - Converts the specified object to an instance of the specified type.
-        /// </summary>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        if (destinationType is null)
         {
-            if (null == value)
-            {
-                throw new ArgumentNullException(nameof(value));
-            }
-
-            FontFamily fontFamily = value as FontFamily;
-            if (fontFamily == null)
-            {
-                throw new ArgumentException(string.Format(Strings.General_Expected_Type, nameof(FontFamily)), nameof(value));
-            }
-
-            if (null == destinationType)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (fontFamily.Source != null)
-                {
-                    // Usual case: it's a named font family.
-                    return fontFamily.Source;
-                }
-                else
-                {
-                    return string.Empty;
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
+            throw new ArgumentNullException(nameof(destinationType));
         }
+
+        if (destinationType == typeof(string))
+        {
+            if (fontFamily.Source != null)
+            {
+                // Usual case: it's a named font family.
+                return fontFamily.Source;
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
+        throw GetConvertToException(value, destinationType);
     }
 }

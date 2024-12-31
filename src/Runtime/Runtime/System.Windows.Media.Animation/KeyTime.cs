@@ -11,11 +11,14 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
+
 namespace System.Windows.Media.Animation;
 
 /// <summary>
 /// Specifies when a particular key frame should take place during an animation.
 /// </summary>
+[TypeConverter(typeof(KeyTimeConverter))]
 public readonly struct KeyTime
 {
     private readonly TimeSpan _value;

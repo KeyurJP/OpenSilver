@@ -14,92 +14,108 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace System.Windows.Media
+namespace System.Windows.Media;
+
+/// <summary>
+/// Converts instances of other types to and from a <see cref="PointCollection"/>.
+/// </summary>
+public sealed class PointCollectionConverter : TypeConverter
 {
     /// <summary>
-    /// PointCollectionConverter - Converter class for converting instances of other types to and from PointCollection instances
+    /// Determines whether an object can be converted from a specified type to an instance of a <see cref="PointCollection"/>.
     /// </summary>
-    internal sealed class PointCollectionConverter : TypeConverter
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the type can be converted to a <see cref="PointCollection"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether an instance of a <see cref="PointCollection"/> can be converted to a different type.
+    /// </summary>
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="destinationType">
+    /// The needed type for which you are evaluating this <see cref="PointCollection"/> for conversion.
+    /// </param>
+    /// <returns>
+    /// true if this <see cref="PointCollection"/> can be converted to destinationType; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert the specified object to a <see cref="PointCollection"/>.
+    /// </summary>
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// The <see cref="CultureInfo"/> of the type you want to convert.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The <see cref="PointCollection"/> that is created from converting value.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// The specified object is null or is a type that cannot be converted to a <see cref="PointCollection"/>.
+    /// </exception>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// Returns true if this type converter can convert from a given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert from the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="sourceType"> The Type being queried for support. </param>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is string source)
         {
-            return sourceType == typeof(string);
+            return PointCollection.Parse(source);
         }
 
-        /// <summary>
-        /// Returns true if this type converter can convert to the given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert to the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="destinationType"> The Type being queried for support. </param>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        throw GetConvertFromException(value);
+    }
+
+    /// <summary>
+    /// Attempts to convert a <see cref="PointCollection"/> to a specified type.
+    /// </summary>
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// The <see cref="CultureInfo"/> of the type you want to convert.
+    /// </param>
+    /// <param name="value">
+    /// The <see cref="PointCollection"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type to convert this <see cref="PointCollection"/> to.
+    /// </param>
+    /// <returns>
+    /// The object that is created from converting this <see cref="PointCollection"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// value is not a <see cref="PointCollection"/>; or the destinationType is not one of the valid types for conversion.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(destinationType));
         }
 
-        /// <summary>
-        /// Attempts to convert to a PointCollection from the given object.
-        /// </summary>
-        /// <returns>
-        /// The PointCollection which was constructed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if the example object is null or is not a valid type
-        /// which can be converted to a PointCollection.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The requested CultureInfo.  Note that conversion uses "en-US" rather than this parameter. </param>
-        /// <param name="value"> The object to convert to an instance of PointCollection. </param>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (destinationType == typeof(string))
         {
-            if (value is string source)
+            if (value is PointCollection instance)
             {
-                return PointCollection.Parse(source);
+                return instance.ToString();
             }
-
-            throw GetConvertFromException(value);
         }
 
-        /// <summary>
-        /// ConvertTo - Attempt to convert an instance of PointCollection to the given type
-        /// </summary>
-        /// <returns>
-        /// The object which was constructoed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if "value" is null or not an instance of PointCollection,
-        /// or if the destinationType isn't one of the valid destination types.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The CultureInfo which is respected when converting. </param>
-        /// <param name="value"> The object to convert to an instance of "destinationType". </param>
-        /// <param name="destinationType"> The type to which this will convert the PointCollection instance. </param>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is PointCollection instance)
-                {
-                    return instance.ToString();
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
-        }
+        throw GetConvertToException(value, destinationType);
     }
 }

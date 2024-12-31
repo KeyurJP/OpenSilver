@@ -291,7 +291,7 @@ namespace System.Windows.Input
 
         internal const int _cursorTypeCount = ((int)CursorType.Eraser) + 1;
 
-        private static Cursor[] _stockCursors = new Cursor[_cursorTypeCount];  //CursorType.Eraser = 29
+        private static readonly Cursor[] _stockCursors = new Cursor[_cursorTypeCount];  //CursorType.Eraser = 29
     }
 
     /// <summary>
@@ -449,7 +449,7 @@ namespace System.Windows.Input
         /// </summary>
         Eraser = 29,
 
-        // Update the count in Cursors class and the HtmlCursors array
-        // in the Cursor class if there is a new addition here.
+        // Update the count in Cursors class and the HtmlCursors array in the Cursor class
+        // and the CursorConverter.GetStandardValues method if there is a new addition here.
     }
 }

@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
@@ -19,6 +20,7 @@ namespace System.Windows;
 /// <summary>
 /// Describes the width and height of an object.
 /// </summary>
+[TypeConverter(typeof(SizeConverter))]
 public struct Size : IFormattable
 {
     internal double _width;

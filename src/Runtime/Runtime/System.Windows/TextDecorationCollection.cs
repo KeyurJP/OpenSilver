@@ -11,42 +11,49 @@
 *  
 \*====================================================================================*/
 
-namespace System.Windows
+using System.ComponentModel;
+using System.Windows.Controls;
+using System.Windows.Documents;
+
+namespace System.Windows;
+
+/// <summary>
+/// Provides the value for the <see cref="TextBlock.TextDecorations"/> and <see cref="Inline.TextDecorations"/> properties.
+/// </summary>
+[TypeConverter(typeof(TextDecorationCollectionConverter))]
+public sealed class TextDecorationCollection
 {
-    public sealed class TextDecorationCollection
+    internal TextDecorationCollection(TextDecorationLocation location)
     {
-        internal TextDecorationCollection(TextDecorationLocation location)
+        Location = location;
+    }
+
+    internal TextDecorationLocation Location { get; }
+
+    internal string ToHtmlString()
+    {
+        return Location switch
         {
-            Location = location;
+            TextDecorationLocation.Underline => "underline",
+            TextDecorationLocation.Strikethrough => "line-through",
+            TextDecorationLocation.Overline => "overline",
+            _ => "none",
+        };
+    }
+
+    internal static string ToString(TextDecorationCollection textDecoration)
+    {
+        if (textDecoration is null)
+        {
+            return "None";
         }
 
-        internal TextDecorationLocation Location { get; }
-
-        internal string ToHtmlString()
+        return textDecoration.Location switch
         {
-            return Location switch
-            {
-                TextDecorationLocation.Underline => "underline",
-                TextDecorationLocation.Strikethrough => "line-through",
-                TextDecorationLocation.Overline => "overline",
-                _ => "none",
-            };
-        }
-
-        internal static string ToString(TextDecorationCollection textDecoration)
-        {
-            if (textDecoration is null)
-            {
-                return "None";
-            }
-
-            return textDecoration.Location switch
-            {
-                TextDecorationLocation.Underline => nameof(TextDecorationLocation.Underline),
-                TextDecorationLocation.Strikethrough => nameof(TextDecorationLocation.Strikethrough),
-                TextDecorationLocation.Overline => nameof(TextDecorationLocation.Overline),
-                _ => string.Empty,
-            };
-        }
+            TextDecorationLocation.Underline => nameof(TextDecorationLocation.Underline),
+            TextDecorationLocation.Strikethrough => nameof(TextDecorationLocation.Strikethrough),
+            TextDecorationLocation.Overline => nameof(TextDecorationLocation.Overline),
+            _ => string.Empty,
+        };
     }
 }

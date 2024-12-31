@@ -20,7 +20,7 @@ namespace System.Windows.Media.Animation;
 /// <summary>
 /// Converts instances of other types to and from a <see cref="KeySpline"/>.
 /// </summary>
-internal sealed class KeySplineConverter : TypeConverter
+public class KeySplineConverter : TypeConverter
 {
     /// <summary>
     /// Determines whether an object can be converted from a given type to an instance of a 
@@ -79,19 +79,13 @@ internal sealed class KeySplineConverter : TypeConverter
                 return new KeySpline();
             }
 
-            IFormatProvider formatProvider = CultureInfo.InvariantCulture;
-            char[] separator = new char[2] { TokenizerHelper.GetNumericListSeparator(formatProvider), ' ' };
-            string[] split = source.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            var th = new TokenizerHelper(source, cultureInfo);
 
-            if (split.Length == 4)
-            {
-                return new KeySpline(
-                    Convert.ToDouble(split[0], formatProvider),
-                    Convert.ToDouble(split[1], formatProvider),
-                    Convert.ToDouble(split[2], formatProvider),
-                    Convert.ToDouble(split[3], formatProvider)
-                );
-            }
+            return new KeySpline(
+                Convert.ToDouble(th.NextTokenRequired(), cultureInfo),
+                Convert.ToDouble(th.NextTokenRequired(), cultureInfo),
+                Convert.ToDouble(th.NextTokenRequired(), cultureInfo),
+                Convert.ToDouble(th.NextTokenRequired(), cultureInfo));
         }
 
         throw GetConvertFromException(value);

@@ -17,31 +17,53 @@ using System.Globalization;
 namespace System.Windows.Media.Animation;
 
 /// <summary>
-/// 
+/// Converts instances of <see cref="KeyTime"/> to and from other types.
 /// </summary>
-internal sealed class KeyTimeConverter : TypeConverter
+public class KeyTimeConverter : TypeConverter
 {
     /// <summary>
-    /// Returns whether or not this class can convert from a given type
-    /// to an instance of a KeyTime.
+    /// Determines whether an object can be converted from a given type to an instance of a <see cref="KeyTime"/>.
     /// </summary>
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-    {
-        return sourceType == typeof(string);
-    }
+    /// <param name="context">
+    /// Contextual information required for conversion.
+    /// </param>
+    /// <param name="sourceType">
+    /// Type being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if this type can be converted; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
 
     /// <summary>
-    /// Returns whether or not this class can convert from an instance of a
-    /// KeyTime to a given type.
+    /// Determines if a given type can be converted to an instance of <see cref="KeyTime"/>.
     /// </summary>
-    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-    {
-        return destinationType == typeof(string);
-    }
+    /// <param name="context">
+    /// Contextual information required for conversion.
+    /// </param>
+    /// <param name="destinationType">
+    /// Type being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if this type can be converted; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
 
     /// <summary>
-    /// 
+    /// Attempts to convert a given object to an instance of <see cref="KeyTime"/>.
     /// </summary>
+    /// <param name="context">
+    /// Context information required for conversion.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural information that is respected during conversion.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted to an instance of <see cref="KeyTime"/>.
+    /// </param>
+    /// <returns>
+    /// A new instance of <see cref="KeyTime"/>, based on the supplied value.
+    /// </returns>
     public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
         if (value is string stringValue)
@@ -79,11 +101,23 @@ internal sealed class KeyTimeConverter : TypeConverter
     }
 
     /// <summary>
-    /// 
+    /// Attempts to convert an instance of <see cref="KeyTime"/> to another type.
     /// </summary>
+    /// <param name="context">
+    /// Context information required for conversion.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural information that is respected during conversion.
+    /// </param>
+    /// <param name="value">
+    /// <see cref="KeyTime"/> value to convert from.
+    /// </param>
+    /// <param name="destinationType">
+    /// Type being evaluated for conversion.
+    /// </param>
     public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
     {
-        if (destinationType == null)
+        if (destinationType is null)
         {
             throw new ArgumentNullException(nameof(destinationType));
         }

@@ -14,92 +14,108 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace System.Windows.Media
+namespace System.Windows.Media;
+
+/// <summary>
+/// Converts instances of other types to and from a <see cref="Matrix"/>.
+/// </summary>
+public sealed class MatrixConverter : TypeConverter
 {
     /// <summary>
-    /// MatrixConverter - Converter class for converting instances of other types to and from Matrix instances
+    /// Determines whether an object can be converted from a specific type to an instance of a <see cref="Matrix"/>.
     /// </summary>
-    internal sealed class MatrixConverter : TypeConverter
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the type can be converted to a <see cref="Matrix"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether an instance of a <see cref="Matrix"/> can be converted to a different type.
+    /// </summary>
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="destinationType">
+    /// The desired type this <see cref="Matrix"/> is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if this <see cref="Matrix"/> can be converted to destinationType; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert the specified object to a <see cref="Matrix"/>.
+    /// </summary>
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// The <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The <see cref="Matrix"/> created from converting value.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// The specified object is null or is a type that cannot be converted to a <see cref="Matrix"/>.
+    /// </exception>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// Returns true if this type converter can convert from a given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert from the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="sourceType"> The Type being queried for support. </param>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is string source)
         {
-            return sourceType == typeof(string);
+            return Matrix.Parse(source);
         }
 
-        /// <summary>
-        /// Returns true if this type converter can convert to the given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert to the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="destinationType"> The Type being queried for support. </param>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        throw GetConvertFromException(value);
+    }
+
+    /// <summary>
+    /// Attempts to convert a <see cref="Matrix"/> to a specified type.
+    /// </summary>
+    /// <param name="context">
+    /// The context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// The <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The <see cref="Matrix"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type to convert this <see cref="Matrix"/> to.
+    /// </param>
+    /// <returns>
+    /// The object created from converting this <see cref="Matrix"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// The value is not a <see cref="Matrix"/>, or the destinationType is not a valid conversion type.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(destinationType));
         }
 
-        /// <summary>
-        /// Attempts to convert to a Matrix from the given object.
-        /// </summary>
-        /// <returns>
-        /// The Matrix which was constructed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if the example object is null or is not a valid type
-        /// which can be converted to a Matrix.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The requested CultureInfo.  Note that conversion uses "en-US" rather than this parameter. </param>
-        /// <param name="value"> The object to convert to an instance of Matrix. </param>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (destinationType == typeof(string))
         {
-            if (value is string source)
+            if (value is Matrix instance)
             {
-                return Matrix.Parse(source);
+                return instance.ConvertToString(null, culture);
             }
-
-            throw GetConvertFromException(value);
         }
 
-        /// <summary>
-        /// ConvertTo - Attempt to convert an instance of Matrix to the given type
-        /// </summary>
-        /// <returns>
-        /// The object which was constructoed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if "value" is null or not an instance of Matrix,
-        /// or if the destinationType isn't one of the valid destination types.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The CultureInfo which is respected when converting. </param>
-        /// <param name="value"> The object to convert to an instance of "destinationType". </param>
-        /// <param name="destinationType"> The type to which this will convert the Matrix instance. </param>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is Matrix instance)
-                {
-                    return instance.ConvertToString(null, culture);
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
-        }
+        throw GetConvertToException(value, destinationType);
     }
 }

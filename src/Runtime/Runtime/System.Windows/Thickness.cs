@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Globalization;
 
 namespace System.Windows;
@@ -20,6 +21,7 @@ namespace System.Windows;
 /// describe the <see cref="Left"/>, <see cref="Top"/>, <see cref="Right"/>, and 
 /// <see cref="Bottom"/> sides of the rectangle, respectively.
 /// </summary>
+[TypeConverter(typeof(ThicknessConverter))]
 public struct Thickness : IEquatable<Thickness>
 {
     /// <summary>

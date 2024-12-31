@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Text;
 using OpenSilver.Internal;
 
@@ -19,6 +20,7 @@ namespace System.Windows.Media
     /// <summary>
     /// Describes a color in terms of alpha, red, green, and blue channels.
     /// </summary>
+    [TypeConverter(typeof(ColorConverter))]
     public struct Color : IFormattable
     {
         internal static Color FromUInt32(uint argb)

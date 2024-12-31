@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace System.Windows
@@ -18,6 +19,7 @@ namespace System.Windows
     /// <summary>
     /// Represents the style of a font face (for instance, as normal or italic).
     /// </summary>
+    [TypeConverter(typeof(FontStyleConverter))]
     public struct FontStyle : IFormattable
     {
         private readonly int _style;

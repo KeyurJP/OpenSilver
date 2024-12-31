@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Diagnostics;
 
 namespace System.Windows.Media.Animation;
@@ -18,6 +19,7 @@ namespace System.Windows.Media.Animation;
 /// <summary>
 /// This class is used by a spline key frame to define animation progress.
 /// </summary>
+[TypeConverter(typeof(KeySplineConverter))]
 public sealed class KeySpline : DependencyObject
 {
     // constants

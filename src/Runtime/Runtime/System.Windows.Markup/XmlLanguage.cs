@@ -12,6 +12,7 @@
 \*====================================================================================*/
 
 using System.Collections.Concurrent;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using OpenSilver.Internal;
@@ -21,6 +22,7 @@ namespace System.Windows.Markup;
 /// <summary>
 /// Represents culture information for use in XML and XAML markup.
 /// </summary>
+[TypeConverter(typeof(XmlLanguageConverter))]
 public sealed class XmlLanguage
 {
     private static readonly ConcurrentDictionary<string, XmlLanguage> _cache = new();

@@ -14,92 +14,108 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace System.Windows.Media
+namespace System.Windows.Media;
+
+/// <summary>
+/// Used to convert a <see cref="Brush"/> object to or from another object type.
+/// </summary>
+public sealed class BrushConverter : TypeConverter
 {
     /// <summary>
-    /// BrushConverter - Converter class for converting instances of other types to and from Brush instances
+    /// Determines whether this class can convert an object of a given type to a <see cref="Brush"/> object.
     /// </summary>
-    internal sealed class BrushConverter : TypeConverter
+    /// <param name="context">
+    /// The conversion context.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type from which to convert.
+    /// </param>
+    /// <returns>
+    /// Returns true if conversion is possible (object is string type); otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether this class can convert an object of a given type to the specified destination type.
+    /// </summary>
+    /// <param name="context">
+    /// The conversion context.
+    /// </param>
+    /// <param name="destinationType">
+    /// The destination type.
+    /// </param>
+    /// <returns>
+    /// Returns true if conversion is possible; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Converts from an object of a given type to a <see cref="Brush"/> object.
+    /// </summary>
+    /// <param name="context">
+    /// The conversion context.
+    /// </param>
+    /// <param name="culture">
+    /// The culture information that applies to the conversion.
+    /// </param>
+    /// <param name="value">
+    /// The object to convert.
+    /// </param>
+    /// <returns>
+    /// Returns a new <see cref="Brush"/> object if successful; otherwise, NULL.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// value is NULL or cannot be converted to a <see cref="Brush"/>.
+    /// </exception>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// Returns true if this type converter can convert from a given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert from the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="sourceType"> The Type being queried for support. </param>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is string source)
         {
-            return sourceType == typeof(string);
+            return Brush.Parse(source);
         }
 
-        /// <summary>
-        /// Returns true if this type converter can convert to the given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert to the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="destinationType"> The Type being queried for support. </param>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        throw GetConvertFromException(value);
+    }
+
+    /// <summary>
+    /// Converts a <see cref="Brush"/> object to a specified type, using the specified context and culture information.
+    /// </summary>
+    /// <param name="context">
+    /// The conversion context.
+    /// </param>
+    /// <param name="culture">
+    /// The current culture information.
+    /// </param>
+    /// <param name="value">
+    /// The <see cref="Brush"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The destination type that the value object is converted to.
+    /// </param>
+    /// <returns>
+    /// An object that represents the converted value.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// value is NULL or it is not a <see cref="Brush"/> -or- destinationType is not a valid destination type.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(destinationType));
         }
 
-        /// <summary>
-        /// Attempts to convert to a Brush from the given object.
-        /// </summary>
-        /// <returns>
-        /// The Brush which was constructed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if the example object is null or is not a valid type
-        /// which can be converted to a Brush.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The requested CultureInfo.  Note that conversion uses "en-US" rather than this parameter. </param>
-        /// <param name="value"> The object to convert to an instance of Brush. </param>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (destinationType == typeof(string))
         {
-            if (value is string source)
+            if (value is Brush instance)
             {
-                return Brush.Parse(source);
+                return instance.ToString();
             }
-
-            throw GetConvertFromException(value);
         }
 
-        /// <summary>
-        /// ConvertTo - Attempt to convert an instance of Brush to the given type
-        /// </summary>
-        /// <returns>
-        /// The object which was constructoed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if "value" is null or not an instance of Brush,
-        /// or if the destinationType isn't one of the valid destination types.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The CultureInfo which is respected when converting. </param>
-        /// <param name="value"> The object to convert to an instance of "destinationType". </param>
-        /// <param name="destinationType"> The type to which this will convert the Brush instance. </param>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is Brush instance)
-                {
-                    return instance.ToString();
-                }
-            }
-            
-            throw GetConvertToException(value, destinationType);
-        }
-    } 
+        throw GetConvertToException(value, destinationType);
+    }
 }

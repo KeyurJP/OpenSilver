@@ -15,87 +15,115 @@ using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
-namespace System.Windows
+namespace System.Windows;
+
+/// <summary>
+/// Converts instances of <see cref="FontWeight"/> to and from other data types.
+/// </summary>
+public sealed class FontWeightConverter : TypeConverter
 {
     /// <summary>
-    /// FontWeightConverter class parses a font weight string.
+    /// Returns a value that indicates whether this converter can convert an object of the given type to an instance of <see cref="FontWeight"/>.
     /// </summary>
-    internal sealed class FontWeightConverter : TypeConverter
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the converter can convert the provided type to an instance of <see cref="FontWeight"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether an instance of <see cref="FontWeight"/> can be converted to a different type.
+    /// </summary>
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="destinationType">
+    /// The desired type that this instance of <see cref="FontWeight"/> is being evaluated for conversion to.
+    /// </param>
+    /// <returns>
+    /// true if the converter can convert this instance of <see cref="FontWeight"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert a specified object to an instance of <see cref="FontWeight"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The instance of <see cref="FontWeight"/> created from the converted value.
+    /// </returns>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// CanConvertFrom
-        /// </summary>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is null)
         {
-            return sourceType == typeof(string);
+            throw GetConvertFromException(value);
         }
 
-        /// <summary>
-        /// TypeConverter method override.
-        /// </summary>
-        /// <param name="context">ITypeDescriptorContext</param>
-        /// <param name="destinationType">Type to convert to</param>
-        /// <returns>true if conversion is possible</returns>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        if (value is not string s)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentException(string.Format(Strings.General_BadType, nameof(ConvertFrom)), nameof(value));
         }
 
-        /// <summary>
-        /// ConvertFrom - attempt to convert to a FontWeight from the given object
-        /// </summary>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if the example object is null or is not a valid type
-        /// which can be converted to a FontWeight.
-        /// </exception>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (!FontWeights.FontWeightStringToKnownWeight(s, culture, out FontWeight fontWeight))
         {
-            if (value is null)
-            {
-                throw GetConvertFromException(value);
-            }
-
-            if (value is not string s)
-            {
-                throw new ArgumentException(string.Format(Strings.General_BadType, nameof(ConvertFrom)), nameof(value));
-            }
-
-            if (!FontWeights.FontWeightStringToKnownWeight(s, culture, out FontWeight fontWeight))
-            {
-                throw new FormatException(Strings.Parsers_IllegalToken);
-            }
-
-            return fontWeight;
+            throw new FormatException(Strings.Parsers_IllegalToken);
         }
 
-        /// <summary>
-        /// TypeConverter method implementation.
-        /// </summary>
-        /// <exception cref="NotSupportedException">
-        /// An NotSupportedException is thrown if the example object is null or is not a FontWeight,
-        /// or if the destinationType isn't one of the valid destination types.
-        /// </exception>
-        /// <param name="context">ITypeDescriptorContext</param>
-        /// <param name="culture">current culture (see CLR specs)</param>
-        /// <param name="value">value to convert from</param>
-        /// <param name="destinationType">Type to convert to</param>
-        /// <returns>converted value</returns>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        return fontWeight;
+    }
+
+    /// <summary>
+    /// Attempts to convert an instance of <see cref="FontWeight"/> to a specified type.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// Describes the <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The instance of <see cref="FontWeight"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type this instance of <see cref="FontWeight"/> is converted to.
+    /// </param>
+    /// <returns>
+    /// The object created from the converted instance of <see cref="FontWeight"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// value is not an instance of <see cref="FontWeight"/> -or- destinationType is not a valid destination type.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is FontWeight c)
-                {
-                    return ((IFormattable)c).ToString(null, culture);
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
+            throw new ArgumentNullException(nameof(destinationType));
         }
+
+        if (destinationType == typeof(string))
+        {
+            if (value is FontWeight c)
+            {
+                return ((IFormattable)c).ToString(null, culture);
+            }
+        }
+
+        throw GetConvertToException(value, destinationType);
     }
 }

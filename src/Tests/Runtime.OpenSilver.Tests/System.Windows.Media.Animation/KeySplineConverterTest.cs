@@ -110,12 +110,12 @@ namespace System.Windows.Media.Animation.Tests
         }
 
         [TestMethod]
-        public void ConvertFrom_String_Should_Throw_NotSupportedException()
+        public void ConvertFrom_String_Should_Throw_InvalidOperationException()
         {
-            Assert.ThrowsException<NotSupportedException>(() => Converter.ConvertFrom(" "));
-            Assert.ThrowsException<NotSupportedException>(() => Converter.ConvertFrom("0.2"));
-            Assert.ThrowsException<NotSupportedException>(() => Converter.ConvertFrom("0.2 0.2"));
-            Assert.ThrowsException<NotSupportedException>(() => Converter.ConvertFrom("0.2 0.2 0.3"));
+            Assert.ThrowsException<InvalidOperationException>(() => Converter.ConvertFrom(" "));
+            Assert.ThrowsException<InvalidOperationException>(() => Converter.ConvertFrom("0.2"));
+            Assert.ThrowsException<InvalidOperationException>(() => Converter.ConvertFrom("0.2 0.2"));
+            Assert.ThrowsException<InvalidOperationException>(() => Converter.ConvertFrom("0.2 0.2 0.3"));
         }
 
         [TestMethod]

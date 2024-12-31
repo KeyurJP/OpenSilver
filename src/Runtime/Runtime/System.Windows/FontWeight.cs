@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Diagnostics;
 using OpenSilver.Internal;
 
@@ -20,6 +21,7 @@ namespace System.Windows
     /// Refers to the density of a typeface, in terms of the lightness or heaviness of
     /// the strokes.
     /// </summary>
+    [TypeConverter(typeof(FontWeightConverter))]
     public struct FontWeight : IFormattable
     {
         private readonly int _weight;

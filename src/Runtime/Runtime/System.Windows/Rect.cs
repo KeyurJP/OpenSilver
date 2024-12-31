@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Media;
 using OpenSilver.Internal;
@@ -20,6 +21,7 @@ namespace System.Windows;
 /// <summary>
 /// Describes the width, height, and point origin of a rectangle.
 /// </summary>
+[TypeConverter(typeof(RectConverter))]
 public struct Rect : IFormattable
 {
     internal double _x;

@@ -11,7 +11,7 @@
 *  
 \*====================================================================================*/
 
-using System;
+using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
@@ -21,6 +21,7 @@ namespace System.Windows
     /// Represents the length of elements that explicitly support <see cref="GridUnitType.Star"/>
     /// unit types.
     /// </summary>
+    [TypeConverter(typeof(GridLengthConverter))]
     public struct GridLength
     {
         private double _unitValue;      //  unit value storage

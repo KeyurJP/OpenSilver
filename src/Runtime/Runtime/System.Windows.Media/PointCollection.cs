@@ -12,6 +12,7 @@
 \*====================================================================================*/
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
@@ -21,6 +22,7 @@ namespace System.Windows.Media
     /// Represents a collection of <see cref="Point"/> values that can be individually
     /// accessed by index.
     /// </summary>
+    [TypeConverter(typeof(PointCollectionConverter))]
     public sealed class PointCollection : PresentationFrameworkCollection<Point>
     {
         /// <summary>

@@ -15,101 +15,130 @@ using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
-namespace System.Windows
+namespace System.Windows;
+
+/// <summary>
+/// Converts instances of <see cref="TextDecorationCollection"/> from other data types.
+/// </summary>   
+public sealed class TextDecorationCollectionConverter : TypeConverter
 {
     /// <summary>
-    /// TypeConverter for TextDecorationCollection 
-    /// </summary>   
-    internal sealed class TextDecorationCollectionConverter : TypeConverter
+    /// Returns a value that indicates whether this converter can convert an object of the given type to an instance of <see cref="TextDecorationCollection"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the converter can convert the provided type to an instance of <see cref="TextDecorationCollection"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether an instance of <see cref="TextDecorationCollection"/> can be converted to a different type.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// false is always returned because the <see cref="TextDecorationCollection"/> cannot be converted to another type.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert a specified object to an instance of <see cref="TextDecorationCollection"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// Describes the <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The instance of <see cref="FontWeight"/> created from the converted input.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// Occurs if input is null or is not a valid type for conversion.
+    /// </exception>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// CanConvertFrom
-        /// </summary>
-        /// <param name="context"> ITypeDescriptorContext </param>
-        /// <param name="sourceType">Type to convert to </param>
-        /// <returns> true if it can convert from sourceType to TextDecorations, false otherwise </returns>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is string source)
         {
-            return sourceType == typeof(string);
+            return FromString(source);
         }
 
-        /// <summary>
-        /// CanConvertTo method
-        /// </summary>
-        /// <param name="context"> ITypeDescriptorContext </param>
-        /// <param name="destinationType"> Type to convert to </param>
-        /// <returns> false will always be returned because TextDecorations cannot be converted to any other type. </returns>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        throw GetConvertFromException(value);
+    }
+
+    /// <summary>
+    /// Attempts to convert an instance of <see cref="TextDecorationCollection"/> to a specified type.
+    /// </summary>
+    /// <param name="context">
+    /// Describes the context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// Describes the <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The instance of <see cref="TextDecorationCollection"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type this instance of <see cref="TextDecorationCollection"/> is converted to.
+    /// </param>
+    /// <returns>
+    /// null is always returned because <see cref="TextDecorationCollection"/> cannot be converted to any other type.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(destinationType));
         }
 
-        /// <summary>
-        /// ConvertFrom
-        /// </summary>
-        /// <param name="context"> ITypeDescriptorContext </param>
-        /// <param name="culture"> CultureInfo </param>        
-        /// <param name="value"> The input object to be converted to TextDecorations </param>
-        /// <returns> the converted value of the input object </returns>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (destinationType == typeof(string))
         {
-            if (value is string source)
+            if (value is TextDecorationCollection tdc)
             {
-                return FromString(source);
+                return tdc.ToString();
             }
-
-            throw GetConvertFromException(value);
         }
 
-        /// <summary>
-        /// ConvertTo
-        /// </summary>
-        /// <param name="context"> ITypeDescriptorContext </param>
-        /// <param name="culture"> CultureInfo </param>        
-        /// <param name="value"> the object to be converted to another type </param>
-        /// <param name="destinationType"> The destination type of the conversion </param>
-        /// <returns> null will always be returned because TextDecorations cannot be converted to any other type. </returns>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        throw GetConvertToException(value, destinationType);
+    }
+
+    internal static TextDecorationCollection FromString(string source)
+    {
+        if (source is null)
         {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is TextDecorationCollection tdc)
-                {
-                    return tdc.ToString();
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
+            throw new ArgumentNullException(nameof(source));
         }
 
-        internal static TextDecorationCollection FromString(string source)
+        switch (source.Trim().ToLower())
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
+            case "underline":
+                return TextDecorations.Underline;
+            case "strikethrough":
+                return TextDecorations.Strikethrough;
+            case "overline":
+                return TextDecorations.OverLine;
+            //case "baseline":
+            //    return TextDecorations.Baseline;
+            case "none":
+                return null;
 
-            switch (source.Trim().ToLower())
-            {
-                case "underline":
-                    return TextDecorations.Underline;
-                case "strikethrough":
-                    return TextDecorations.Strikethrough;
-                case "overline":
-                    return TextDecorations.OverLine;
-                //case "baseline":
-                //    return TextDecorations.Baseline;
-                case "none":
-                    return null;
-
-                default:
-                    throw new FormatException(string.Format(Strings.InvalidTextDecorationCollectionString, source));
-            }
+            default:
+                throw new FormatException(string.Format(Strings.InvalidTextDecorationCollectionString, source));
         }
     }
 }

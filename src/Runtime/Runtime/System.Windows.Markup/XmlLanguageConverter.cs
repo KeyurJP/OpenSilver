@@ -13,108 +13,102 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace System.Windows.Markup
+namespace System.Windows.Markup;
+
+/// <summary>
+/// Provides type conversion for the <see cref="XmlLanguage"/> class.
+/// </summary> 
+public class XmlLanguageConverter : TypeConverter
 {
     /// <summary>
-    /// XmlLanuageConverter - Converter class for converting instances of other types to and from XmlLanguage
-    /// in a way that does not depend on the current user's language settings.
-    /// </summary> 
-    internal sealed class XmlLanguageConverter : TypeConverter
+    /// Returns whether this converter can convert an object of one type to the <see cref="XmlLanguage"/> type supported by this converter.
+    /// </summary>
+    /// <param name="typeDescriptorContext">
+    /// An <see cref="ITypeDescriptorContext"/> that provides a format context.
+    /// </param>
+    /// <param name="sourceType">
+    /// A type that represents the type you want to convert from.
+    /// </param>
+    /// <returns>
+    /// true if this converter can perform the conversion; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext typeDescriptorContext, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Returns whether this converter can convert the object to the specified type.
+    /// </summary>
+    /// <param name="typeDescriptorContext">
+    /// An <see cref="ITypeDescriptorContext"/> that provides a format context.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type you want to convert to.
+    /// </param>
+    /// <returns>
+    /// true if this converter can perform the conversion; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext typeDescriptorContext, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Converts the specified string value to the <see cref="XmlLanguage"/> type supported by this converter.
+    /// </summary>
+    /// <param name="typeDescriptorContext">
+    /// An <see cref="ITypeDescriptorContext"/> that provides a format context.
+    /// </param>
+    /// <param name="cultureInfo">
+    /// The <see cref="CultureInfo"/> to use as the current culture.
+    /// </param>
+    /// <param name="source">
+    /// The string to convert.
+    /// </param>
+    /// <returns>
+    /// An object that represents the converted value.
+    /// </returns>
+    public override object ConvertFrom(ITypeDescriptorContext typeDescriptorContext, CultureInfo cultureInfo, object source)
     {
-        /// <summary>
-        /// CanConvertFrom - Returns whether or not this class can convert from a given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert from the provided type, false if not.
-        /// </returns>
-        /// <param name="typeDescriptorContext"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="sourceType"> The Type being queried for support. </param>
-        public override bool CanConvertFrom(ITypeDescriptorContext typeDescriptorContext, Type sourceType)
+        if (source is string ietfLanguageTag)
         {
-            // We can only handle strings.
-            return sourceType == typeof(string);
+            return XmlLanguage.GetLanguage(ietfLanguageTag);
         }
 
-        /// <summary>
-        /// CanConvertTo - Returns whether or not this class can convert to a given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert to the provided type, false if not.
-        /// </returns>
-        /// <param name="typeDescriptorContext"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="destinationType"> The Type being queried for support. </param>
-        public override bool CanConvertTo(ITypeDescriptorContext typeDescriptorContext, Type destinationType)
+        throw GetConvertFromException(source);
+    }
+
+    /// <summary>
+    /// Converts the specified <see cref="XmlLanguage"/> to the specified type.
+    /// </summary>
+    /// <param name="typeDescriptorContext">
+    /// An <see cref="ITypeDescriptorContext"/> that provides a format context.
+    /// </param>
+    /// <param name="cultureInfo">
+    /// The <see cref="CultureInfo"/> to use as the current culture.
+    /// </param>
+    /// <param name="value">
+    /// The object to convert. This is expected to be type <see cref="XmlLanguage"/>.
+    /// </param>
+    /// <param name="destinationType">
+    /// A type that represents the type you want to convert to.
+    /// </param>
+    /// <returns>
+    /// An object that represents the converted value.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext typeDescriptorContext, CultureInfo cultureInfo, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            // We can convert to an InstanceDescriptor or to a string.
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(destinationType));
         }
 
-        /// <summary>
-        /// ConvertFrom - Attempt to convert to a CultureInfo from the given object
-        /// </summary>
-        /// <returns>
-        /// A CultureInfo object based on the specified culture name.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// An ArgumentNullException is thrown if the example object is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// An ArgumentException is thrown if the example object is not null and is not a valid type
-        /// which can be converted to a CultureInfo.
-        /// </exception>
-        /// <param name="typeDescriptorContext">The ITypeDescriptorContext for this call.</param>
-        /// <param name="cultureInfo">The CultureInfo which is respected when converting.</param>
-        /// <param name="source">The object to convert to a CultureInfo.</param>
-        public override object ConvertFrom(ITypeDescriptorContext typeDescriptorContext,
-                                           CultureInfo cultureInfo,
-                                           object source)
+        if (value is XmlLanguage xmlLanguage)
         {
-            string ietfLanguageTag = source as string;
-            if (ietfLanguageTag != null)
+            if (destinationType == typeof(string))
             {
-                return XmlLanguage.GetLanguage(ietfLanguageTag);
+                return xmlLanguage.IetfLanguageTag;
             }
-
-            throw GetConvertFromException(source);
         }
 
-        /// <summary>
-        /// ConvertTo - Attempt to convert a CultureInfo to the given type
-        /// </summary>
-        /// <returns>
-        /// The object which was constructed.
-        /// </returns>
-        /// <exception cref="ArgumentNullException">
-        /// An ArgumentNullException is thrown if the example object is null.
-        /// </exception>
-        /// <exception cref="ArgumentException">
-        /// An ArgumentException is thrown if the example object is not null and is not a CultureInfo,
-        /// or if the destinationType isn't one of the valid destination types.
-        /// </exception>
-        /// <param name="typeDescriptorContext"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="cultureInfo"> The CultureInfo which is respected when converting. </param>
-        /// <param name="value"> The XmlLanguage to convert. </param>
-        /// <param name="destinationType">The type to which to convert the CultureInfo. </param>
-        public override object ConvertTo(ITypeDescriptorContext typeDescriptorContext,
-                                         CultureInfo cultureInfo,
-                                         object value,
-                                         Type destinationType)
-        {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            XmlLanguage xmlLanguage = value as XmlLanguage;
-            if (xmlLanguage != null)
-            {
-                if (destinationType == typeof(string))
-                {
-                    return xmlLanguage.IetfLanguageTag;
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
-        }
+        throw GetConvertToException(value, destinationType);
     }
 }

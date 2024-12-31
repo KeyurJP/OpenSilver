@@ -20,6 +20,7 @@ namespace System.Windows.Media.Animation;
 /// <summary>
 /// Describes how a <see cref="Timeline"/> repeats its simple duration.
 /// </summary>
+[TypeConverter(typeof(RepeatBehaviorConverter))]
 public struct RepeatBehavior : IFormattable
 {
     private double _iterationCount;

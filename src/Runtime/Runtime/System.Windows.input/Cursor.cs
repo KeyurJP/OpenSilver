@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using OpenSilver.Internal;
 
 namespace System.Windows.Input
@@ -18,6 +19,7 @@ namespace System.Windows.Input
     /// <summary>
     /// Represents the image used for the mouse pointer.
     /// </summary>
+    [TypeConverter(typeof(CursorConverter))]
     public sealed class Cursor : IDisposable
     {
         private static string[] HtmlCursors { get; }

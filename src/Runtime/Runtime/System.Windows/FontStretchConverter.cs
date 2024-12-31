@@ -15,88 +15,119 @@ using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
-namespace System.Windows
+namespace System.Windows;
+
+/// <summary>
+/// Converts instances of <see cref="FontStretch"/> to and from other type representations.
+/// </summary>
+public sealed class FontStretchConverter : TypeConverter
 {
     /// <summary>
-    /// FontStretchConverter class parses a font stretch string.
+    /// Determines if conversion from a specified type to a <see cref="FontStretch"/> value is possible.
     /// </summary>
-    internal sealed class FontStretchConverter : TypeConverter
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if t can create a <see cref="FontStretch"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether an instance of <see cref="FontStretch"/> can be converted to a different type.
+    /// </summary>
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="destinationType">
+    /// The desired type that this instance of <see cref="FontStretch"/> is being evaluated for conversion to.
+    /// </param>
+    /// <returns>
+    /// true if the converter can convert <see cref="FontStretch"/> to destinationType; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert a specified object to an instance of <see cref="FontStretch"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The instance of <see cref="FontStretch"/> created from the converted value.
+    /// </returns>
+    /// <exception cref="ArgumentException">
+    /// value is not a valid type for conversion.
+    /// </exception>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// CanConvertFrom
-        /// </summary>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is null)
         {
-            return sourceType == typeof(string);
+            throw GetConvertFromException(value);
         }
 
-        /// <summary>
-        /// TypeConverter method override.
-        /// </summary>
-        /// <param name="context">ITypeDescriptorContext</param>
-        /// <param name="destinationType">Type to convert to</param>
-        /// <returns>true if conversion is possible</returns>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        if (value is not string s)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentException(string.Format(Strings.General_BadType, nameof(ConvertFrom)), nameof(value));
         }
 
-        /// <summary>
-        /// ConvertFrom - attempt to convert to a FontStretch from the given object
-        /// </summary>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if the example object is null or is not a valid type
-        /// which can be converted to a FontStretch.
-        /// </exception>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        var fontStretch = new FontStretch();
+        if (!FontStretches.FontStretchStringToKnownStretch(s, culture, ref fontStretch))
         {
-            if (null == value)
-            {
-                throw GetConvertFromException(value);
-            }
-
-            if (value is not string s)
-            {
-                throw new ArgumentException(string.Format(Strings.General_BadType, nameof(ConvertFrom)), nameof(value));
-            }
-
-            var fontStretch = new FontStretch();
-            if (!FontStretches.FontStretchStringToKnownStretch(s, culture, ref fontStretch))
-            {
-                throw new FormatException(Strings.Parsers_IllegalToken);
-            }
-
-            return fontStretch;
+            throw new FormatException(Strings.Parsers_IllegalToken);
         }
 
-        /// <summary>
-        /// TypeConverter method implementation.
-        /// </summary>
-        /// <exception cref="NotSupportedException">
-        /// An NotSupportedException is thrown if the example object is null or is not a FontStretch,
-        /// or if the destinationType isn't one of the valid destination types.
-        /// </exception>
-        /// <param name="context">ITypeDescriptorContext</param>
-        /// <param name="culture">current culture (see CLR specs)</param>
-        /// <param name="value">value to convert from</param>
-        /// <param name="destinationType">Type to convert to</param>
-        /// <returns>converted value</returns>
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        return fontStretch;
+    }
+
+    /// <summary>
+    /// Attempts to convert an instance of <see cref="FontStretch"/> to a specified type.
+    /// </summary>
+    /// <param name="context">
+    /// Context information of a type.
+    /// </param>
+    /// <param name="culture">
+    /// <see cref="CultureInfo"/> of the type being converted.
+    /// </param>
+    /// <param name="value">
+    /// The instance of <see cref="FontStretch"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type this instance of <see cref="FontStretch"/> is converted to.
+    /// </param>
+    /// <returns>
+    /// The object created from the converted instance of <see cref="FontStretch"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// value is not an instance of <see cref="FontStretch"/> -or- destinationType is not a valid destination type.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is FontStretch instance)
-                {
-                    return ((IFormattable)instance).ToString(null, culture);
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
+            throw new ArgumentNullException(nameof(destinationType));
         }
+
+        if (destinationType == typeof(string))
+        {
+            if (value is FontStretch instance)
+            {
+                return ((IFormattable)instance).ToString(null, culture);
+            }
+        }
+
+        throw GetConvertToException(value, destinationType);
     }
 }

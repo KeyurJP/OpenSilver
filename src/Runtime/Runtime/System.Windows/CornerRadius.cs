@@ -11,7 +11,7 @@
 *  
 \*====================================================================================*/
 
-using System;
+using System.ComponentModel;
 using System.Globalization;
 
 namespace System.Windows
@@ -20,6 +20,7 @@ namespace System.Windows
     /// Describes the characteristics of a rounded corner, such as can be applied to
     /// a <see cref="Controls.Border"/>.
     /// </summary>
+    [TypeConverter(typeof(CornerRadiusConverter))]
     public struct CornerRadius
     {
         /// <summary>

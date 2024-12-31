@@ -20,6 +20,7 @@ namespace System.Windows.Media
     /// <summary>
     /// Represents a family of related fonts.
     /// </summary>
+    [TypeConverter(typeof(FontFamilyConverter))]
     public class FontFamily
     {
         /// <summary>

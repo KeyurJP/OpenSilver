@@ -664,6 +664,15 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; value is not valid. It must contain one or four delimited Lengths..
+        /// </summary>
+        internal static string InvalidStringCornerRadius {
+            get {
+                return ResourceManager.GetString("InvalidStringCornerRadius", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; value is not valid. It must contain one, two, or four delimited Lengths..
         /// </summary>
         internal static string InvalidStringThickness {

@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Globalization;
 using System.Windows.Shapes;
 using OpenSilver.Internal;
@@ -22,6 +23,7 @@ namespace System.Windows.Media
     /// objects can be used for clipping regions and as geometry definitions for rendering
     /// two-dimensional graphic data as a <see cref="Path"/>.
     /// </summary>
+    [TypeConverter(typeof(GeometryConverter))]
     public abstract class Geometry : DependencyObject
     {
         internal Geometry() { }

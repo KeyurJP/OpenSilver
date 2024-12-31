@@ -17,34 +17,55 @@ using System.Globalization;
 namespace System.Windows.Media.Animation;
 
 /// <summary>
-/// 
+/// Converts instances of <see cref="RepeatBehavior"/> to and from other data types.
 /// </summary>
-internal sealed class RepeatBehaviorConverter : TypeConverter
+public sealed class RepeatBehaviorConverter : TypeConverter
 {
     private static readonly char[] _iterationCharacter = new char[] { 'x' };
 
     /// <summary>
-    /// CanConvertFrom - Returns whether or not this class can convert from a given type
+    /// Determines whether or not conversion from a specified data type is possible.
     /// </summary>
-    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-    {
-        return sourceType == typeof(string);
-    }
+    /// <param name="context">
+    /// Context information required for conversion.
+    /// </param>
+    /// <param name="sourceType">
+    /// Type to evaluate for conversion.
+    /// </param>
+    /// <returns>
+    /// true if conversion is supported; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
 
     /// <summary>
-    /// TypeConverter method override.
+    /// Determines if conversion to a specified type is possible.
     /// </summary>
-    /// <param name="context">ITypeDescriptorContext</param>
-    /// <param name="destinationType">Type to convert to</param>
-    /// <returns>true if conversion is possible</returns>
-    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-    {
-        return destinationType == typeof(string);
-    }
+    /// <param name="context">
+    /// Context information required for conversion.
+    /// </param>
+    /// <param name="destinationType">
+    /// Destination type being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if conversion is possible; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
 
     /// <summary>
-    /// ConvertFrom
+    /// Converts a given string value to an instance of <see cref="RepeatBehaviorConverter"/>.
     /// </summary>
+    /// <param name="context">
+    /// Context information required for conversion.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural information to respect during conversion.
+    /// </param>
+    /// <param name="value">
+    /// Object being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// A new <see cref="RepeatBehavior"/> object based on value.
+    /// </returns>
     public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
         string stringValue = value as string;
@@ -86,16 +107,26 @@ internal sealed class RepeatBehaviorConverter : TypeConverter
     }
 
     /// <summary>
-    /// TypeConverter method implementation.
+    /// Converts an instance of <see cref="RepeatBehavior"/> to a supported destination type.
     /// </summary>
-    /// <param name="context">ITypeDescriptorContext</param>
-    /// <param name="culture">current culture (see CLR specs)</param>
-    /// <param name="value">value to convert from</param>
-    /// <param name="destinationType">Type to convert to</param>
-    /// <returns>converted value</returns>
+    /// <param name="context">
+    /// Context information required for conversion.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural information to respect during conversion.
+    /// </param>
+    /// <param name="value">
+    /// Object being evaluated for conversion.
+    /// </param>
+    /// <param name="destinationType">
+    /// Destination type being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// The only supported destination type is <see cref="string"/>.
+    /// </returns>
     public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
     {
-        if (destinationType == null)
+        if (destinationType is null)
         {
             throw new ArgumentNullException(nameof(destinationType));
         }

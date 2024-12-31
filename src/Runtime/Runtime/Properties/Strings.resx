@@ -320,6 +320,9 @@
   <data name="InvalidSetterValue" xml:space="preserve">
     <value>'{0}' is not a valid value for the '{1}.{2}' property on a Setter.</value>
   </data>
+  <data name="InvalidStringCornerRadius" xml:space="preserve">
+    <value>'{0}' value is not valid. It must contain one or four delimited Lengths.</value>
+  </data>
   <data name="InvalidStringThickness" xml:space="preserve">
     <value>'{0}' value is not valid. It must contain one, two, or four delimited Lengths.</value>
   </data>

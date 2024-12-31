@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.ComponentModel;
 using System.Globalization;
 using OpenSilver.Internal;
 
@@ -19,6 +20,7 @@ namespace System.Windows.Media
     /// <summary>
     /// Defines functionality that enables transformations in a two-dimensional plane.
     /// </summary>
+    [TypeConverter(typeof(TransformConverter))]
     public abstract class Transform : GeneralTransform
     {
         private Matrix? _matrix;

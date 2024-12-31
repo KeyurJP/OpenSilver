@@ -11,82 +11,111 @@
 *  
 \*====================================================================================*/
 
-using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace System.Windows
+namespace System.Windows;
+
+/// <summary>
+/// Converts instances of other types to and from instances of <see cref="Rect"/>.
+/// </summary>
+public sealed class RectConverter : TypeConverter
 {
     /// <summary>
-    /// RectConverter - Converter class for converting instances of other types to and from Rect instances
+    /// Determines whether an object can be converted from a given type to an instance of <see cref="Rect"/>.
     /// </summary>
-    internal sealed class RectConverter : TypeConverter
+    /// <param name="context">
+    /// Provides contextual information required for conversion.
+    /// </param>
+    /// <param name="sourceType">
+    /// The type of the source that is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if the type can be converted to a <see cref="Rect"/>; otherwise, false.
+    /// </returns>
+    public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType) => sourceType == typeof(string);
+
+    /// <summary>
+    /// Determines whether a <see cref="Rect"/> can be converted to the specified type.
+    /// </summary>
+    /// <param name="context">
+    /// Provides contextual information required for conversion.
+    /// </param>
+    /// <param name="destinationType">
+    /// The desired type this <see cref="Rect"/> is being evaluated for conversion.
+    /// </param>
+    /// <returns>
+    /// true if a <see cref="Rect"/> can be converted to destinationType; otherwise, false.
+    /// </returns>
+    public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType) => destinationType == typeof(string);
+
+    /// <summary>
+    /// Attempts to convert the specified object to a <see cref="Rect"/>.
+    /// </summary>
+    /// <param name="context">
+    /// Provides contextual information required for conversion.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural information which is respected when converting.
+    /// </param>
+    /// <param name="value">
+    /// The object being converted.
+    /// </param>
+    /// <returns>
+    /// The <see cref="Rect"/> created from converting value.
+    /// </returns>
+    /// <exception cref="NotSupportedException">
+    /// The specified object is NULL or is a type that cannot be converted to a <see cref="Rect"/>.
+    /// </exception>
+    public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
     {
-        /// <summary>
-        /// Returns true if this type converter can convert from a given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert from the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="sourceType"> The Type being queried for support. </param>
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        if (value is string source)
         {
-            return sourceType == typeof(string);
+            return Rect.Parse(source);
         }
 
-        /// <summary>
-        /// Returns true if this type converter can convert to the given type.
-        /// </summary>
-        /// <returns>
-        /// bool - True if this converter can convert to the provided type, false if not.
-        /// </returns>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="destinationType"> The Type being queried for support. </param>
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        throw GetConvertFromException(value);
+    }
+
+    /// <summary>
+    /// Attempts to convert a <see cref="Rect"/> to the specified type.
+    /// </summary>
+    /// <param name="context">
+    /// Provides contextual information required for conversion.
+    /// </param>
+    /// <param name="culture">
+    /// Cultural information which is respected during conversion.
+    /// </param>
+    /// <param name="value">
+    /// The <see cref="Rect"/> to convert.
+    /// </param>
+    /// <param name="destinationType">
+    /// The type to convert this <see cref="Rect"/> to.
+    /// </param>
+    /// <returns>
+    /// The object created from converting this <see cref="Rect"/>.
+    /// </returns>
+    /// <exception cref="ArgumentNullException">
+    /// destinationType is null.
+    /// </exception>
+    /// <exception cref="NotSupportedException">
+    /// value is null. -or- value is not a <see cref="Rect"/>. -or- The destinationType is not one of the valid types for conversion.
+    /// </exception>
+    public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+    {
+        if (destinationType is null)
         {
-            return destinationType == typeof(string);
+            throw new ArgumentNullException(nameof(destinationType));
         }
 
-        /// <summary>
-        /// Attempts to convert to a Rect from the given object.
-        /// </summary>
-        /// <returns>
-        /// The Rect which was constructed.
-        /// </returns>
-        /// <exception cref="NotSupportedException">
-        /// A NotSupportedException is thrown if the example object is null or is not a valid type
-        /// which can be converted to a Rect.
-        /// </exception>
-        /// <param name="context"> The ITypeDescriptorContext for this call. </param>
-        /// <param name="culture"> The requested CultureInfo.  Note that conversion uses "en-US" rather than this parameter. </param>
-        /// <param name="value"> The object to convert to an instance of Rect. </param>
-        public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+        if (destinationType == typeof(string))
         {
-            if (value is string source)
+            if (value is Rect rect)
             {
-                return Rect.Parse(source);
+                return rect.ToString(culture);
             }
-
-            throw GetConvertFromException(value);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-        {
-            if (destinationType == null)
-            {
-                throw new ArgumentNullException(nameof(destinationType));
-            }
-
-            if (destinationType == typeof(string))
-            {
-                if (value is Rect rect)
-                {
-                    return rect.ToString(culture);
-                }
-            }
-
-            throw GetConvertToException(value, destinationType);
-        }
+        throw GetConvertToException(value, destinationType);
     }
 }
