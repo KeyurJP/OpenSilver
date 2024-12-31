@@ -39,9 +39,11 @@ public sealed class MultiBindingExpression : BindingExpressionBase
     }
 
     // Create a new BindingExpression from the given Binding description
-    internal static MultiBindingExpression CreateBindingExpression(DependencyProperty dp, MultiBinding binding, BindingExpressionBase owner)
+    internal static MultiBindingExpression CreateBindingExpression(DependencyObject d, DependencyProperty dp, MultiBinding binding, BindingExpressionBase owner)
     {
-        if (dp.ReadOnly)
+        FrameworkPropertyMetadata fwMetaData = dp.GetMetadata(d.DependencyObjectType) as FrameworkPropertyMetadata;
+
+        if ((fwMetaData is not null && !fwMetaData.IsDataBindingAllowed) || dp.ReadOnly)
         {
             throw new ArgumentException(string.Format(Strings.PropertyNotBindable, dp.Name), nameof(dp));
         }

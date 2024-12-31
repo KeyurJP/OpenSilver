@@ -366,5 +366,5 @@ public class Binding : BindingBase
 
     internal sealed override BindingExpressionBase CreateBindingExpressionOverride(
         DependencyObject target, DependencyProperty dp, BindingExpressionBase owner)
-        => BindingExpression.CreateBindingExpression(dp, this, owner);
+        => BindingExpression.CreateBindingExpression(target, dp, this, owner);
 }

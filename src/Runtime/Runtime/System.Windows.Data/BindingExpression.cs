@@ -52,9 +52,11 @@ namespace System.Windows.Data
         }
 
         // Create a new BindingExpression from the given Bind description
-        internal static BindingExpression CreateBindingExpression(DependencyProperty dp, Binding binding, BindingExpressionBase parent)
+        internal static BindingExpression CreateBindingExpression(DependencyObject d, DependencyProperty dp, Binding binding, BindingExpressionBase parent)
         {
-            if (dp.ReadOnly)
+            FrameworkPropertyMetadata fwMetaData = dp.GetMetadata(d.DependencyObjectType) as FrameworkPropertyMetadata;
+
+            if ((fwMetaData is not null && !fwMetaData.IsDataBindingAllowed) || dp.ReadOnly)
             {
                 throw new ArgumentException(string.Format(Strings.PropertyNotBindable, dp.Name), nameof(dp));
             }

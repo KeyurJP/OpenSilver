@@ -464,7 +464,7 @@ namespace System.Windows
             FW_AffectsParentArrangeID = 0x00000200,
             FW_AffectsRenderID = 0x00000400,
             // Unused                                    = 0x00000800,
-            // Unused                                    = 0x00001000,
+            FW_IsNotDataBindableID = 0x00001000,
             // Unused                                    = 0x00002000,
             // Unused                                    = 0x00004000,
             // Unused                                    = 0x00008000,

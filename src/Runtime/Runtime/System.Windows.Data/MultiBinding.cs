@@ -212,7 +212,7 @@ public class MultiBinding : BindingBase
             CheckTrigger(Bindings[i]);
         }
 
-        return MultiBindingExpression.CreateBindingExpression(dp, this, owner);
+        return MultiBindingExpression.CreateBindingExpression(target, dp, this, owner);
     }
 
     internal static void CheckTrigger(BindingBase bb)

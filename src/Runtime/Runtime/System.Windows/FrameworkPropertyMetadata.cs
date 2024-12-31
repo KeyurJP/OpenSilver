@@ -11,26 +11,43 @@ namespace System.Windows
     [Flags]
     public enum FrameworkPropertyMetadataOptions : int
     {
-        /// <summary>No flags</summary>
+        /// <summary>
+        /// No options are specified; the dependency property uses the default behavior of the WPF property system.
+        /// </summary>
         None = 0x000,
 
-        /// <summary>This property affects measurement</summary>
+        /// <summary>The measure pass of layout compositions is affected by value changes to this dependency property.</summary>
         AffectsMeasure = 0x001,
 
-        /// <summary>This property affects arragement</summary>
+        /// <summary>
+        /// The arrange pass of layout composition is affected by value changes to this dependency property.
+        /// </summary>
         AffectsArrange = 0x002,
 
-        /// <summary>This property affects parent's measurement</summary>
+        /// <summary>
+        /// The measure pass on the parent element is affected by value changes to this dependency property.
+        /// </summary>
         AffectsParentMeasure = 0x004,
 
-        /// <summary>This property affects parent's arrangement</summary>
+        /// <summary>
+        /// The arrange pass on the parent element is affected by value changes to this dependency property.
+        /// </summary>
         AffectsParentArrange = 0x008,
 
-        /// <summary>This property affects rendering</summary>
+        /// <summary>
+        /// Some aspect of rendering or layout composition (other than measure or arrange) is affected by value changes to this dependency property.
+        /// </summary>
         AffectsRender = 0x010,
 
-        /// <summary>This property inherits to children</summary>
+        /// <summary>
+        /// The values of this dependency property are inherited by child elements.
+        /// </summary>
         Inherits = 0x020,
+
+        /// <summary>
+        /// Data binding to this dependency property is not allowed.
+        /// </summary>
+        NotDataBindable = 0x080,
     }
 
     /// <summary>
@@ -320,6 +337,34 @@ namespace System.Windows
         }
 
         /// <summary>
+        /// Gets or sets a value that indicates whether the dependency property supports data binding.
+        /// </summary>
+        /// <returns>
+        /// true if the property does not support data binding; otherwise, false. The default is false.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// The metadata has already been applied to a dependency property operation, so that metadata 
+        /// is sealed and properties of the metadata cannot be set.
+        /// </exception>
+        public bool IsNotDataBindable
+        {
+            get { return ReadFlag(MetadataFlags.FW_IsNotDataBindableID); }
+            set { CheckSealed(); WriteFlag(MetadataFlags.FW_IsNotDataBindableID, value); }
+        }
+
+        /// <summary>
+        /// Gets a value that indicates whether data binding is supported for the dependency property.
+        /// </summary>
+        /// <returns>
+        /// true if data binding is supported on the dependency property to which this metadata applies;
+        /// otherwise, false. The default is true.
+        /// </returns>
+        public bool IsDataBindingAllowed
+        {
+            get { return !ReadFlag(MetadataFlags.FW_IsNotDataBindableID) && !ReadOnly; }
+        }
+
+        /// <summary>
         /// Does the represent the metadata for a ReadOnly property
         /// </summary>
         private bool ReadOnly
@@ -369,6 +414,7 @@ namespace System.Windows
                 WriteFlag(MetadataFlags.FW_AffectsParentMeasureID, ReadFlag(MetadataFlags.FW_AffectsParentMeasureID) | fbaseMetadata.AffectsParentMeasure);
                 WriteFlag(MetadataFlags.FW_AffectsParentArrangeID, ReadFlag(MetadataFlags.FW_AffectsParentArrangeID) | fbaseMetadata.AffectsParentArrange);
                 WriteFlag(MetadataFlags.FW_AffectsRenderID, ReadFlag(MetadataFlags.FW_AffectsRenderID) | fbaseMetadata.AffectsRender);
+                WriteFlag(MetadataFlags.FW_IsNotDataBindableID, ReadFlag(MetadataFlags.FW_IsNotDataBindableID) | fbaseMetadata.IsNotDataBindable);
 
                 // Override state
                 if (!IsModified(MetadataFlags.FW_InheritsModifiedID))
@@ -439,6 +485,11 @@ namespace System.Windows
             if (IsFlagSet(FrameworkPropertyMetadataOptions.Inherits, flags))
             {
                 IsInherited = true;
+            }
+
+            if (IsFlagSet(FrameworkPropertyMetadataOptions.NotDataBindable, flags))
+            {
+                IsNotDataBindable = true;
             }
         }
 
