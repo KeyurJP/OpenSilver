@@ -12,10 +12,10 @@
 \*====================================================================================*/
 
 using System.Windows.Automation.Peers;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using CSHTML5.Internal;
-using OpenSilver.Internal;
 using OpenSilver.Internal.Controls;
 
 namespace System.Windows.Controls
@@ -164,7 +164,12 @@ namespace System.Windows.Controls
                 nameof(Password),
                 typeof(string),
                 typeof(PasswordBox),
-                new PropertyMetadata(string.Empty, OnPasswordChanged, CoercePassword));
+                new FrameworkPropertyMetadata(
+                    string.Empty,
+                    FrameworkPropertyMetadataOptions.None,
+                    OnPasswordChanged,
+                    CoercePassword,
+                    UpdateSourceTrigger.LostFocus));
 
         private static void OnPasswordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

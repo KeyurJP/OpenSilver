@@ -407,6 +407,9 @@
   <data name="NoCheckOrChangeWhenDeferred" xml:space="preserve">
     <value>Cannot change or check the contents or Current position of CollectionView while Refresh is being deferred.</value>
   </data>
+  <data name="NoDefaultUpdateSourceTrigger" xml:space="preserve">
+    <value>FrameworkPropertyMetadata.DefaultUpdateSourceTrigger cannot be set to UpdateSourceTrigger.Default; this would create a circular definition.</value>
+  </data>
   <data name="NoUpdateSourceTriggerForInnerBindingOfMultiBinding" xml:space="preserve">
     <value>Cannot set UpdateSourceTrigger on inner Binding of MultiBinding. Only the default Immediate UpdateSourceTrigger is valid.</value>
   </data>

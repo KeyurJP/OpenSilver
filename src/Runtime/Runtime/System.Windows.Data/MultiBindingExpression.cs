@@ -51,7 +51,7 @@ public sealed class MultiBindingExpression : BindingExpressionBase
         // create the BindingExpression
         var bindExpr = new MultiBindingExpression(binding, owner);
 
-        bindExpr.ResolvePropertyDefaultSettings(binding.GetMode(), binding.UpdateSourceTrigger, fwMetaData, d, dp);
+        bindExpr.ResolvePropertyDefaultSettings(binding.GetMode(), binding.UpdateSourceTrigger, fwMetaData);
 
         bindExpr.SaveDefaultFlags();
 

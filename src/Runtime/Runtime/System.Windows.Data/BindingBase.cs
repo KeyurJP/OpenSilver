@@ -42,7 +42,7 @@ public abstract class BindingBase : MarkupExtension
         NotifyOnValidationError = BindingExpressionBase.PrivateFlags.iNotifyOnValidationError,
 
         /// <summary> Obtain trigger from target property default </summary>
-        UpdateDefault = 0,
+        UpdateDefault = BindingExpressionBase.PrivateFlags.iUpdateDefault,
         /// <summary> Update the source value whenever the target value changes </summary>
         UpdateOnPropertyChanged = BindingExpressionBase.PrivateFlags.iUpdateOnPropertyChanged,
         /// <summary> Update the source value whenever the target element loses focus </summary>

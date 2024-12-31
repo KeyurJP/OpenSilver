@@ -379,7 +379,7 @@ namespace System.Windows
             }
 
             _coerceValueCallback ??= baseMetadata.CoerceValueCallback;
-            
+
             _methodToUpdateDom ??= baseMetadata.MethodToUpdateDom;
             _methodToUpdateDom2 ??= baseMetadata.MethodToUpdateDom2;
         }
@@ -478,12 +478,12 @@ namespace System.Windows
             // Unused                                    = 0x00800000,
             // Unused                                    = 0x01000000,
             // Unused                                    = 0x02000000,
-            // Unused                                    = 0x04000000,
+            FW_DefaultUpdateSourceTriggerModifiedID = 0x04000000,
             FW_ReadOnlyID = 0x08000000,
             // Unused                                    = 0x10000000,
             // Unused                                    = 0x20000000,
-            // Unused                                    = 0x40000000,
-            // Unused                                    = 0x80000000,
+            FW_DefaultUpdateSourceTriggerEnumBit1 = 0x40000000, // Must match constants used in FrameworkPropertyMetadata
+            FW_DefaultUpdateSourceTriggerEnumBit2 = 0x80000000, // Must match constants used in FrameworkPropertyMetadata
         }
 
 
@@ -548,7 +548,7 @@ namespace System.Windows
             set
             {
                 CheckSealed();
-                
+
                 IsInherited = value;
                 SetModified(MetadataFlags.FW_InheritsModifiedID);
             }

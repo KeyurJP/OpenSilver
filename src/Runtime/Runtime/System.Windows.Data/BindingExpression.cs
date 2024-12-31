@@ -64,7 +64,7 @@ namespace System.Windows.Data
             // create the BindingExpression
             var bindExpr = new BindingExpression(binding, parent);
 
-            bindExpr.ResolvePropertyDefaultSettings(binding.GetMode(), binding.UpdateSourceTrigger, fwMetaData, d, dp);
+            bindExpr.ResolvePropertyDefaultSettings(binding.GetMode(), binding.UpdateSourceTrigger, fwMetaData);
 
             bindExpr.SaveDefaultFlags();
 

@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.ComponentModel;
 using System.Windows.Data;
+using OpenSilver.Internal;
 
 namespace System.Windows
 {
@@ -66,9 +68,10 @@ namespace System.Windows
         /// <summary>
         /// Initializes a new instance of the <see cref="FrameworkPropertyMetadata"/> class.
         /// </summary>
-        public FrameworkPropertyMetadata() 
+        public FrameworkPropertyMetadata()
             : base()
         {
+            Initialize();
         }
 
         /// <summary>
@@ -85,6 +88,7 @@ namespace System.Windows
         public FrameworkPropertyMetadata(object defaultValue)
             : base(defaultValue)
         {
+            Initialize();
         }
 
         /// <summary>
@@ -98,6 +102,7 @@ namespace System.Windows
         public FrameworkPropertyMetadata(PropertyChangedCallback propertyChangedCallback)
             : base(propertyChangedCallback)
         {
+            Initialize();
         }
 
         /// <summary>
@@ -116,6 +121,7 @@ namespace System.Windows
         public FrameworkPropertyMetadata(PropertyChangedCallback propertyChangedCallback, CoerceValueCallback coerceValueCallback)
             : base(propertyChangedCallback)
         {
+            Initialize();
             CoerceValueCallback = coerceValueCallback;
         }
 
@@ -138,6 +144,7 @@ namespace System.Windows
         public FrameworkPropertyMetadata(object defaultValue, PropertyChangedCallback propertyChangedCallback)
             : base(defaultValue, propertyChangedCallback)
         {
+            Initialize();
         }
 
         /// <summary>
@@ -162,6 +169,7 @@ namespace System.Windows
         public FrameworkPropertyMetadata(object defaultValue, PropertyChangedCallback propertyChangedCallback, CoerceValueCallback coerceValueCallback)
             : base(defaultValue, propertyChangedCallback, coerceValueCallback)
         {
+            Initialize();
         }
 
         /// <summary>
@@ -247,7 +255,57 @@ namespace System.Windows
         {
             TranslateFlags(flags);
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FrameworkPropertyMetadata"/> class with the provided 
+        /// default value and framework metadata options, specified callbacks, and a data-binding update trigger
+        /// default.
+        /// </summary>
+        /// <param name="defaultValue">
+        /// The default value of the dependency property, usually provided as a specific type.
+        /// </param>
+        /// <param name="flags">
+        /// The metadata option flags (a combination of <see cref="FrameworkPropertyMetadataOptions"/>
+        /// values). These options specify characteristics of the dependency property that interact with 
+        /// systems such as layout or data binding.
+        /// </param>
+        /// <param name="propertyChangedCallback">
+        /// A reference to a handler implementation that the property system will call whenever the effective 
+        /// value of the property changes.
+        /// </param>
+        /// <param name="coerceValueCallback">
+        /// A reference to a handler implementation that will be called whenever the property system calls 
+        /// <see cref="DependencyObject.CoerceValue(DependencyProperty)"/> against this property.
+        /// </param>
+        /// <param name="defaultUpdateSourceTrigger">
+        /// The <see cref="UpdateSourceTrigger"/> to use when bindings for this property are applied that have 
+        /// their <see cref="UpdateSourceTrigger"/> set to <see cref="UpdateSourceTrigger.Default"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">
+        /// defaultValue is set to <see cref="DependencyProperty.UnsetValue"/>.
+        /// </exception>
+        public FrameworkPropertyMetadata(
+            object defaultValue,
+            FrameworkPropertyMetadataOptions flags,
+            PropertyChangedCallback propertyChangedCallback,
+            CoerceValueCallback coerceValueCallback,
+            UpdateSourceTrigger defaultUpdateSourceTrigger)
+            : base(defaultValue, propertyChangedCallback, coerceValueCallback)
+        {
+            if (!IsValidUpdateSourceTrigger(defaultUpdateSourceTrigger))
+            {
+                throw new InvalidEnumArgumentException(nameof(defaultUpdateSourceTrigger), (int)defaultUpdateSourceTrigger, typeof(UpdateSourceTrigger));
+            }
+
+            if (defaultUpdateSourceTrigger == UpdateSourceTrigger.Default)
+            {
+                throw new ArgumentException(Strings.NoDefaultUpdateSourceTrigger, nameof(defaultUpdateSourceTrigger));
+            }
+
+            TranslateFlags(flags);
+            DefaultUpdateSourceTrigger = defaultUpdateSourceTrigger;
+        }
+
         /// <summary>
         /// Gets or sets a value that indicates whether a dependency property potentially
         /// affects the measure pass during layout engine operations.
@@ -377,6 +435,45 @@ namespace System.Windows
         }
 
         /// <summary>
+        /// Gets or sets the default for <see cref="UpdateSourceTrigger"/> to use when bindings for the 
+        /// property with this metadata are applied, which have their <see cref="UpdateSourceTrigger"/>
+        /// set to <see cref="UpdateSourceTrigger.Default"/>.
+        /// </summary>
+        /// <returns>
+        /// A value of the enumeration, other than <see cref="UpdateSourceTrigger.Default"/>.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// This property is set to <see cref="UpdateSourceTrigger.Default"/>; the value you set is 
+        /// supposed to become the default when requested by bindings.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        /// The metadata has already been applied to a dependency property operation, so that metadata 
+        /// is sealed and properties of the metadata cannot be set.
+        /// </exception>
+        public UpdateSourceTrigger DefaultUpdateSourceTrigger
+        {
+            // FW_DefaultUpdateSourceTriggerEnumBit1        = 0x40000000,
+            // FW_DefaultUpdateSourceTriggerEnumBit2        = 0x80000000,
+            get { return (UpdateSourceTrigger)(((uint)_flags >> 30) & 0x3); }
+            set
+            {
+                CheckSealed();
+                if (!IsValidUpdateSourceTrigger(value))
+                {
+                    throw new InvalidEnumArgumentException(nameof(value), (int)value, typeof(UpdateSourceTrigger));
+                }
+                if (value == UpdateSourceTrigger.Default)
+                {
+                    throw new ArgumentException(Strings.NoDefaultUpdateSourceTrigger, nameof(value));
+                }
+                // FW_DefaultUpdateSourceTriggerEnumBit1        = 0x40000000,
+                // FW_DefaultUpdateSourceTriggerEnumBit2        = 0x80000000,
+                _flags = (MetadataFlags)(((uint)_flags & 0x3FFFFFFF) | ((uint)value) << 30);
+                SetModified(MetadataFlags.FW_DefaultUpdateSourceTriggerModifiedID);
+            }
+        }
+
+        /// <summary>
         /// Gets a value that indicates whether data binding is supported for the dependency property.
         /// </summary>
         /// <returns>
@@ -446,6 +543,13 @@ namespace System.Windows
                 {
                     IsInherited = fbaseMetadata.Inherits;
                 }
+
+                if (!IsModified(MetadataFlags.FW_DefaultUpdateSourceTriggerModifiedID))
+                {
+                    // FW_DefaultUpdateSourceTriggerEnumBit1        = 0x40000000,
+                    // FW_DefaultUpdateSourceTriggerEnumBit2        = 0x80000000,
+                    _flags = (MetadataFlags)(((uint)_flags & 0x3FFFFFFF) | ((uint)fbaseMetadata.DefaultUpdateSourceTrigger) << 30);
+                }
             }
         }
 
@@ -468,6 +572,13 @@ namespace System.Windows
             base.OnApply(dp, targetType);
         }
 
+        private void Initialize()
+        {
+            // FW_DefaultUpdateSourceTriggerEnumBit1        = 0x40000000,
+            // FW_DefaultUpdateSourceTriggerEnumBit2        = 0x80000000,
+            _flags = (MetadataFlags)(((uint)_flags & 0x3FFFFFFF) | ((uint)UpdateSourceTrigger.PropertyChanged) << 30);
+        }
+
         private static bool IsFlagSet(FrameworkPropertyMetadataOptions flag, FrameworkPropertyMetadataOptions flags)
         {
             return (flags & flag) != 0;
@@ -475,6 +586,8 @@ namespace System.Windows
 
         private void TranslateFlags(FrameworkPropertyMetadataOptions flags)
         {
+            Initialize();
+
             // Convert flags to state sets. If a flag is set, then,
             // the value is set on the respective property. Otherwise,
             // the state remains unset
@@ -524,6 +637,16 @@ namespace System.Windows
         }
 
         internal void SetModified(MetadataFlags id) { WriteFlag(id, true); }
+
         internal bool IsModified(MetadataFlags id) { return ReadFlag(id); }
+
+        // return false if this is an invalid value for UpdateSourceTrigger
+        private static bool IsValidUpdateSourceTrigger(UpdateSourceTrigger value)
+        {
+            return value == UpdateSourceTrigger.Default ||
+                   value == UpdateSourceTrigger.PropertyChanged ||
+                   value == UpdateSourceTrigger.LostFocus ||
+                   value == UpdateSourceTrigger.Explicit;
+        }
     }
 }

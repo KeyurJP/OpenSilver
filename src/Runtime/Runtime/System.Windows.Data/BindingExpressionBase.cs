@@ -34,6 +34,7 @@ public abstract class BindingExpressionBase : Expression
         iUpdateOnLostFocus = 0x00000080,
         iUpdateExplicitly = 0x00000100,
         iUpdateOnPropertyChanged = 0x00000200,
+        iUpdateDefault = iUpdateExplicitly | iUpdateOnLostFocus | iUpdateOnPropertyChanged,
         iNeedsUpdate = 0x00000400,
         iDetaching = 0x00000800,
         iInMultiBindingExpression = 0x00001000,
@@ -319,12 +320,7 @@ public abstract class BindingExpressionBase : Expression
     /// <summary> End a source update </summary>
     internal void EndSourceUpdate() => ChangeFlag(PrivateFlags.iInUpdate | PrivateFlags.iNeedsUpdate, false);
 
-    internal void ResolvePropertyDefaultSettings(
-        BindingMode mode,
-        UpdateSourceTrigger updateTrigger,
-        FrameworkPropertyMetadata fwMetaData,
-        DependencyObject d,
-        DependencyProperty dp)
+    internal void ResolvePropertyDefaultSettings(BindingMode mode, UpdateSourceTrigger updateTrigger, FrameworkPropertyMetadata fwMetaData)
     {
         // resolve "property-default" dataflow
         if (mode == BindingMode.Default)
@@ -344,27 +340,23 @@ public abstract class BindingExpressionBase : Expression
         // resolve "property-default" update trigger
         if (updateTrigger == UpdateSourceTrigger.Default)
         {
-            UpdateSourceTrigger ust = GetDefaultUpdateSourceTrigger(d, dp);
+            UpdateSourceTrigger ust = GetDefaultUpdateSourceTrigger(fwMetaData);
 
             SetUpdateSourceTrigger(ust);
         }
+
+        Debug.Assert((_flags & PrivateFlags.iUpdateMask) != PrivateFlags.iUpdateDefault, "BindingExpression should not have Default update trigger");
     }
 
     // return the effective update trigger, used when binding doesn't set one explicitly
-    private UpdateSourceTrigger GetDefaultUpdateSourceTrigger(DependencyObject target, DependencyProperty targetProperty)
+    private UpdateSourceTrigger GetDefaultUpdateSourceTrigger(FrameworkPropertyMetadata fwMetaData)
     {
         if (IsInMultiBindingExpression)
         {
             return UpdateSourceTrigger.Explicit;
         }
 
-        if ((target is TextBox && targetProperty == TextBox.TextProperty) ||
-            (target is PasswordBox && targetProperty == PasswordBox.PasswordProperty))
-        {
-            return UpdateSourceTrigger.LostFocus;
-        }
-
-        return UpdateSourceTrigger.PropertyChanged;
+        return fwMetaData?.DefaultUpdateSourceTrigger ?? UpdateSourceTrigger.PropertyChanged;
     }
 
     private void SetUpdateSourceTrigger(UpdateSourceTrigger ust)

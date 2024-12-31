@@ -13,6 +13,7 @@
 
 using System.ComponentModel;
 using System.Windows.Automation.Peers;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Input;
@@ -141,14 +142,19 @@ namespace System.Windows.Controls
         }
 
         /// <summary>
-        /// Identifies the Text dependency property.
+        /// Identifies the <see cref="Text"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register(
                 nameof(Text),
                 typeof(string),
                 typeof(TextBox),
-                new PropertyMetadata(string.Empty, OnTextChanged, CoerceText));
+                new FrameworkPropertyMetadata(
+                    string.Empty,
+                    FrameworkPropertyMetadataOptions.None,
+                    OnTextChanged,
+                    CoerceText,
+                    UpdateSourceTrigger.LostFocus));
 
         private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

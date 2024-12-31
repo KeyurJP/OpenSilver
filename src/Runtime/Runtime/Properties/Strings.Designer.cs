@@ -925,6 +925,15 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to FrameworkPropertyMetadata.DefaultUpdateSourceTrigger cannot be set to UpdateSourceTrigger.Default; this would create a circular definition..
+        /// </summary>
+        internal static string NoDefaultUpdateSourceTrigger {
+            get {
+                return ResourceManager.GetString("NoDefaultUpdateSourceTrigger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot set UpdateSourceTrigger on inner Binding of MultiBinding. Only the default Immediate UpdateSourceTrigger is valid..
         /// </summary>
         internal static string NoUpdateSourceTriggerForInnerBindingOfMultiBinding {
