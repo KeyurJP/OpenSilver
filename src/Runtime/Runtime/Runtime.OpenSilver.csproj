@@ -99,6 +99,7 @@
     <Compile Include="System.Windows.Controls\ItemsControlHelper.cs" />
     <Compile Include="System.Windows.Controls\IUpdateVisualState.cs" />
     <Compile Include="System.Windows.Controls\MenuItem.cs" />
+    <Compile Include="System.Windows.Controls\ScrollChangedEventArgs.cs" />
     <Compile Include="System.Windows.Controls\Separator.cs" />
     <Compile Include="System.Windows.Controls\TreeView.cs" />
     <Compile Include="System.Windows.Controls\TreeViewItem.cs" />
