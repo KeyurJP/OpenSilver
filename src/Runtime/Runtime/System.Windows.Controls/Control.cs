@@ -27,6 +27,8 @@ namespace System.Windows.Controls
     {
         static Control()
         {
+            FocusableProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox));
+
             EventManager.RegisterClassHandler(typeof(Control), MouseLeftButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
             EventManager.RegisterClassHandler(typeof(Control), MouseRightButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
         }
@@ -378,12 +380,7 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the <see cref="TabIndex"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty TabIndexProperty =
-            DependencyProperty.Register(
-                nameof(TabIndex), 
-                typeof(int), 
-                typeof(Control), 
-                new PropertyMetadata(int.MaxValue));
+        public static readonly DependencyProperty TabIndexProperty = KeyboardNavigation.TabIndexProperty.AddOwner(typeof(Control));
 
         //-----------------------
         // ISTABSTOP
@@ -402,12 +399,7 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the <see cref="IsTabStop"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsTabStopProperty =
-            DependencyProperty.Register(
-                nameof(IsTabStop),    
-                typeof(bool), 
-                typeof(Control), 
-                new PropertyMetadata(true));
+        public static readonly DependencyProperty IsTabStopProperty = KeyboardNavigation.IsTabStopProperty.AddOwner(typeof(Control));
 
         /// <summary>
         /// Gets or sets a value that modifies how tabbing and <see cref="TabIndex"/>
@@ -425,12 +417,7 @@ namespace System.Windows.Controls
         /// <summary>
         /// Identifies the <see cref="TabNavigation"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty TabNavigationProperty =
-            DependencyProperty.Register(
-                nameof(TabNavigation),
-                typeof(KeyboardNavigationMode),
-                typeof(Control),
-                new PropertyMetadata(KeyboardNavigationMode.Local));
+        public static readonly DependencyProperty TabNavigationProperty = KeyboardNavigation.TabNavigationProperty.AddOwner(typeof(Control));
 
         //-----------------------
         // TEMPLATE
@@ -514,9 +501,7 @@ namespace System.Windows.Controls
         /// true if focus was set to the control, or focus was already on the control.
         /// false if the control is not focusable.
         /// </returns>
-        public bool Focus() =>
-            KeyboardNavigation.Current.Focus(this) is UIElement uie &&
-            InputManager.Current.SetFocus(uie);
+        public new bool Focus() => base.Focus();
 
         [Obsolete(Helper.ObsoleteMemberMessage)]
         [EditorBrowsable(EditorBrowsableState.Never)]

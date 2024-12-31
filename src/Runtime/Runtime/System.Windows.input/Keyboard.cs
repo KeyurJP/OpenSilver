@@ -11,8 +11,6 @@
 *  
 \*====================================================================================*/
 
-using System.Windows.Controls;
-
 namespace System.Windows.Input;
 
 /// <summary>
@@ -25,5 +23,5 @@ public static class Keyboard
     /// </summary>
     public static ModifierKeys Modifiers => InputManager.Current.GetKeyboardModifiers();
 
-    internal static bool IsFocusable(Control control) => KeyboardNavigation.Current.IsTabStop(control);
+    internal static bool IsFocusable(UIElement uie) => KeyboardNavigation.Current.IsTabStop(uie);
 }

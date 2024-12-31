@@ -27,6 +27,11 @@ namespace System.Windows
     [ContentProperty(nameof(Content))]
     public class Window : FrameworkElement
     {
+        static Window()
+        {
+            KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(Window), new FrameworkPropertyMetadata(KeyboardNavigationMode.Cycle));
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Window"/> class.
         /// </summary>

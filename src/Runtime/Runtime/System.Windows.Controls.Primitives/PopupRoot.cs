@@ -29,6 +29,11 @@ internal sealed class PopupRoot : FrameworkElement
     private readonly PositionLayer _positionLayer;
     private readonly TransformLayer _transformLayer;
 
+    static PopupRoot()
+    {
+        KeyboardNavigation.TabNavigationProperty.OverrideMetadata(typeof(PopupRoot), new FrameworkPropertyMetadata(KeyboardNavigationMode.Cycle));
+    }
+
     internal PopupRoot(Popup popup)
     {
         BypassLayoutPolicies = true;

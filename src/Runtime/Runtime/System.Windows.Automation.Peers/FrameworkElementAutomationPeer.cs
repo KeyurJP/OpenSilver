@@ -458,7 +458,7 @@ namespace System.Windows.Automation.Peers
         /// true if the element is focusable by the keyboard; otherwise, false.
         /// </returns>
         protected override bool IsKeyboardFocusableCore() 
-            => Owner is Control c && Keyboard.IsFocusable(c);
+            => Owner is UIElement uie && Keyboard.IsFocusable(uie);
 
         /// <summary>
         /// Returns a value that indicates whether the <see cref="UIElement" /> that is 
@@ -477,9 +477,9 @@ namespace System.Windows.Automation.Peers
         /// </summary>
         protected override void SetFocusCore()
         {
-            if (Owner is Control c)
+            if (Owner is UIElement uie)
             {
-                c.Focus();
+                uie.Focus();
             }
         }
 

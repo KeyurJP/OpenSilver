@@ -308,7 +308,53 @@ namespace System.Windows
             base.OnPropertyChanged(e);
         }
 
-#region ClipToBounds
+        /// <summary>
+        /// Attempts to set focus to this element.
+        /// </summary>
+        /// <returns>
+        /// true if keyboard focus and logical focus were set to this element; false if only logical focus was set to this element, 
+        /// or if the call to this method did not force the focus to change.
+        /// </returns>
+        public bool Focus() =>
+            KeyboardNavigation.Current.Focus(this) is UIElement uie &&
+            InputManager.Current.SetFocus(uie);
+
+        /// <summary>
+        /// Occurs when the value of the <see cref="Focusable"/> property changes.
+        /// </summary>
+        public event DependencyPropertyChangedEventHandler FocusableChanged;
+
+        /// <summary>
+        /// Identifies the <see cref="Focusable"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty FocusableProperty =
+            DependencyProperty.Register(
+                nameof(Focusable),
+                typeof(bool),
+                typeof(UIElement),
+                new PropertyMetadata(BooleanBoxes.FalseBox, OnFocusableChanged));
+
+        /// <summary>
+        /// Gets or sets a value that indicates whether the element can receive focus. This is a dependency property.
+        /// </summary>
+        /// <returns>
+        /// true if the element is focusable; otherwise false. The default is false.
+        /// </returns>
+        public bool Focusable
+        {
+            get => (bool)GetValue(FocusableProperty);
+            set => SetValueInternal(FocusableProperty, value);
+        }
+
+        private static void OnFocusableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var uie = (UIElement)d;
+
+            // Raise the public changed event.
+            uie.FocusableChanged?.Invoke(uie, e);
+        }
+
+        #region ClipToBounds
 
         /// <summary>
         /// Gets or sets a value indicating whether to clip the content of this element
