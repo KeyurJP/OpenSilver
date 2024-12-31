@@ -24,10 +24,40 @@ namespace System.Windows.Controls;
 /// </summary>
 public class Grid : Panel
 {
+    static Grid()
+    {
+        DefinitionBase.PrivateSharedSizeScopeProperty.OverrideMetadata(
+            typeof(Grid),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits, OnSharedSizeScopeChanged));
+    }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Grid"/> class.
     /// </summary>
     public Grid() { }
+
+    private static void OnSharedSizeScopeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var grid = (Grid)d;
+        if (grid.ExtData is ExtendedData data)
+        {
+            if (data.RowDefinitions is RowDefinitionCollection rows)
+            {
+                foreach (RowDefinition row in rows.InternalItems)
+                {
+                    DefinitionBase.OnPrivateSharedSizeScopePropertyChanged(row, e);
+                }
+            }
+
+            if (data.ColumnDefinitions is ColumnDefinitionCollection columns)
+            {
+                foreach (ColumnDefinition column in columns.InternalItems)
+                {
+                    DefinitionBase.OnPrivateSharedSizeScopePropertyChanged(column, e);
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// Identifies the Grid.Column attached property.
@@ -223,6 +253,54 @@ public class Grid : Panel
         }
 
         element.SetValueInternal(RowSpanProperty, value);
+    }
+
+    /// <summary>
+    /// Identifies the Grid.IsSharedSizeScope attached property.
+    /// </summary>
+    public static readonly DependencyProperty IsSharedSizeScopeProperty =
+        DependencyProperty.RegisterAttached(
+            "IsSharedSizeScope",
+            typeof(bool),
+            typeof(Grid),
+            new FrameworkPropertyMetadata(BooleanBoxes.FalseBox, DefinitionBase.OnIsSharedSizeScopePropertyChanged));
+
+    /// <summary>
+    /// Gets the value of the Grid.IsSharedSizeScope attached property from a given <see cref="UIElement"/>.
+    /// </summary>
+    /// <param name="element">
+    /// The element from which to read the property value.
+    /// </param>
+    /// <returns>
+    /// The value of the Grid.IsSharedSizeScope attached property.
+    /// </returns>
+    public static bool GetIsSharedSizeScope(UIElement element)
+    {
+        if (element is null)
+        {
+            throw new ArgumentNullException(nameof(element));
+        }
+
+        return (bool)element.GetValue(IsSharedSizeScopeProperty);
+    }
+
+    /// <summary>
+    /// Sets the value of the Grid.IsSharedSizeScope attached property to a given <see cref="UIElement"/>.
+    /// </summary>
+    /// <param name="element">
+    /// The element on which to set the Grid.IsSharedSizeScope attached property.
+    /// </param>
+    /// <param name="value">
+    /// The property value to set.
+    /// </param>
+    public static void SetIsSharedSizeScope(UIElement element, bool value)
+    {
+        if (element is null)
+        {
+            throw new ArgumentNullException(nameof(element));
+        }
+
+        element.SetValueInternal(IsSharedSizeScopeProperty, value);
     }
 
     /// <summary>

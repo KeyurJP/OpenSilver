@@ -11,7 +11,9 @@
 *  
 \*====================================================================================*/
 
+using System.Collections.Generic;
 using System.Diagnostics;
+using OpenSilver.Internal;
 
 namespace System.Windows.Controls;
 
@@ -22,10 +24,44 @@ namespace System.Windows.Controls;
 /// </summary>
 public abstract class DefinitionBase : DependencyObject
 {
+    /// <summary>
+    /// Static ctor. Used for static registration of properties.
+    /// </summary>
+    static DefinitionBase()
+    {
+        PrivateSharedSizeScopeProperty.OverrideMetadata(
+            typeof(DefinitionBase),
+            new FrameworkPropertyMetadata(OnPrivateSharedSizeScopePropertyChanged));
+    }
+
     internal DefinitionBase(bool isColumnDefinition)
     {
         _isColumnDefinition = isColumnDefinition;
         _parentIndex = -1;
+    }
+
+    /// <summary>
+    /// Identifies the <see cref="SharedSizeGroup"/> dependency property.
+    /// </summary>
+    public static readonly DependencyProperty SharedSizeGroupProperty =
+        DependencyProperty.Register(
+            nameof(SharedSizeGroup),
+            typeof(string),
+            typeof(DefinitionBase),
+            new FrameworkPropertyMetadata(OnSharedSizeGroupPropertyChanged),
+            SharedSizeGroupPropertyValueValid);
+
+    /// <summary>
+    /// Gets or sets a value that identifies a <see cref="ColumnDefinition"/> or <see cref="RowDefinition"/> 
+    /// as a member of a defined group that shares sizing properties.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="string"/> that identifies a shared-size group.
+    /// </returns>
+    public string SharedSizeGroup
+    {
+        get => (string)GetValue(SharedSizeGroupProperty);
+        set => SetValueInternal(SharedSizeGroupProperty, value);
     }
 
     internal Grid Parent { get; set; }
@@ -33,7 +69,22 @@ public abstract class DefinitionBase : DependencyObject
     /// <summary>
     /// Callback to notify about entering model tree.
     /// </summary>
-    internal void OnEnterParentTree() { }
+    internal void OnEnterParentTree()
+    {
+        if (_sharedState is null)
+        {
+            //  start with getting SharedSizeGroup value.
+            //  this property is NOT inhereted which should result in better overall perf.
+            if (SharedSizeGroup is string sharedSizeGroupId)
+            {
+                if (PrivateSharedSizeScope is SharedSizeScope privateSharedSizeScope)
+                {
+                    _sharedState = privateSharedSizeScope.EnsureSharedState(sharedSizeGroupId);
+                    _sharedState.AddMember(this);
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// Callback to notify about exitting model tree.
@@ -41,6 +92,11 @@ public abstract class DefinitionBase : DependencyObject
     internal void OnExitParentTree()
     {
         _offset = 0;
+        if (_sharedState is not null)
+        {
+            _sharedState.RemoveMember(this);
+            _sharedState = null;
+        }
     }
 
     /// <summary>
@@ -51,6 +107,9 @@ public abstract class DefinitionBase : DependencyObject
         //  reset layout state.
         _minSize = 0;
         LayoutWasUpdated = true;
+
+        //  defer verification for shared definitions
+        _sharedState?.EnsureDeferredValidation(grid);
     }
 
     /// <summary>
@@ -77,15 +136,22 @@ public abstract class DefinitionBase : DependencyObject
 
         if (definition.InParentLogicalTree)
         {
-            Grid parentGrid = definition.Parent;
-
-            if (((GridLength)e.OldValue).GridUnitType != ((GridLength)e.NewValue).GridUnitType)
+            if (definition._sharedState is not null)
             {
-                parentGrid.Invalidate();
+                definition._sharedState.Invalidate();
             }
             else
             {
-                parentGrid.InvalidateMeasure();
+                Grid parentGrid = definition.Parent;
+
+                if (((GridLength)e.OldValue).GridUnitType != ((GridLength)e.NewValue).GridUnitType)
+                {
+                    parentGrid.Invalidate();
+                }
+                else
+                {
+                    parentGrid.InvalidateMeasure();
+                }
             }
         }
     }
@@ -133,14 +199,38 @@ public abstract class DefinitionBase : DependencyObject
     }
 
     /// <summary>
+    /// <see cref="PropertyMetadata.PropertyChangedCallback"/>
+    /// </summary>
+    /// <remarks>
+    /// This method reflects Grid.SharedScopeProperty state by setting / clearing
+    /// dynamic property PrivateSharedSizeScopeProperty. Value of PrivateSharedSizeScopeProperty
+    /// is a collection of SharedSizeState objects for the scope.
+    /// Also PrivateSharedSizeScopeProperty is FrameworkPropertyMetadataOptions.Inherits property. So that all children
+    /// elements belonging to a certain scope can easily access SharedSizeState collection. As well
+    /// as been norified about enter / exit a scope.
+    /// </remarks>
+    internal static void OnIsSharedSizeScopePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        //  is it possible to optimize here something like this:
+        if ((bool)e.NewValue)
+        {
+            d.SetValueInternal(PrivateSharedSizeScopeProperty, new SharedSizeScope());
+        }
+        else
+        {
+            d.ClearValue(PrivateSharedSizeScopeProperty);
+        }
+    }
+
+    /// <summary>
     /// Returns <c>true</c> if this definition is a part of shared group.
     /// </summary>
-    internal bool IsShared => false;
+    internal bool IsShared => _sharedState is not null;
 
     /// <summary>
     /// Internal accessor to user size field.
     /// </summary>
-    internal GridLength UserSize => UserSizeValueCache;
+    internal GridLength UserSize => _sharedState?.UserSize ?? UserSizeValueCache;
 
     /// <summary>
     /// Internal accessor to user min size field.
@@ -214,12 +304,34 @@ public abstract class DefinitionBase : DependencyObject
     /// <summary>
     /// Returns min size.
     /// </summary>
-    internal double MinSize => _minSize;
+    internal double MinSize
+    {
+        get
+        {
+            double minSize = _minSize;
+            if (UseSharedMinimum && _sharedState is not null && minSize < _sharedState.MinSize)
+            {
+                minSize = _sharedState.MinSize;
+            }
+            return minSize;
+        }
+    }
 
     /// <summary>
     /// Returns min size, always taking into account shared state.
     /// </summary>
-    internal double MinSizeForArrange => _minSize;
+    internal double MinSizeForArrange
+    {
+        get
+        {
+            double minSize = _minSize;
+            if (_sharedState is not null && (UseSharedMinimum || !LayoutWasUpdated) && minSize < _sharedState.MinSize)
+            {
+                minSize = _sharedState.MinSize;
+            }
+            return minSize;
+        }
+    }
 
     /// <summary>
     /// Returns min size, never taking into account shared state.
@@ -271,6 +383,38 @@ public abstract class DefinitionBase : DependencyObject
     private bool CheckFlagsAnd(Flags flags) => (_flags & flags) == flags;
 
     /// <summary>
+    /// <see cref="PropertyMetadata.PropertyChangedCallback"/>
+    /// </summary>
+    private static void OnSharedSizeGroupPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        DefinitionBase definition = (DefinitionBase)d;
+
+        if (definition.InParentLogicalTree)
+        {
+            string sharedSizeGroupId = (string)e.NewValue;
+
+            if (definition._sharedState is not null)
+            {
+                //  if definition is already registered AND shared size group id is changing,
+                //  then un-register the definition from the current shared size state object.
+                definition._sharedState.RemoveMember(definition);
+                definition._sharedState = null;
+            }
+
+            if (definition._sharedState is null && sharedSizeGroupId is not null)
+            {
+                if (definition.PrivateSharedSizeScope is SharedSizeScope privateSharedSizeScope)
+                {
+                    //  if definition is not registered and both: shared size group id AND private shared scope
+                    //  are available, then register definition.
+                    definition._sharedState = privateSharedSizeScope.EnsureSharedState(sharedSizeGroupId);
+                    definition._sharedState.AddMember(definition);
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// <see cref="DependencyProperty.ValidateValueCallback"/>
     /// </summary>
     /// <remarks>
@@ -312,6 +456,58 @@ public abstract class DefinitionBase : DependencyObject
     }
 
     /// <summary>
+    /// <see cref="PropertyMetadata.PropertyChangedCallback"/>
+    /// </summary>
+    /// <remark>
+    /// OnPrivateSharedSizeScopePropertyChanged is called when new scope enters or
+    /// existing scope just left. In both cases if the DefinitionBase object is already registered
+    /// in SharedSizeState, it should un-register and register itself in a new one.
+    /// </remark>
+    internal static void OnPrivateSharedSizeScopePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        DefinitionBase definition = (DefinitionBase)d;
+
+        if (definition.InParentLogicalTree)
+        {
+            SharedSizeScope privateSharedSizeScope = (SharedSizeScope)e.NewValue;
+
+            if (definition._sharedState is not null)
+            {
+                //  if definition is already registered And shared size scope is changing,
+                //  then un-register the definition from the current shared size state object.
+                definition._sharedState.RemoveMember(definition);
+                definition._sharedState = null;
+            }
+
+            if (definition._sharedState is null && privateSharedSizeScope is not null)
+            {
+                if (definition.SharedSizeGroup is string sharedSizeGroup)
+                {
+                    //  if definition is not registered and both: shared size group id AND private shared scope
+                    //  are available, then register definition.
+                    definition._sharedState = privateSharedSizeScope.EnsureSharedState(definition.SharedSizeGroup);
+                    definition._sharedState.AddMember(definition);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Private getter of shared state collection dynamic property.
+    /// </summary>
+    private SharedSizeScope PrivateSharedSizeScope
+    {
+        get
+        {
+            if (Parent is Grid parentGrid)
+            {
+                return (SharedSizeScope)parentGrid.GetValue(PrivateSharedSizeScopeProperty);
+            }
+            return null;
+        }
+    }
+
+    /// <summary>
     /// Convenience accessor to UseSharedMinimum flag
     /// </summary>
     private bool UseSharedMinimum
@@ -340,6 +536,8 @@ public abstract class DefinitionBase : DependencyObject
     private double _sizeCache;                      //  cache used for various purposes (sorting, caching, etc) during calculations
     private double _offset;                         //  offset of the DefinitionBase from left / top corner (assuming LTR case)
 
+    private SharedSizeState _sharedState;           //  reference to shared state object this instance is registered with
+
     internal const bool ThisIsColumnDefinition = true;
     internal const bool ThisIsRowDefinition = false;
 
@@ -352,4 +550,287 @@ public abstract class DefinitionBase : DependencyObject
         UseSharedMinimum = 0x00000020,     //  when "1", definition will take into account shared state's minimum
         LayoutWasUpdated = 0x00000040,     //  set to "1" every time the parent grid is measured
     }
+
+    /// <summary>
+    /// Collection of shared states objects for a single scope
+    /// </summary>
+    private sealed class SharedSizeScope
+    {
+        /// <summary>
+        /// Returns SharedSizeState object for a given group.
+        /// Creates a new StatedState object if necessary.
+        /// </summary>
+        internal SharedSizeState EnsureSharedState(string sharedSizeGroup)
+        {
+            //  check that sharedSizeGroup is not default
+            Debug.Assert(sharedSizeGroup is not null);
+
+            if (!_registry.TryGetValue(sharedSizeGroup, out SharedSizeState sharedState))
+            {
+                sharedState = new SharedSizeState(this, sharedSizeGroup);
+                _registry[sharedSizeGroup] = sharedState;
+            }
+            return sharedState;
+        }
+
+        /// <summary>
+        /// Removes an entry in the registry by the given key.
+        /// </summary>
+        internal void Remove(string key)
+        {
+            Debug.Assert(_registry.ContainsKey(key));
+            _registry.Remove(key);
+        }
+
+        private readonly Dictionary<string, SharedSizeState> _registry = new();  //  storage for shared state objects
+    }
+
+    /// <summary>
+    /// Implementation of per shared group state object
+    /// </summary>
+    private sealed class SharedSizeState
+    {
+        /// <summary>
+        /// Default ctor.
+        /// </summary>
+        internal SharedSizeState(SharedSizeScope sharedSizeScope, string sharedSizeGroupId)
+        {
+            Debug.Assert(sharedSizeScope is not null && sharedSizeGroupId is not null);
+            _sharedSizeScope = sharedSizeScope;
+            _sharedSizeGroupId = sharedSizeGroupId;
+            _registry = new List<DefinitionBase>();
+            _layoutUpdated = new EventHandler(OnLayoutUpdated);
+            _broadcastInvalidation = true;
+        }
+
+        /// <summary>
+        /// Adds / registers a definition instance.
+        /// </summary>
+        internal void AddMember(DefinitionBase member)
+        {
+            Debug.Assert(!_registry.Contains(member));
+            _registry.Add(member);
+            Invalidate();
+        }
+
+        /// <summary>
+        /// Removes / un-registers a definition instance.
+        /// </summary>
+        /// <remarks>
+        /// If the collection of registered definitions becomes empty
+        /// instantiates self removal from owner's collection.
+        /// </remarks>
+        internal void RemoveMember(DefinitionBase member)
+        {
+            Invalidate();
+            _registry.Remove(member);
+
+            if (_registry.Count == 0)
+            {
+                _sharedSizeScope.Remove(_sharedSizeGroupId);
+            }
+        }
+
+        /// <summary>
+        /// Propogates invalidations for all registered definitions.
+        /// Resets its own state.
+        /// </summary>
+        internal void Invalidate()
+        {
+            _userSizeValid = false;
+
+            if (_broadcastInvalidation)
+            {
+                for (int i = 0, count = _registry.Count; i < count; ++i)
+                {
+                    Grid parentGrid = _registry[i].Parent;
+                    parentGrid.Invalidate();
+                }
+                _broadcastInvalidation = false;
+            }
+        }
+
+        /// <summary>
+        /// Makes sure that one and only one layout updated handler is registered for this shared state.
+        /// </summary>
+        internal void EnsureDeferredValidation(UIElement layoutUpdatedHost)
+        {
+            if (_layoutUpdatedHost is null)
+            {
+                _layoutUpdatedHost = layoutUpdatedHost;
+                _layoutUpdatedHost.LayoutUpdated += _layoutUpdated;
+            }
+        }
+
+        /// <summary>
+        /// DefinitionBase's specific code.
+        /// </summary>
+        internal double MinSize
+        {
+            get
+            {
+                if (!_userSizeValid)
+                {
+                    EnsureUserSizeValid();
+                }
+                return _minSize;
+            }
+        }
+
+        /// <summary>
+        /// DefinitionBase's specific code.
+        /// </summary>
+        internal GridLength UserSize
+        {
+            get
+            {
+                if (!_userSizeValid)
+                {
+                    EnsureUserSizeValid();
+                }
+                return _userSize;
+            }
+        }
+
+        private void EnsureUserSizeValid()
+        {
+            _userSize = new GridLength(1, GridUnitType.Auto);
+
+            for (int i = 0, count = _registry.Count; i < count; ++i)
+            {
+                Debug.Assert(_userSize.GridUnitType == GridUnitType.Auto || _userSize.GridUnitType == GridUnitType.Pixel);
+
+                GridLength currentGridLength = _registry[i].UserSizeValueCache;
+                if (currentGridLength.GridUnitType == GridUnitType.Pixel)
+                {
+                    if (_userSize.GridUnitType == GridUnitType.Auto)
+                    {
+                        _userSize = currentGridLength;
+                    }
+                    else if (_userSize.Value < currentGridLength.Value)
+                    {
+                        _userSize = currentGridLength;
+                    }
+                }
+            }
+            //  taking maximum with user size effectively prevents squishy-ness.
+            //  this is a "solution" to avoid shared definitions from been sized to
+            //  different final size at arrange time, if / when different grids receive
+            //  different final sizes.
+            _minSize = _userSize.IsAbsolute ? _userSize.Value : 0.0;
+
+            _userSizeValid = true;
+        }
+
+        /// <summary>
+        /// OnLayoutUpdated handler. Validates that all participating definitions
+        /// have updated min size value. Forces another layout update cycle if needed.
+        /// </summary>
+        private void OnLayoutUpdated(object sender, EventArgs e)
+        {
+            double sharedMinSize = 0;
+
+            //  accumulate min size of all participating definitions
+            for (int i = 0, count = _registry.Count; i < count; ++i)
+            {
+                sharedMinSize = Math.Max(sharedMinSize, _registry[i]._minSize);
+            }
+
+            bool sharedMinSizeChanged = !DoubleUtil.AreClose(_minSize, sharedMinSize);
+
+            //  compare accumulated min size with min sizes of the individual definitions
+            for (int i = 0, count = _registry.Count; i < count; ++i)
+            {
+                DefinitionBase definitionBase = _registry[i];
+
+                // we'll set d.UseSharedMinimum to maintain the invariant:
+                //      d.UseSharedMinimum iff d._minSize < this.MinSize
+                // i.e. iff d is not a "long-pole" definition.
+                //
+                // Measure/Arrange of d's Grid uses d._minSize for long-pole
+                // definitions, and max(d._minSize, shared size) for
+                // short-pole definitions.  This distinction allows us to react
+                // to changes in "long-pole-ness" more efficiently and correctly,
+                // by avoiding remeasures when a long-pole definition changes.
+                bool useSharedMinimum = !DoubleUtil.AreClose(definitionBase._minSize, sharedMinSize);
+
+                // before doing that, determine whether d's Grid needs to be remeasured.
+                // It's important _not_ to remeasure if the last measure is still
+                // valid, otherwise infinite loops are possible
+                bool measureIsValid;
+                if (!definitionBase.UseSharedMinimum)
+                {
+                    // d was a long-pole.  measure is valid iff it's still a long-pole,
+                    // since previous measure didn't use shared size.
+                    measureIsValid = !useSharedMinimum;
+                }
+                else if (useSharedMinimum)
+                {
+                    // d was a short-pole, and still is.  measure is valid
+                    // iff the shared size didn't change
+                    measureIsValid = !sharedMinSizeChanged;
+                }
+                else
+                {
+                    // d was a short-pole, but is now a long-pole.  This can
+                    // happen in several ways:
+                    //  a. d's minSize increased to or past the old shared size
+                    //  b. other long-pole definitions decreased, leaving
+                    //      d as the new winner
+                    // In the former case, the measure is valid - it used
+                    // d's new larger minSize.  In the latter case, the
+                    // measure is invalid - it used the old shared size,
+                    // which is larger than d's (possibly changed) minSize
+                    measureIsValid = definitionBase.LayoutWasUpdated &&
+                        DoubleUtil.GreaterThanOrClose(definitionBase._minSize, MinSize);
+                }
+
+                if (!measureIsValid)
+                {
+                    Grid parentGrid = definitionBase.Parent;
+                    parentGrid.InvalidateMeasure();
+                }
+                else if (!DoubleUtil.AreClose(sharedMinSize, definitionBase.SizeCache))
+                {
+                    //  if measure is valid then also need to check arrange.
+                    //  Note: definitionBase.SizeCache is volatile but at this point
+                    //  it contains up-to-date final size
+                    Grid parentGrid = definitionBase.Parent;
+                    parentGrid.InvalidateArrange();
+                }
+
+                // now we can restore the invariant, and clear the layout flag
+                definitionBase.UseSharedMinimum = useSharedMinimum;
+                definitionBase.LayoutWasUpdated = false;
+            }
+
+            _minSize = sharedMinSize;
+
+            _layoutUpdatedHost.LayoutUpdated -= _layoutUpdated;
+            _layoutUpdatedHost = null;
+
+            _broadcastInvalidation = true;
+        }
+
+        private readonly SharedSizeScope _sharedSizeScope;  //  the scope this state belongs to
+        private readonly string _sharedSizeGroupId;         //  Id of the shared size group this object is servicing
+        private readonly List<DefinitionBase> _registry;    //  registry of participating definitions
+        private readonly EventHandler _layoutUpdated;       //  instance event handler for layout updated event
+        private UIElement _layoutUpdatedHost;               //  UIElement for which layout updated event handler is registered
+        private bool _broadcastInvalidation;                //  "true" when broadcasting of invalidation is needed
+        private bool _userSizeValid;                        //  "true" when _userSize is up to date
+        private GridLength _userSize;                       //  shared state
+        private double _minSize;                            //  shared state
+    }
+
+    /// <summary>
+    /// Private shared size scope property holds a collection of shared state objects for the a given shared size scope.
+    /// <see cref="OnIsSharedSizeScopePropertyChanged"/>
+    /// </summary>
+    internal static readonly DependencyProperty PrivateSharedSizeScopeProperty =
+        DependencyProperty.RegisterAttached(
+            "PrivateSharedSizeScope",
+            typeof(SharedSizeScope),
+            typeof(DefinitionBase),
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.Inherits));
 }
