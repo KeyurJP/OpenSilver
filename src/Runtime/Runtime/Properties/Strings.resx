@@ -200,6 +200,9 @@
     <value>Cannot call Show() on a ChildWindow that is in the visual tree. ChildWindow should be the top-most element in the .xaml file.</value>
     <comment>Exception thrown when the ChildWindow is in the visual tree and Show() is called on it.</comment>
   </data>
+  <data name="ClassTypeIllegal" xml:space="preserve">
+    <value>Class handlers can be registered only for UIElement and their subtypes.</value>
+  </data>
   <data name="CollectionAddEventMissingItem" xml:space="preserve">
     <value>After a CollectionChange.Add event, Items collection does not contain the added item '{0}'.\n This could happen if the event sender supplied incorrect information in CollectionChangedEventArgs.</value>
   </data>
@@ -247,6 +250,9 @@
   </data>
   <data name="DTypeNotSupportForSystemType" xml:space="preserve">
     <value>'{0}' type does not have a matching DependencyObjectType.</value>
+  </data>
+  <data name="DuplicateEventName" xml:space="preserve">
+    <value>RoutedEvent Name '{0}' for OwnerType '{1}' already used.</value>
   </data>
   <data name="EndInitWithoutBeginInitNotSupported" xml:space="preserve">
     <value>Must call BeginInit before EndInit.</value>
@@ -497,6 +503,9 @@
   <data name="ResourceDictionaryValueMustBeStyleWithCorrectTargetType" xml:space="preserve">
     <value>For a Type key the Style value must have TargetType which is equals to key.</value>
   </data>
+  <data name="RoutedEventCannotChangeWhileRouting" xml:space="preserve">
+    <value>Cannot change the RoutedEvent property while the RoutedEvent is being routed.</value>
+  </data>
   <data name="ScrollViewer_CannotBeNaN" xml:space="preserve">
     <value>'{0}' parameter value cannot be NaN.</value>
   </data>
@@ -583,6 +592,9 @@
   </data>
   <data name="TokenizerHelperPrematureStringTermination" xml:space="preserve">
     <value>Premature string termination encountered while parsing '{0}'.</value>
+  </data>
+  <data name="TooManyRoutedEvents" xml:space="preserve">
+    <value>RoutedEvent limit exceeded. Routed events for CLR events are typically static class members registered with field initializers or static constructors. In this case, routed events might be getting initialized in instance constructors, causing the limit to be exceeded.</value>
   </data>
   <data name="Transform_NotInvertible" xml:space="preserve">
     <value>Transform is not invertible.</value>

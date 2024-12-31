@@ -15,112 +15,79 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using OpenSilver.Internal;
 
-namespace System.Windows
+namespace System.Windows;
+
+/// <summary>
+///     Container for the event handlers
+/// </summary>
+/// <remarks>
+///     EventHandlersStore is a hashtable of handlers for a given RoutedEvent
+/// </remarks>
+internal sealed class EventHandlersStore
 {
+    private readonly Dictionary<int, List<RoutedEventHandlerInfo>> _entries;
+
     /// <summary>
-    ///     Container for the event handlers
+    ///     Constructor for EventHandlersStore
+    /// </summary>
+    public EventHandlersStore()
+    {
+        _entries = new Dictionary<int, List<RoutedEventHandlerInfo>>();
+    }
+
+    /// <summary>
+    ///     Adds a routed event handler for the given 
+    ///     RoutedEvent to the store
+    /// </summary>
+    public void AddRoutedEventHandler(RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
+    {
+        Debug.Assert(routedEvent is not null);
+        Debug.Assert(handler is not null);
+        Debug.Assert(routedEvent.IsLegalHandler(handler), Strings.HandlerTypeIllegal);
+
+        // Create a new RoutedEventHandler
+        var routedEventHandlerInfo = new RoutedEventHandlerInfo(handler, handledEventsToo);
+
+        if (!_entries.TryGetValue(routedEvent.GlobalIndex, out List<RoutedEventHandlerInfo> handlers))
+        {
+            _entries[routedEvent.GlobalIndex] = handlers = new List<RoutedEventHandlerInfo>(1);
+        }
+
+        handlers.Add(routedEventHandlerInfo);
+    }
+
+    /// <summary>
+    ///     Removes an instance of the specified 
+    ///     routed event handler for the given 
+    ///     RoutedEvent from the store
     /// </summary>
     /// <remarks>
-    ///     EventHandlersStore is a hashtable of handlers for a given RoutedEvent
+    ///     NOTE: This method does nothing if no 
+    ///     matching handler instances are found 
+    ///     in the store
     /// </remarks>
-    internal sealed class EventHandlersStore
+    public void RemoveRoutedEventHandler(RoutedEvent routedEvent, Delegate handler)
     {
-        private readonly Dictionary<RoutedEvent, List<RoutedEventHandlerInfo>> _entries;
+        Debug.Assert(routedEvent is not null);
+        Debug.Assert(handler is not null);
+        Debug.Assert(routedEvent.IsLegalHandler(handler), Strings.HandlerTypeIllegal);
 
-        /// <summary>
-        ///     Constructor for EventHandlersStore
-        /// </summary>
-        public EventHandlersStore()
+        if (_entries.TryGetValue(routedEvent.GlobalIndex, out List<RoutedEventHandlerInfo> handlers))
         {
-            _entries = new Dictionary<RoutedEvent, List<RoutedEventHandlerInfo>>();
-        }
-
-        /// <summary>
-        ///     Adds a routed event handler for the given 
-        ///     RoutedEvent to the store
-        /// </summary>
-        public void AddRoutedEventHandler(
-            RoutedEvent routedEvent,
-            Delegate handler,
-            bool handledEventsToo)
-        {
-            if (routedEvent == null)
+            for (int i = 0; i < handlers.Count; i++)
             {
-                throw new ArgumentNullException(nameof(routedEvent));
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-            if (!routedEvent.IsLegalHandler(handler))
-            {
-                throw new ArgumentException(Strings.HandlerTypeIllegal);
-            }
-
-            // Create a new RoutedEventHandler
-            RoutedEventHandlerInfo routedEventHandlerInfo =
-                new RoutedEventHandlerInfo(handler, handledEventsToo);
-
-            if (!_entries.TryGetValue(routedEvent, out List<RoutedEventHandlerInfo> handlers))
-            {
-                _entries[routedEvent] = handlers = new List<RoutedEventHandlerInfo>(1);
-            }
-
-            handlers.Add(routedEventHandlerInfo);
-        }
-
-        /// <summary>
-        ///     Removes an instance of the specified 
-        ///     routed event handler for the given 
-        ///     RoutedEvent from the store
-        /// </summary>
-        /// <remarks>
-        ///     NOTE: This method does nothing if no 
-        ///     matching handler instances are found 
-        ///     in the store
-        /// </remarks>
-        public void RemoveRoutedEventHandler(RoutedEvent routedEvent, Delegate handler)
-        {
-            if (routedEvent == null)
-            {
-                throw new ArgumentNullException(nameof(routedEvent));
-            }
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-            if (!routedEvent.IsLegalHandler(handler))
-            {
-                throw new ArgumentException(Strings.HandlerTypeIllegal);
-            }
-
-            if (_entries.TryGetValue(routedEvent, out List<RoutedEventHandlerInfo> handlers) && handlers != null)
-            {
-                for (int i = 0; i < handlers.Count; i++)
+                if (handlers[i].Handler == handler)
                 {
-                    if (handlers[i].Handler == handler)
-                    {
-                        handlers.RemoveAt(i);
-                        break;
-                    }
+                    handlers.RemoveAt(i);
+                    break;
                 }
             }
         }
+    }
 
-        // Returns Handlers for the given key
-        internal List<RoutedEventHandlerInfo> this[RoutedEvent key]
-        {
-            get
-            {
-                Debug.Assert(key != null, "Search key cannot be null");
-
-                if (_entries.TryGetValue(key, out List<RoutedEventHandlerInfo> handlers))
-                {
-                    return handlers;
-                }
-
-                return null;
-            }
-        }
+    // Returns Handlers for the given key
+    public List<RoutedEventHandlerInfo> Get(RoutedEvent routedEvent)
+    {
+        return _entries.TryGetValue(routedEvent.GlobalIndex, out List<RoutedEventHandlerInfo> handlers) ? handlers : null;
     }
 }

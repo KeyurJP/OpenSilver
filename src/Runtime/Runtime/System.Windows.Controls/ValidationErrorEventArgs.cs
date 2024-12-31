@@ -50,6 +50,10 @@ namespace System.Windows.Controls
         /// <returns>
         /// true if the event is handled; otherwise, false.
         /// </returns>
-        public bool Handled { get; set; }
+        public new bool Handled
+        {
+            get => base.Handled;
+            set => base.Handled = value;
+        }
     }
 }

@@ -147,11 +147,14 @@
     <Compile Include="System.Windows.Media.Animation\VectorAnimationUsingKeyFrames.cs" />
     <Compile Include="System.Windows.Media.Animation\VectorKeyFrame.cs" />
     <Compile Include="System.Windows\DynamicResourceExtension.cs" />
+    <Compile Include="System.Windows\EventManager.cs" />
+    <Compile Include="System.Windows\GlobalEventManager.cs" />
     <Compile Include="System.Windows\HierarchicalDataTemplate.cs" />
     <Compile Include="System.Windows\LengthConverter.cs" />
     <Compile Include="System.Windows\ResourceReferenceExpression.cs" />
     <Compile Include="System.Windows\ResourcesChangedEventArgs.cs" />
     <Compile Include="System.Windows\LogicalTreeHelper.cs" />
+    <Compile Include="System.Windows\RoutingStrategy.cs" />
     <Compile Include="System.Windows\TreeChangeInfo.cs" />
     <Compile Include="System.Windows\UIElement.TransformToVisual.cs" />
     <Compile Include="System.Windows\ValidateValueCallback.cs" />
@@ -946,7 +949,7 @@
     <Compile Include="System.Windows\TextWrapping.cs" />
     <Compile Include="System.Windows\Thickness.cs" />
     <Compile Include="System.Windows\UIElement.cs" />
-    <Compile Include="System.Windows\UIElement_Events.cs" />
+    <Compile Include="System.Windows\UIElement.Events.cs" />
     <Compile Include="System.Windows\VerticalAlignment.cs" />
     <Compile Include="System.Windows\Visibility.cs" />
     <Compile Include="System.Windows\VisualState.cs" />

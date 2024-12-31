@@ -304,6 +304,15 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Class handlers can be registered only for UIElement and their subtypes..
+        /// </summary>
+        internal static string ClassTypeIllegal {
+            get {
+                return ResourceManager.GetString("ClassTypeIllegal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to After a CollectionChange.Add event, Items collection does not contain the added item &apos;{0}&apos;.\n This could happen if the event sender supplied incorrect information in CollectionChangedEventArgs..
         /// </summary>
         internal static string CollectionAddEventMissingItem {
@@ -444,6 +453,15 @@ namespace OpenSilver.Internal {
         internal static string DTypeNotSupportForSystemType {
             get {
                 return ResourceManager.GetString("DTypeNotSupportForSystemType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RoutedEvent Name &apos;{0}&apos; for OwnerType &apos;{1}&apos; already used..
+        /// </summary>
+        internal static string DuplicateEventName {
+            get {
+                return ResourceManager.GetString("DuplicateEventName", resourceCulture);
             }
         }
         
@@ -1195,6 +1213,15 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot change the RoutedEvent property while the RoutedEvent is being routed..
+        /// </summary>
+        internal static string RoutedEventCannotChangeWhileRouting {
+            get {
+                return ResourceManager.GetString("RoutedEventCannotChangeWhileRouting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; parameter value cannot be NaN..
         /// </summary>
         internal static string ScrollViewer_CannotBeNaN {
@@ -1452,6 +1479,15 @@ namespace OpenSilver.Internal {
         internal static string TokenizerHelperPrematureStringTermination {
             get {
                 return ResourceManager.GetString("TokenizerHelperPrematureStringTermination", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RoutedEvent limit exceeded. Routed events for CLR events are typically static class members registered with field initializers or static constructors. In this case, routed events might be getting initialized in instance constructors, causing the limit to be exceeded..
+        /// </summary>
+        internal static string TooManyRoutedEvents {
+            get {
+                return ResourceManager.GetString("TooManyRoutedEvents", resourceCulture);
             }
         }
         

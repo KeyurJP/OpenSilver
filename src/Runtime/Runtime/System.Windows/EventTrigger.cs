@@ -11,7 +11,6 @@
 *  
 \*====================================================================================*/
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Markup;
@@ -180,26 +179,12 @@ namespace System.Windows
 
         private static void AddHandler(IInternalFrameworkElement fe, RoutedEvent routedEvent, RoutedEventHandler handler)
         {
-            if (routedEvent == fe.LoadedEvent)
-            {
-                fe.Loaded += handler;
-            }
-            else
-            {
-                fe.AddHandler(routedEvent, handler, false);
-            }
+            fe.AddHandler(routedEvent, handler, false);
         }
 
         private static void RemoveHandler(IInternalFrameworkElement fe, RoutedEvent routedEvent, RoutedEventHandler handler)
         {
-            if (routedEvent == fe.LoadedEvent)
-            {
-                fe.Loaded -= handler;
-            }
-            else
-            {
-                fe.RemoveHandler(routedEvent, handler);
-            }
+            fe.RemoveHandler(routedEvent, handler);
         }
 
         internal sealed class EventTriggerSourceListener

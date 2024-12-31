@@ -878,12 +878,11 @@ namespace System.Windows
             ((FrameworkElement)d).RaiseDataContextChangedEvent(e);
         }
 
-        private void RaiseDataContextChangedEvent(DependencyPropertyChangedEventArgs e)
-        {
-            DataContextChanged?.Invoke(this, e);
-        }
+        private void RaiseDataContextChangedEvent(DependencyPropertyChangedEventArgs e) => DataContextChanged?.Invoke(this, e);
 
-        /// <summary>Occurs when the data context for this element changes. </summary>
+        /// <summary>
+        /// Occurs when the data context for this element changes.
+        /// </summary>
         public event DependencyPropertyChangedEventHandler DataContextChanged;
 
         #endregion
@@ -900,8 +899,7 @@ namespace System.Windows
         {
             get
             {
-                TriggerCollection triggers = (TriggerCollection)GetValue(TriggersProperty);
-                if (triggers == null)
+                if (GetValue(TriggersProperty) is not TriggerCollection triggers)
                 {
                     triggers = new TriggerCollection(this);
                     SetValueInternal(TriggersProperty, triggers);
@@ -1099,23 +1097,30 @@ namespace System.Windows
                 typeof(FrameworkElement), 
                 new PropertyMetadata((object)null));
 
-#endregion
+        #endregion
 
         #region Loaded/Unloaded events
 
-        public static readonly RoutedEvent LoadedEvent = 
-            new RoutedEvent(
+        /// <summary>
+        /// Identifies the <see cref="Loaded"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent LoadedEvent =
+            EventManager.RegisterRoutedEvent(
                 nameof(Loaded),
                 RoutingStrategy.Direct,
-                typeof(RoutedEventHandler), 
+                typeof(RoutedEventHandler),
                 typeof(FrameworkElement));
 
         /// <summary>
-        /// Occurs when a FrameworkElement has been constructed and added to the object tree.
+        /// Occurs when a <see cref="FrameworkElement"/> has been constructed and added to the object tree.
         /// </summary>
-        public event RoutedEventHandler Loaded;
+        public event RoutedEventHandler Loaded
+        {
+            add => AddHandler(LoadedEvent, value, false);
+            remove => RemoveHandler(LoadedEvent, value);
+        }
 
-        internal void RaiseLoadedEvent() => Loaded?.Invoke(this, new RoutedEventArgs());
+        internal void RaiseLoadedEvent() => RaiseEvent(new RoutedEventArgs(LoadedEvent));
 
         internal void LoadResources()
         {
@@ -1126,11 +1131,25 @@ namespace System.Windows
         }
 
         /// <summary>
+        /// Identifies the <see cref="Unloaded"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent UnloadedEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(Unloaded),
+                RoutingStrategy.Direct,
+                typeof(RoutedEventHandler),
+                typeof(FrameworkElement));
+
+        /// <summary>
         /// Occurs when this object is no longer connected to the main object tree.
         /// </summary>
-        public event RoutedEventHandler Unloaded;
+        public event RoutedEventHandler Unloaded
+        {
+            add => AddHandler(UnloadedEvent, value, false);
+            remove => RemoveHandler(UnloadedEvent, value);
+        }
 
-        internal void RaiseUnloadedEvent() => Unloaded?.Invoke(this, new RoutedEventArgs());
+        internal void RaiseUnloadedEvent() => RaiseEvent(new RoutedEventArgs(UnloadedEvent));
 
         internal void UnloadResources()
         {

@@ -28,7 +28,11 @@ namespace System.Windows.Controls
         /// this <see cref="UpDownParsingEventArgs&lt;T&gt;"/> is handled.
         /// </summary>
         /// <value><c>True</c> if handled; otherwise, <c>false</c>.</value>
-        public bool Handled { get; set; }
+        public new bool Handled
+        {
+            get { return base.Handled; }
+            set { base.Handled = value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the 

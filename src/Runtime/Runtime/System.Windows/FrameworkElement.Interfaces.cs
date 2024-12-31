@@ -40,8 +40,6 @@ public partial class FrameworkElement : IInternalFrameworkElement
 
     IEnumerator IInternalFrameworkElement.LogicalChildren => LogicalChildren;
 
-    RoutedEvent IInternalFrameworkElement.LoadedEvent => LoadedEvent;
-
     DependencyObject IInternalFrameworkElement.TemplatedParent => TemplatedParent;
 
     IFrameworkElement IInternalFrameworkElement.TemplateChild

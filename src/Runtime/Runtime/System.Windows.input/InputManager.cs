@@ -108,9 +108,8 @@ internal sealed class InputManager
                 if (routedEvent is null) continue;
 
                 UIElement target = r.Target;
-                target.RaiseEvent(new RoutedEventArgs
+                RaiseUserInitiatedEvent(target, new RoutedEventArgs(routedEvent)
                 {
-                    RoutedEvent = routedEvent,
                     OriginalSource = target,
                 });
             }
@@ -195,7 +194,7 @@ internal sealed class InputManager
             Pointer.Captured = null;
             OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.releaseMouseCapture();");
 
-            uie.RaiseEvent(new MouseEventArgs
+            RaiseUserInitiatedEvent(uie, new MouseEventArgs
             {
                 RoutedEvent = UIElement.LostMouseCaptureEvent,
                 OriginalSource = uie,
@@ -267,7 +266,7 @@ internal sealed class InputManager
             {
                 uie.IsPointerOver = false;
 
-                uie.RaiseEvent(new MouseEventArgs
+                RaiseUserInitiatedEvent(uie, new MouseEventArgs
                 {
                     RoutedEvent = UIElement.MouseLeaveEvent,
                     OriginalSource = uie,
@@ -400,7 +399,7 @@ internal sealed class InputManager
         // The window received focus, re-focus element with logical focus if any.
         if (FocusManager.GetFocusedElement() is UIElement focusedElement)
         {
-            focusedElement.RaiseEvent(new RoutedEventArgs
+            RaiseUserInitiatedEvent(focusedElement, new RoutedEventArgs
             {
                 RoutedEvent = UIElement.GotFocusEvent,
                 OriginalSource = focusedElement,
@@ -413,7 +412,7 @@ internal sealed class InputManager
     {
         if (FocusManager.GetFocusedElement() is UIElement focusedElement)
         {
-            focusedElement.RaiseEvent(new RoutedEventArgs
+            RaiseUserInitiatedEvent(focusedElement, new RoutedEventArgs
             {
                 RoutedEvent = UIElement.LostFocusEvent,
                 OriginalSource = focusedElement,
@@ -563,7 +562,7 @@ internal sealed class InputManager
             };
 
             e.FillEventArgs(mouseTarget, jsEventArg);
-            mouseTarget.RaiseEvent(e);
+            RaiseUserInitiatedEvent(mouseTarget, e);
         }
 
         ReleaseMouseCapture();
@@ -586,7 +585,7 @@ internal sealed class InputManager
             // fill the Mouse Wheel delta:
             e.Delta = MouseWheelEventArgs.GetPointerWheelDelta(jsEventArg);
 
-            mouseTarget.RaiseEvent(e);
+            RaiseUserInitiatedEvent(mouseTarget, e);
 
             if (e.Handled)
             {
@@ -639,7 +638,7 @@ internal sealed class InputManager
 
         ToolTipService.OnKeyDown(e);
 
-        keyboardTarget.RaiseEvent(e);
+        RaiseUserInitiatedEvent(keyboardTarget, e);
 
         KeyboardNavigation.Current.ProcessInput(e);
 
@@ -670,7 +669,7 @@ internal sealed class InputManager
             KeyModifiers = Keyboard.Modifiers,
         };
 
-        keyboardTarget.RaiseEvent(e);
+        RaiseUserInitiatedEvent(keyboardTarget, e);
     }
 
     private void ProcessOnFocusUnmanaged(UIElement uie, object jsEventArg)
@@ -734,7 +733,7 @@ internal sealed class InputManager
             UIEventArg = jsEventArg,
         };
 
-        keyboardTarget.RaiseEvent(textInputStartArgs);
+        RaiseUserInitiatedEvent(keyboardTarget, textInputStartArgs);
 
         var textInputArgs = new TextCompositionEventArgs
         {
@@ -745,7 +744,7 @@ internal sealed class InputManager
             UIEventArg = jsEventArg,
         };
 
-        keyboardTarget.RaiseEvent(textInputArgs);
+        RaiseUserInitiatedEvent(keyboardTarget, textInputArgs);
 
         if (textInputArgs.Cancel)
         {
@@ -763,7 +762,7 @@ internal sealed class InputManager
         };
 
         e.FillEventArgs(uie, jsEventArg);
-        uie.RaiseEvent(e);
+        RaiseUserInitiatedEvent(uie, e);
     }
 
     private void ProcessOnTouchEndEvent(
@@ -778,8 +777,8 @@ internal sealed class InputManager
         };
 
         e.FillEventArgs(uie, jsEventArg);
-        
-        uie.RaiseEvent(e);
+
+        RaiseUserInitiatedEvent(uie, e);
     }
 
     private bool ProcessMouseButtonEvent(
@@ -810,7 +809,7 @@ internal sealed class InputManager
             ToolTipService.OnMouseButtonDown(e);
         }
 
-        uie.RaiseEvent(e);
+        RaiseUserInitiatedEvent(uie, e);
 
         return e.Handled;
     }
@@ -825,17 +824,31 @@ internal sealed class InputManager
         };
 
         e.FillEventArgs(uie, jsEventArg);
-        uie.RaiseEvent(e);
+        RaiseUserInitiatedEvent(uie, e);
+    }
+
+    private static void RaiseUserInitiatedEvent(UIElement uie, RoutedEventArgs e)
+    {
+        e.MarkAsUserInitiated();
+
+        try
+        {
+            uie.RaiseEvent(e);
+        }
+        finally
+        {
+            e.ClearUserInitiated();
+        }
     }
 
     private int RefreshClickCount(UIElement target, MouseButton button, int timeStamp, Point ptClient)
     {
         _clickCount = CalculateClickCount(target, button, timeStamp, ptClient);
-        
+
         if (_clickCount == 1)
         {
             // we need to reset out data, since this is the start of the click count process...
-            _lastButton = button;            
+            _lastButton = button;
             _lastClickTarget ??= new WeakReference<UIElement>(null);
             _lastClickTarget.SetTarget(target);
         }

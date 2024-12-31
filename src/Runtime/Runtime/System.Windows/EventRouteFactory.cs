@@ -26,7 +26,7 @@ internal static class EventRouteFactory
     {
         EventRoute eventRoute = Pop();
 
-        if (eventRoute == null)
+        if (eventRoute is null)
         {
             eventRoute = new EventRoute(routedEvent);
         }
@@ -92,5 +92,5 @@ internal static class EventRouteFactory
 
     private static EventRoute[] _eventRouteStack;
     private static int _stackTop;
-    private static readonly object _synchronized = new object();
+    private static readonly object _synchronized = new();
 }

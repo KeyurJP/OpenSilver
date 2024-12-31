@@ -12,72 +12,63 @@
 \*====================================================================================*/
 
 using System.ComponentModel;
-using CSHTML5;
 
-namespace System.Windows.Input
+namespace System.Windows.Input;
+
+/// <summary>
+/// Provides event data for the <see cref="UIElement.KeyUp"/> and <see cref="UIElement.KeyDown"/> events.
+/// </summary>
+public sealed class KeyEventArgs : RoutedEventArgs
 {
+    /// <inheritdoc />
+    protected override void InvokeEventHandler(Delegate genericHandler, object genericTarget) =>
+        ((KeyEventHandler)genericHandler)(genericTarget, this);
+
     /// <summary>
-    /// Provides data for the KeyUp and KeyDown routed events, as well as related
-    /// attached and Preview events.
+    /// Gets or sets a value that marks the routed event as handled. A true value for Handled prevents 
+    /// most handlers along the event route from handling the same event again.
     /// </summary>
-    public sealed class KeyEventArgs : RoutedEventArgs
+    /// <returns>
+    /// true to mark the routed event handled; false to leave the routed event unhandled, which permits 
+    /// the event to potentially route further. The default is false.
+    /// </returns>
+    public new bool Handled
     {
-        internal override void InvokeHandler(Delegate handler, object target)
-        {
-            ((KeyEventHandler)handler)(target, this);
-        }
-
-        /// <summary>
-        /// Gets or sets a value that marks the routed event as handled. A true value
-        /// for Handled prevents most handlers along the event route from handling the
-        /// same event again.
-        /// </summary>
-        public bool Handled
-        {
-            get => HandledImpl;
-            set => HandledImpl = value;
-        }
-
-        /// <summary>
-        /// Gets or sets a value that determines if the routed event will call <i>preventDefault()</i>
-        /// if <see cref="Handled"/> is set to true. The default is true.
-        /// </summary>
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public new bool Cancellable
-        {
-            get => base.Cancellable;
-            set => base.Cancellable = value;
-        }
-
-        // Returns:
-        //     A system value that indicates the code for the key referenced by the event.
-        /// <summary>
-        /// Gets the keyboard key associated with the event.
-        /// </summary>
-        public Key Key
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Gets an integer value that represents the key that is pressed or released
-        /// (depending on which event is raised). This value is browser-specific.
-        /// </summary>
-        public int PlatformKeyCode
-        {
-            get;
-            internal set;
-        }
-
-        /// <summary>
-        /// Gets a value that indicates which key modifiers were active at the time that
-        /// the pointer event was initiated.
-        /// </summary>
-        public ModifierKeys KeyModifiers
-        {
-            get;
-            internal set;
-        }
+        get => base.Handled;
+        set => base.Handled = value;
     }
+
+    /// <summary>
+    /// Gets or sets a value that determines if the routed event will call <i>preventDefault()</i>
+    /// if <see cref="Handled"/> is set to true. The default is true.
+    /// </summary>
+    [EditorBrowsable(EditorBrowsableState.Advanced)]
+    public new bool Cancellable
+    {
+        get => base.Cancellable;
+        set => base.Cancellable = value;
+    }
+
+    /// <summary>
+    /// Gets the keyboard key associated with the event.
+    /// </summary>
+    /// <returns>
+    /// One of the enumeration values that indicates the key referenced by the event.
+    /// </returns>
+    public Key Key { get; internal set; }
+
+    /// <summary>
+    /// Gets an integer value that represents the key that is pressed or released (depending on which 
+    /// event is raised). This value is the nonportable key code, which is operating system–specific.
+    /// </summary>
+    /// <returns>
+    /// The key code value.
+    /// </returns>
+    public int PlatformKeyCode { get; internal set; }
+
+    /// <summary>
+    /// Gets a value that indicates which key modifiers were active at the time that
+    /// the pointer event was initiated.
+    /// </summary>
+    public ModifierKeys KeyModifiers { get; internal set; }
 }

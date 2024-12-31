@@ -25,7 +25,11 @@ namespace System.Windows.Controls
         /// <summary>
         /// Gets or sets a value indicating whether the event is handled.
         /// </summary>
-        public bool Handled { get; set; }
+        public new bool Handled
+        {
+            get { return base.Handled; }
+            set { base.Handled = value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the UpDownParseErrorEventArgs class.

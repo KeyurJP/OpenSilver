@@ -53,8 +53,6 @@ internal interface IInternalFrameworkElement : IFrameworkElement, IInternalUIEle
 
     IEnumerator LogicalChildren { get; }
 
-    RoutedEvent LoadedEvent { get; }
-
     DependencyObject TemplatedParent { get; }
 
     void SetTemplatedParent(WeakReference<DependencyObject> templatedParent);

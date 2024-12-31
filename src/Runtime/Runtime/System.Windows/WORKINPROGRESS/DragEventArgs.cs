@@ -38,7 +38,7 @@ namespace System.Windows
         // Returns:
         //     true if the event is marked handled; otherwise, false. The default value is false.
 		[OpenSilver.NotImplemented]
-        public bool Handled { get; set; }
+        public new bool Handled { get; set; }
 
         //
         // Summary:

@@ -523,7 +523,7 @@ namespace System.Windows.Controls
         private void OnPopupTextInput(object sender, TextCompositionEventArgs e) => OnTextInput(e);
 
         private void OnPopupGotFocus(object sender, RoutedEventArgs e) => SetValueInternal(IsSelectionActivePropertyKey, true);
-        
+
         private void OnPopupLostFocus(object sender, RoutedEventArgs e) => SetValueInternal(IsSelectionActivePropertyKey, false);
 
         private void OnDropDownToggleClick(object sender, RoutedEventArgs e)
@@ -535,19 +535,13 @@ namespace System.Windows.Controls
         /// Invoked when the DropDownClosed event is raised.
         /// </summary>
         /// <param name="e">Event data for the event.</param>
-        protected virtual void OnDropDownClosed(EventArgs e)
-        {
-            DropDownClosed?.Invoke(this, e);
-        }
+        protected virtual void OnDropDownClosed(EventArgs e) => DropDownClosed?.Invoke(this, e);
 
         /// <summary>
         /// Invoked when the DropDownOpened event is raised.
         /// </summary>
         /// <param name="e">Event data for the event.</param>
-        protected virtual void OnDropDownOpened(EventArgs e)
-        {
-            DropDownOpened?.Invoke(this, e);
-        }
+        protected virtual void OnDropDownOpened(EventArgs e) => DropDownOpened?.Invoke(this, e);
 
         /// <summary>
         /// Occurs when the drop-down portion of the ComboBox closes.
@@ -577,7 +571,7 @@ namespace System.Windows.Controls
                 nameof(IsDropDownOpen),
                 typeof(bool),
                 typeof(ComboBox),
-                new PropertyMetadata(false, OnIsDropDownOpenChanged, CoerceIsDropDownOpen));
+                new PropertyMetadata(BooleanBoxes.FalseBox, OnIsDropDownOpenChanged, CoerceIsDropDownOpen));
 
         private static void OnIsDropDownOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -726,10 +720,7 @@ namespace System.Windows.Controls
         /// Gets a value that indicates whether the user can edit text in the text box
         /// portion of the ComboBox. This property always returns false.
         /// </summary>
-        public bool IsEditable 
-        { 
-            get { return false; } 
-        }
+        public bool IsEditable => false;
 
         /// <summary>
         /// Identifies the <see cref="SelectionBoxItem"/> dependency property.
@@ -788,7 +779,7 @@ namespace System.Windows.Controls
                 nameof(IsSelectionBoxHighlighted),
                 typeof(bool),
                 typeof(ComboBox),
-                new PropertyMetadata(false));
+                new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Gets a value that indicates whether the SelectionBoxItem component is highlighted.
