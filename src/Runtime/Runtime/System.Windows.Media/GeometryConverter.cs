@@ -64,7 +64,7 @@ namespace System.Windows.Media
         {
             if (value is string source)
             {
-                return GeometryParser.ParseGeometry(source);
+                return Geometry.Parse(source);
             }
 
             throw GetConvertFromException(value);

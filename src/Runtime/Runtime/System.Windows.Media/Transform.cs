@@ -11,6 +11,7 @@
 *  
 \*====================================================================================*/
 
+using System.Globalization;
 using OpenSilver.Internal;
 
 namespace System.Windows.Media
@@ -23,6 +24,17 @@ namespace System.Windows.Media
         private Matrix? _matrix;
 
         internal Transform() { }
+
+        /// <summary>
+        /// Creates a new <see cref="Transform"/> from the specified string representation of a transformation matrix.
+        /// </summary>
+        /// <param name="source">
+        /// Six comma-delimited <see cref="double"/> values that describe the new <see cref="Transform"/>.
+        /// </param>
+        /// <returns>
+        /// A new transform that is constructed from the specified string.
+        /// </returns>
+        public static Transform Parse(string source) => Parsers.ParseTransform(source, CultureInfo.InvariantCulture);
 
         internal Matrix Matrix => _matrix ??= GetMatrixCore();
 
@@ -92,18 +104,6 @@ namespace System.Windows.Media
                 matrix.Invert();
                 return new MatrixTransform(matrix);
             }
-        }
-
-        /// <summary>
-        /// Parse - returns an instance converted from the provided string
-        /// using the current culture
-        /// <param name="source"> string with Transform data </param>
-        /// </summary>
-        internal static Transform Parse(string source)
-        {
-            Matrix matrix = Matrix.Parse(source);
-
-            return new MatrixTransform(matrix);
         }
 
         internal event EventHandler Changed;

@@ -11,71 +11,76 @@
 *  
 \*====================================================================================*/
 
-//credits : https://github.com/dotnet/wpf/blob/master/src/Microsoft.DotNet.Wpf/src/PresentationCore/System/Windows/Media/ParsersCommon.cs
-
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using OpenSilver.Internal;
+using System.Windows;
+using System.Windows.Media;
 
-namespace System.Windows.Media
+namespace OpenSilver.Internal;
+
+internal static partial class Parsers
 {
-    internal static class GeometryParser
+    /// <summary>
+    /// Parse a PathGeometry string.
+    /// The PathGeometry syntax is the same as the PathFigureCollection syntax except that it
+    /// may start with a "wsp*Fwsp*(0|1)" which indicate the winding mode (F0 is EvenOdd while
+    /// F1 is NonZero).
+    /// </summary>
+    internal static Geometry ParseGeometry(string pathString, IFormatProvider formatProvider)
     {
-        internal static Geometry ParseGeometry(string pathString/*, IFormatProvider formatProvider*/)
-        {
-            FillRule fillRule = FillRule.EvenOdd;
-            PathStreamGeometryContext context = new PathStreamGeometryContext();
-            ParseStringToStreamGeometryContext(context, pathString/*, formatProvider*/, ref fillRule);
-            var geometry = context.GetPathGeometry();
-            geometry.FillRule = fillRule;
-            return geometry;
-        }
+        FillRule fillRule = FillRule.EvenOdd;
+        var context = new PathStreamGeometryContext();
+        ParseStringToStreamGeometryContext(context, pathString, formatProvider, ref fillRule);
+        var geometry = context.GetPathGeometry();
+        geometry.FillRule = fillRule;
+        return geometry;
+    }
 
-        private static void ParseStringToStreamGeometryContext(PathStreamGeometryContext geometry, string pathString/*, IFormatProvider formatProvider*/, ref FillRule fillRule)
+    private static void ParseStringToStreamGeometryContext(PathStreamGeometryContext geometry, string pathString, IFormatProvider formatProvider, ref FillRule fillRule)
+    {
+        // Check to ensure that there's something to parse
+        if (pathString != null)
         {
-            // Check to ensure that there's something to parse
-            if (pathString != null)
+            int curIndex = 0;
+
+            // skip any leading space
+            while ((curIndex < pathString.Length) && char.IsWhiteSpace(pathString, curIndex))
             {
-                int curIndex = 0;
+                curIndex++;
+            }
 
-                // skip any leading space
-                while ((curIndex < pathString.Length) && char.IsWhiteSpace(pathString, curIndex))
+            // Is there anything to look at?
+            if (curIndex < pathString.Length)
+            {
+                // If so, we only care if the first non-WhiteSpace char encountered is 'F'
+                if (pathString[curIndex] == 'F')
                 {
                     curIndex++;
-                }
 
-                // Is there anything to look at?
-                if (curIndex < pathString.Length)
-                {
-                    // If so, we only care if the first non-WhiteSpace char encountered is 'F'
-                    if (pathString[curIndex] == 'F')
+                    // Since we found 'F' the next non-WhiteSpace char must be 0 or 1 - look for it.
+                    while ((curIndex < pathString.Length) && Char.IsWhiteSpace(pathString, curIndex))
                     {
                         curIndex++;
-
-                        // Since we found 'F' the next non-WhiteSpace char must be 0 or 1 - look for it.
-                        while ((curIndex < pathString.Length) && Char.IsWhiteSpace(pathString, curIndex))
-                        {
-                            curIndex++;
-                        }
-
-                        // If we ran out of text, this is an error, because 'F' cannot be specified without 0 or 1
-                        // Also, if the next token isn't 0 or 1, this too is illegal
-                        if ((curIndex == pathString.Length) || ((pathString[curIndex] != '0') && (pathString[curIndex] != '1')))
-                        {
-                            throw new FormatException(Strings.Parsers_IllegalToken);
-                        }
-
-                        fillRule = pathString[curIndex] == '0' ? FillRule.EvenOdd : FillRule.Nonzero;
-
-                        // Increment curIndex to point to the next char
-                        curIndex++;
                     }
+
+                    // If we ran out of text, this is an error, because 'F' cannot be specified without 0 or 1
+                    // Also, if the next token isn't 0 or 1, this too is illegal
+                    if ((curIndex == pathString.Length) || ((pathString[curIndex] != '0') && (pathString[curIndex] != '1')))
+                    {
+                        throw new FormatException(Strings.Parsers_IllegalToken);
+                    }
+
+                    fillRule = pathString[curIndex] == '0' ? FillRule.EvenOdd : FillRule.Nonzero;
+
+                    // Increment curIndex to point to the next char
+                    curIndex++;
                 }
-
-                AbbreviatedGeometryParser parser = new AbbreviatedGeometryParser();
-
-                parser.ParseToGeometryContext(geometry, pathString, curIndex);
             }
+
+            var parser = new AbbreviatedGeometryParser();
+
+            parser.ParseToGeometryContext(geometry, pathString, curIndex);
         }
     }
 
@@ -84,7 +89,7 @@ namespace System.Windows.Media
     /// SVG path spec is closely followed http://www.w3.org/TR/SVG11/paths.html
     /// 3/23/2006, new parser for performance (fyuan)
     /// </summary>
-    internal sealed partial class AbbreviatedGeometryParser
+    private struct AbbreviatedGeometryParser
     {
         private const bool AllowSign = true;
         private const bool AllowComma = true;
@@ -619,13 +624,13 @@ namespace System.Windows.Media
         MilSegmentPolyQuadraticBezier,
 
         MIL_SEGMENT_TYPE_FORCE_DWORD = unchecked((int)0xffffffff)
-    };
+    }
 
     /// <summary>
     ///     PathStreamGeometryContext
     /// </summary>
     //internal partial class PathStreamGeometryContext : CapacityStreamGeometryContext
-    internal partial class PathStreamGeometryContext
+    private sealed class PathStreamGeometryContext
     {
         #region Public Methods
         static PathStreamGeometryContext()
@@ -1083,7 +1088,7 @@ namespace System.Windows.Media
 
         #region Private Fields
 
-        private PathGeometry _pathGeometry;
+        private readonly PathGeometry _pathGeometry;
         private PathFigureCollection _figures;
         private PathFigure _currentFigure;
         private PathSegmentCollection _segments;
@@ -1094,18 +1099,16 @@ namespace System.Windows.Media
         private bool _currentSegmentIsStroked;
         private bool _currentSegmentIsSmoothJoin;
 
-        private static FillRule s_defaultFillRule;
+        private static readonly FillRule s_defaultFillRule;
 
-        private static bool s_defaultValueForPathFigureIsClosed;
-        private static bool s_defaultValueForPathFigureIsFilled;
-        private static Point s_defaultValueForPathFigureStartPoint;
+        private static readonly bool s_defaultValueForPathFigureIsClosed;
+        private static readonly bool s_defaultValueForPathFigureIsFilled;
+        private static readonly Point s_defaultValueForPathFigureStartPoint;
 
-        private static bool s_defaultValueForArcSegmentIsLargeArc;
-        private static SweepDirection s_defaultValueForArcSegmentSweepDirection;
-        private static double s_defaultValueForArcSegmentRotationAngle;
+        private static readonly bool s_defaultValueForArcSegmentIsLargeArc;
+        private static readonly SweepDirection s_defaultValueForArcSegmentSweepDirection;
+        private static readonly double s_defaultValueForArcSegmentRotationAngle;
 
         #endregion
     }
 }
-
-

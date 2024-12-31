@@ -11,7 +11,9 @@
 *  
 \*====================================================================================*/
 
+using System.Globalization;
 using System.Windows.Shapes;
+using OpenSilver.Internal;
 
 namespace System.Windows.Media
 {
@@ -23,6 +25,17 @@ namespace System.Windows.Media
     public abstract class Geometry : DependencyObject
     {
         internal Geometry() { }
+
+        /// <summary>
+        /// Creates a new <see cref="Geometry"/> instance from the specified string using the current culture.
+        /// </summary>
+        /// <param name="source">
+        /// A string that describes the geometry to be created.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="Geometry"/> instance created from the specified string.
+        /// </returns>
+        public static Geometry Parse(string source) => Parsers.ParseGeometry(source, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Gets an empty geometry object.
