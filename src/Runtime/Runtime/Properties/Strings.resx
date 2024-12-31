@@ -672,6 +672,12 @@
   <data name="Validation_ConversionFailed" xml:space="preserve">
     <value>Value '{0}' could not be converted.</value>
   </data>
+  <data name="XmlLangGetCultureFailure" xml:space="preserve">
+    <value>There is no registered CultureInfo with the IetfLanguageTag '{0}'.</value>
+  </data>
+  <data name="XmlLangGetSpecificCulture" xml:space="preserve">
+    <value>Cannot find non-neutral culture related to '{0}'.</value>
+  </data>
   <data name="XmlLangMalformed" xml:space="preserve">
     <value>'{0}' language tag must be empty or must conform to grammar defined in IETF RFC 3066.</value>
   </data>

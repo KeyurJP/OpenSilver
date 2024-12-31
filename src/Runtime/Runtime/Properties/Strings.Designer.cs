@@ -1708,6 +1708,24 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There is no registered CultureInfo with the IetfLanguageTag &apos;{0}&apos;..
+        /// </summary>
+        internal static string XmlLangGetCultureFailure {
+            get {
+                return ResourceManager.GetString("XmlLangGetCultureFailure", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot find non-neutral culture related to &apos;{0}&apos;..
+        /// </summary>
+        internal static string XmlLangGetSpecificCulture {
+            get {
+                return ResourceManager.GetString("XmlLangGetSpecificCulture", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &apos;{0}&apos; language tag must be empty or must conform to grammar defined in IETF RFC 3066..
         /// </summary>
         internal static string XmlLangMalformed {
