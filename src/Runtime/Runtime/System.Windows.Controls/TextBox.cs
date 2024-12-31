@@ -501,6 +501,15 @@ namespace System.Windows.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the content of the current selection in the text box.
+        /// </summary>
+        /// <returns>
+        /// The currently selected text in the text box. If no text is selected, the value is <see cref="string.Empty"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">
+        /// value is null.
+        /// </exception>
         public string SelectedText
         {
             get => _textViewHost?.View.SelectedText ?? string.Empty;
@@ -518,6 +527,15 @@ namespace System.Windows.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the starting position of the text selected in the text box.
+        /// </summary>
+        /// <returns>
+        /// The starting position of the current selection.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// value is less than 0.
+        /// </exception>
         public int SelectionStart
         {
             get => _textViewHost?.View.SelectionStart ?? 0;
@@ -535,6 +553,15 @@ namespace System.Windows.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the number of characters in the current selection in the text box.
+        /// </summary>
+        /// <returns>
+        /// The number of characters in the current selection in the text box, or 0 if there is no selection.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// value is less than 0.
+        /// </exception>
         public int SelectionLength
         {
             get => _textViewHost?.View.SelectionLength ?? 0;
@@ -550,6 +577,18 @@ namespace System.Windows.Controls
                     _textViewHost.View.SelectionLength = value;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the insertion position index of the caret.
+        /// </summary>
+        /// <returns>
+        /// The zero-based insertion position index of the caret.
+        /// </returns>
+        public int CaretIndex
+        {
+            get => SelectionStart;
+            set => Select(value, 0);
         }
 
         /// <summary>
@@ -711,6 +750,18 @@ namespace System.Windows.Controls
         /// </summary>
         public void SelectAll() => Select(0, int.MaxValue);
 
+        /// <summary>
+        /// Selects a range of text in the text box.
+        /// </summary>
+        /// <param name="start">
+        /// The zero-based index of the first character in the selection.
+        /// </param>
+        /// <param name="length">
+        /// The length of the selection, in characters.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// start or length value is negative.
+        /// </exception>
         public void Select(int start, int length)
         {
             if (start < 0)
