@@ -146,9 +146,31 @@ namespace System.Windows
         /// Gets a value indicating whether the collection is read-only.
         /// </summary>
         /// <returns>
-        /// Always returns false
+        /// true if the hash table is read-only; otherwise, false.
         /// </returns>
-        public bool IsReadOnly => false;
+        public bool IsReadOnly
+        {
+            get => ReadPrivateFlag(PrivateFlags.IsReadOnly);
+            internal set
+            {
+                WritePrivateFlag(PrivateFlags.IsReadOnly, value);
+
+                if (value)
+                {
+                    // Seal all the styles and templates in this dictionary
+                    SealValues();
+                }
+
+                // Set all the merged resource dictionaries as ReadOnly
+                if (_mergedDictionaries is not null)
+                {
+                    foreach (ResourceDictionary mergedDictionary in _mergedDictionaries.InternalItems)
+                    {
+                        mergedDictionary.IsReadOnly = true;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Gets an <see cref="ICollection"/> object containing the keys of the <see cref="ResourceDictionary"/>.
@@ -200,6 +222,11 @@ namespace System.Windows
         /// </exception>
         public void Add(object key, object value)
         {
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(Strings.ResourceDictionaryIsReadOnly);
+            }
+
             bool isImplicitStyle = false;
             bool isImplicitDataTemplate = false;
 
@@ -257,6 +284,11 @@ namespace System.Windows
         /// </exception>
         public void Add(string key, object value)
         {
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(Strings.ResourceDictionaryIsReadOnly);
+            }
+
             if (value is null)
             {
                 throw new NotSupportedException(Strings.ResourceDictionaryNullValueNotSupported);
@@ -270,6 +302,11 @@ namespace System.Windows
         /// </summary>
         public void Clear()
         {
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(Strings.ResourceDictionaryIsReadOnly);
+            }
+
             if (Count > 0)
             {
                 // remove inheritance context from all values that got it from
@@ -390,6 +427,16 @@ namespace System.Windows
         /// </exception>
         public void Remove(object key)
         {
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(Strings.ResourceDictionaryIsReadOnly);
+            }
+
+            if (key is null)
+            {
+                throw new ArgumentNullException(nameof(key));
+            }
+
             if (_baseDictionary.TryGetValue(key, out object resource))
             {
                 // remove the inheritance context from the value, if it came from
@@ -417,15 +464,7 @@ namespace System.Windows
         /// <exception cref="ArgumentNullException">
         /// key is null.
         /// </exception>
-        public void Remove(string key)
-        {
-            if (key is null)
-            {
-                throw new ArgumentNullException(nameof(key));
-            }
-
-            Remove((object)key);
-        }
+        public void Remove(string key) => Remove((object)key);
 
         #region ISupportInitialize
 
@@ -819,11 +858,24 @@ namespace System.Windows
             }
         }
 
-        //
+        //  This method
+        //  1. Seals all the styles/templates that belong to this App/Theme/Style/Template ResourceDictionary
+        private void SealValues()
+        {
+            Debug.Assert(IsReadOnly, "This must be an Style/Template ResourceDictionary");
+
+            if (_baseDictionary.Count > 0)
+            {
+                foreach (object value in _baseDictionary.Values)
+                {
+                    SealValue(value);
+                }
+            }
+        }
+
         //  This method
         //  1. Sets the InheritanceContext of the value to the dictionary's principal owner
-        //  (Not yet) 2. Seals the freezable/style/template that is to be placed in an App/Theme/Style/Template ResourceDictionary
-        //
+        //  (Not yet) 2. Seals the style/template that is to be placed in an App/Theme/Style/Template ResourceDictionary
         private void SealValue(object value)
         {
             DependencyObject inheritanceContext = InheritanceContext;
@@ -832,11 +884,11 @@ namespace System.Windows
                 AddInheritanceContext(inheritanceContext, value);
             }
 
-            //if (IsThemeDictionary || _ownerApps != null || IsReadOnly)
-            //{
-            //    // If the value is a ISealable then seal it
-            //    StyleHelper.SealIfSealable(value);
-            //}
+            if (IsReadOnly)
+            {
+                // If the value is a ISealable then seal it
+                StyleHelper.SealIfSealable(value);
+            }
         }
 
         // add inheritance context to a value
@@ -936,7 +988,12 @@ namespace System.Windows
 
         private void SetItem(object key, object value)
         {
-            if (value == null)
+            if (IsReadOnly)
+            {
+                throw new InvalidOperationException(Strings.ResourceDictionaryIsReadOnly);
+            }
+
+            if (value is null)
             {
                 //
                 // Note: Silverlight does not support null values in a 
@@ -1191,7 +1248,7 @@ namespace System.Windows
         {
             IsInitialized = 0x01,
             IsInitializePending = 0x02,
-            IsReadOnly = 0x04, // unused as silverlight ResourceDictionary is never readonly.
+            IsReadOnly = 0x04,
             IsThemeDictionary = 0x08,
             HasImplicitStyles = 0x10,
             CanBeAccessedAcrossThreads = 0x20, // unused

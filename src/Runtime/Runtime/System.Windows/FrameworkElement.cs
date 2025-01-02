@@ -112,8 +112,6 @@ namespace System.Windows
         private static void OnInheritedPropertyChanged(FrameworkElement fe, InheritablePropertyChangeInfo info) =>
             fe.InheritedPropertyChanged?.Invoke(fe, new InheritedPropertyChangedEventArgs(ref info));
 
-        internal event EventHandler ResourcesChanged;
-
         #endregion Inheritance Context
 
         #region Visual Children
@@ -302,39 +300,6 @@ namespace System.Windows
             ResourcesChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnResourcesChanged(ResourcesChangeInfo info)
-        {
-            bool containsTypeOfKey = info.Contains(DependencyObjectType.SystemType, true /*isImplicitStyleKey*/);
-
-            // If a resource dictionary changed above this node then we need to
-            // synchronize the ShouldLookupImplicitStyles flag with respect to
-            // our parent here.
-
-            if (info.IsResourceAddOperation || info.IsCatastrophicDictionaryChange)
-            {
-                SetShouldLookupImplicitStyles();
-            }
-
-            // Invalidate implicit and explicit resource references on current instance
-
-            // if the change affects implicit data templates, notify ContentPresenters
-            if (info.IsImplicitDataTemplateChange)
-            {
-                if (this is ContentPresenter contentPresenter)
-                {
-                    contentPresenter.ReevaluateTemplate();
-                }
-            }
-
-            if (containsTypeOfKey)
-            {
-                HasStyleInvalidated = false;
-                UpdateStyleProperty();
-            }
-
-            ResourcesChanged?.Invoke(this, new ResourcesChangedEventArgs(info));
-        }
-
         // Set the ShouldLookupImplicitStyles flag on the current
         // node if the parent has it set to true.
         private void SetShouldLookupImplicitStyles()
@@ -400,8 +365,6 @@ namespace System.Windows
         /// </summary>
         internal virtual FrameworkElement StateGroupsRoot => TemplateChild;
 
-        private ResourceDictionary _resources;
-
         /// <summary>
         /// Provides base class initialization behavior for FrameworkElement-derived
         /// classes.
@@ -428,83 +391,6 @@ namespace System.Windows
                 ShouldLookupImplicitStyles = true;
             }
         }
-
-#region Resources
-
-        /// <summary>
-        /// Gets the locally defined resource dictionary. In XAML, you can establish
-        /// resource items as child object elements of a frameworkElement.Resources property
-        /// element, through XAML implicit collection syntax.
-        /// </summary>
-        [Ambient]
-        public ResourceDictionary Resources
-        {
-            get
-            {
-                if (_resources is null)
-                {
-                    _resources = new ResourceDictionary();
-                    _resources.AddOwner(this);
-                }
-                return _resources;
-            }
-            set
-            {
-                if (_resources == value) return;
-
-                ResourceDictionary oldValue = _resources;
-                _resources = value;
-
-                // This element is no longer an owner for the old RD
-                oldValue?.RemoveOwner(this);
-
-                if (value != null)
-                {
-                    if (!value.ContainsOwner(this))
-                    {
-                        // This element is an owner for the new RD
-                        value.AddOwner(this);
-                    }
-                }
-
-                // Invalidate ResourceReference properties for this subtree
-                TreeWalkHelper.InvalidateOnResourcesChange(this, new ResourcesChangeInfo(oldValue, value));
-            }
-        }
-
-        /// <summary>
-        ///     Check if resource is not empty.
-        ///     Call HasResources before accessing resources every time you need
-        ///     to query for a resource.
-        /// </summary>
-        internal bool HasResources => _resources is not null && !_resources.IsEmpty;
-
-        void IResourceDictionaryOwner.SetResources(ResourceDictionary resourceDictionary)
-        {
-            // Propagate the HasImplicitStyles flag to the new owner
-            if (resourceDictionary.HasImplicitStyles)
-            {
-                ShouldLookupImplicitStyles = true;
-            }
-        }
-
-        void IResourceDictionaryOwner.OnResourcesChange(ResourcesChangeInfo info, bool shouldInvalidate, bool hasImplicitStyles)
-        {
-            // Set the HasImplicitStyles flag on the owner
-            if (hasImplicitStyles)
-            {
-                ShouldLookupImplicitStyles = true;
-            }
-
-            // If this dictionary has been initialized fire an invalidation
-            // to let the tree know of this change.
-            if (shouldInvalidate)
-            {
-                TreeWalkHelper.InvalidateOnResourcesChange(this, info);
-            }
-        }
-
-        #endregion
 
         /// <summary>
         /// Gets a value that indicates whether this element is in the Visual Tree, that is, if it has been loaded for presentation.

@@ -12,6 +12,7 @@
 \*====================================================================================*/
 
 using System.Collections.Generic;
+using System.Windows.Controls;
 using System.Windows.Data;
 using OpenSilver.Internal;
 
@@ -159,5 +160,35 @@ namespace System.Windows
                 style.Seal();
             }
         }
+
+        //
+        //  This method
+        //  1. If the value is an ISealable and it is not sealed
+        //     and can be sealed, seal it now.
+        //  2. Else it returns the value as is.
+        //
+        internal static void SealIfSealable(object value)
+        {
+            // If the value is an ISealable and it is not sealed
+            // and can be sealed, seal it now.
+            if (value is ISealable sealable && !sealable.IsSealed && sealable.CanSeal)
+            {
+                sealable.Seal();
+            }
+        }
+
+        internal static bool ShouldGetValueFromStyle(DependencyProperty dp) => dp != FrameworkElement.StyleProperty;
+
+        internal static bool ShouldGetValueFromThemeStyle(DependencyProperty dp) =>
+            dp != FrameworkElement.StyleProperty &&
+            dp != FrameworkElement.DefaultStyleKeyProperty &&
+            dp != FrameworkElement.OverridesDefaultStyleProperty;
+
+        internal static bool ShouldGetValueFromTemplate(DependencyProperty dp) =>
+            dp != FrameworkElement.StyleProperty &&
+            dp != FrameworkElement.DefaultStyleKeyProperty &&
+            dp != FrameworkElement.OverridesDefaultStyleProperty &&
+            dp != Control.TemplateProperty &&
+            dp != ContentPresenter.TemplateProperty;
     }
 }

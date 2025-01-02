@@ -259,6 +259,15 @@ namespace System.Windows
             }
         }
 
+        internal object FindResourceInternal(object resourceKey)
+        {
+            if (_resources is not null && _resources.TryGetResource(resourceKey, out object value))
+            {
+                return value;
+            }
+            return null;
+        }
+
         internal object FindImplicitResource(object resourceKey)
         {
             if (_implicitResourcesCache is not null && _implicitResourcesCache.TryGetValue(resourceKey, out object resource))

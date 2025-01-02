@@ -246,7 +246,7 @@ namespace System.Windows.Controls
 
         private void UpdateDataContext()
         {
-            if (!(Content is UIElement))
+            if (Content is not UIElement)
             {
                 // set data context to the content, so that the template can bind to
                 // properties of the content.
@@ -317,20 +317,20 @@ namespace System.Windows.Controls
         internal static object FindTemplateResourceInternal(DependencyObject target, object item)
         {
             // Data styling doesn't apply to UIElement.
-            if (item == null || (item is UIElement))
+            if (item is null || item is UIElement)
             {
                 return null;
             }
 
             Type dataType = item.GetType();
 
-            List<DataTemplateKey> keys = new List<DataTemplateKey>();
+            var keys = new List<DataTemplateKey>();
 
             // construct the list of acceptable keys, in priority ord
             int exactMatch = 1;    // number of entries that count as an exact match
 
             // add compound keys for the dataType and all its base types
-            while (dataType != null)
+            while (dataType is not null)
             {
                 keys.Add(new DataTemplateKey(dataType));
 
@@ -349,10 +349,10 @@ namespace System.Windows.Controls
             if (bestMatch >= exactMatch)
             {
                 // Exact match not found in the parent chain.  Try App Resources.
-                object appResource = FindTemplateResourceFromApp(target, keys, exactMatch, ref bestMatch);
-
-                if (appResource != null)
+                if (FindTemplateResourceFromApp(target, keys, exactMatch, ref bestMatch) is object appResource)
+                {
                     resource = appResource;
+                }
             }
 
             return resource;
@@ -368,20 +368,20 @@ namespace System.Windows.Controls
             object resource = null;
             int k;
 
-            Application app = Application.Current;
-            if (app != null)
+            if (Application.Current is Application app)
             {
                 // If the element is rooted to a Window and App exists, defer to App.
                 for (k = 0; k < bestMatch; ++k)
                 {
-                    object appResource = app.FindImplicitResource(keys[k]);
-                    if (appResource != null)
+                    if (app.FindImplicitResource(keys[k]) is object appResource)
                     {
                         bestMatch = k;
                         resource = appResource;
 
                         if (bestMatch < exactMatch)
+                        {
                             return resource;
+                        }
                     }
                 }
             }
@@ -396,14 +396,14 @@ namespace System.Windows.Controls
             int exactMatch,
             ref int bestMatch)
         {
-            Debug.Assert(target != null, "Don't call FindTemplateResource with a null target object");
+            Debug.Assert(target is not null, "Don't call FindTemplateResource with a null target object");
 
             ResourceDictionary table;
             object resource = null;
 
             FrameworkElement fe = target as FrameworkElement;
 
-            while (fe != null)
+            while (fe is not null)
             {
                 object candidate;
 
@@ -413,11 +413,68 @@ namespace System.Windows.Controls
 
                 // Fetch the ResourceDictionary
                 // for the given target element
-                table = fe.HasResources ? fe.Resources : null;
-                if (table != null)
+                table = GetInstanceResourceDictionary(fe);
+                if (table is not null)
                 {
                     candidate = FindBestMatchInResourceDictionary(table, keys, exactMatch, ref bestMatch);
-                    if (candidate != null)
+                    if (candidate is not null)
+                    {
+                        resource = candidate;
+                        if (bestMatch < exactMatch)
+                        {
+                            // Exact match found, stop here.
+                            return resource;
+                        }
+                    }
+                }
+
+                // -------------------------------------------
+                //  Lookup ResourceDictionary on the current instance's Style, if one exists.
+                // -------------------------------------------
+
+                table = GetStyleResourceDictionary(fe);
+                if (table is not null)
+                {
+                    candidate = FindBestMatchInResourceDictionary(table, keys, exactMatch, ref bestMatch);
+                    if (candidate is not null)
+                    {
+                        resource = candidate;
+                        if (bestMatch < exactMatch)
+                        {
+                            // Exact match found, stop here.
+                            return resource;
+                        }
+                    }
+                }
+
+                // -------------------------------------------
+                //  Lookup ResourceDictionary on the current instance's Theme Style, if one exists.
+                // -------------------------------------------
+
+                table = GetThemeStyleResourceDictionary(fe);
+                if (table is not null)
+                {
+                    candidate = FindBestMatchInResourceDictionary(table, keys, exactMatch, ref bestMatch);
+                    if (candidate is not null)
+                    {
+                        resource = candidate;
+                        if (bestMatch < exactMatch)
+                        {
+                            // Exact match found, stop here.
+                            return resource;
+                        }
+                    }
+                }
+
+                // -------------------------------------------
+                //  Lookup ResourceDictionary on the current instance's Template, if one exists.
+                // -------------------------------------------
+
+                table = GetTemplateResourceDictionary(fe);
+                if (table is not null)
+                {
+                    candidate = FindBestMatchInResourceDictionary(table, keys, exactMatch, ref bestMatch);
+                    if (candidate is not null)
                     {
                         resource = candidate;
                         if (bestMatch < exactMatch)
@@ -433,11 +490,31 @@ namespace System.Windows.Controls
                 // -------------------------------------------
 
                 // Get Framework Parent (priority to logical parent)
-                fe = (fe.Parent ?? VisualTreeHelper.GetParent(fe)) as FrameworkElement;
+                fe = (fe.Parent ?? fe.InternalVisualParent) as FrameworkElement;
             }
 
             return resource;
         }
+
+        // Return a reference to the ResourceDictionary set on the instance of
+        //  the given FrameworkElement, if such a ResourceDictionary exists.
+        private static ResourceDictionary GetInstanceResourceDictionary(FrameworkElement fe) =>
+            fe.HasResources ? fe.Resources : null;
+
+        // Return a reference to the ResourceDictionary attached to the Style of
+        //  the given FrameworkElement, if such a ResourceDictionary exists.
+        private static ResourceDictionary GetStyleResourceDictionary(FrameworkElement fe) =>
+            fe.Style is Style style && style.HasResources ? style.Resources : null;
+
+        // Return a reference to the ResourceDictionary attached to the Theme Style of
+        //  the given FrameworkElement, if such a ResourceDictionary exists.
+        private static ResourceDictionary GetThemeStyleResourceDictionary(FrameworkElement fe) =>
+            fe.ThemeStyle is Style themeStyle && themeStyle.HasResources ? themeStyle.Resources : null;
+
+        // Return a reference to the ResourceDictionary attached to the Template of
+        //  the given FrameworkElement, if such a ResourceDictionary exists.
+        private static ResourceDictionary GetTemplateResourceDictionary(FrameworkElement fe) =>
+            fe.TemplateInternal is FrameworkTemplate template && template.HasResources ? template.Resources : null;
 
         // Given a ResourceDictionary and a set of keys, try to find the best
         //  match in the resource dictionary.
@@ -451,19 +528,20 @@ namespace System.Windows.Controls
             int k;
 
             // Search target element's ResourceDictionary for the resource
-            if (table != null)
+            if (table is not null)
             {
                 for (k = 0; k < bestMatch; ++k)
                 {
-                    object candidate = table[keys[k]];
-                    if (candidate != null)
+                    if (table[keys[k]] is object candidate)
                     {
                         resource = candidate;
                         bestMatch = k;
 
                         // if we found an exact match, no need to continue
                         if (bestMatch < exactMatch)
+                        {
                             return resource;
+                        }
                     }
                 }
             }

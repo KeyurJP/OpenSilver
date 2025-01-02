@@ -36,6 +36,7 @@
     <Compile Include="OpenSilver\Internal\Documents\TextContainerInlineImageContainer.cs" />
     <Compile Include="OpenSilver\Internal\EffectiveValueEntry.cs" />
     <Compile Include="OpenSilver\Internal\IResourceDictionaryOwner.cs" />
+    <Compile Include="OpenSilver\Internal\ISealable.cs" />
     <Compile Include="OpenSilver\Internal\ITemplateContent.cs" />
     <Compile Include="OpenSilver\Internal\Media\Animation\AnimationClock.T.cs" />
     <Compile Include="OpenSilver\Internal\Parsers.Geometry.cs" />
@@ -149,10 +150,12 @@
     <Compile Include="System.Windows.Media.Animation\VectorKeyFrame.cs" />
     <Compile Include="System.Windows\DynamicResourceExtension.cs" />
     <Compile Include="System.Windows\EventManager.cs" />
+    <Compile Include="System.Windows\FrameworkElement.Resources.cs" />
     <Compile Include="System.Windows\GlobalEventManager.cs" />
     <Compile Include="System.Windows\HierarchicalDataTemplate.cs" />
     <Compile Include="System.Windows\LengthConverter.cs" />
     <Compile Include="System.Windows\ResourceReferenceExpression.cs" />
+    <Compile Include="System.Windows\ResourceReferenceKeyNotFoundException.cs" />
     <Compile Include="System.Windows\ResourcesChangedEventArgs.cs" />
     <Compile Include="System.Windows\LogicalTreeHelper.cs" />
     <Compile Include="System.Windows\RoutingStrategy.cs" />

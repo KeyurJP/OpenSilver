@@ -120,9 +120,14 @@ public class ThemeResourceExtension : MarkupExtension
         XamlSchemaContext schemaContext = schemaContextProvider.SchemaContext;
 
         XamlType feXType = schemaContext.GetXamlType(typeof(FrameworkElement));
+        XamlType styleXType = schemaContext.GetXamlType(typeof(Style));
+        XamlType templateXType = schemaContext.GetXamlType(typeof(FrameworkTemplate));
         XamlType appXType = schemaContext.GetXamlType(typeof(Application));
 
         XamlMember feResourcesProperty = feXType.GetMember("Resources");
+        XamlMember styleResourcesProperty = styleXType.GetMember("Resources");
+        XamlMember styleBasedOnProperty = styleXType.GetMember("BasedOn");
+        XamlMember templateResourcesProperty = templateXType.GetMember("Resources");
         XamlMember appResourcesProperty = appXType.GetMember("Resources");
 
         XamlType[] types = new XamlType[1] { schemaContext.GetXamlType(typeof(ResourceDictionary)) };
@@ -131,13 +136,27 @@ public class ThemeResourceExtension : MarkupExtension
                                                                 false,
                                                                 types,
                                                                 feResourcesProperty,
+                                                                styleResourcesProperty,
+                                                                styleBasedOnProperty,
+                                                                templateResourcesProperty,
                                                                 appResourcesProperty);
 
         foreach (var ambientValue in ambientValues)
         {
-            if (ambientValue.Value is ResourceDictionary rd && TryGetResourceFromDictionary(rd, out resource))
+            if (ambientValue.Value is ResourceDictionary rd)
             {
-                return true;
+                if (rd.TryGetResource(ResourceKey, out resource))
+                {
+                    return true;
+                }
+            }
+            else if (ambientValue.Value is Style style)
+            {
+                resource = style.FindResource(ResourceKey);
+                if (resource != DependencyProperty.UnsetValue)
+                {
+                    return true;
+                }
             }
         }
 

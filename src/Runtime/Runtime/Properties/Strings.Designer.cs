@@ -790,6 +790,15 @@ namespace OpenSilver.Internal {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &apos;{0}&apos; resource not found..
+        /// </summary>
+        internal static string MarkupExtensionResourceNotFound {
+            get {
+                return ResourceManager.GetString("MarkupExtensionResourceNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to StaticExtension must have Member property set before ProvideValue can be called..
         /// </summary>
         internal static string MarkupExtensionStaticMember {
@@ -1182,6 +1191,15 @@ namespace OpenSilver.Internal {
         internal static string ResourceDictionaryInvalidMergedDictionary {
             get {
                 return ResourceManager.GetString("ResourceDictionaryInvalidMergedDictionary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ResourceDictionary is read-only and cannot be modified..
+        /// </summary>
+        internal static string ResourceDictionaryIsReadOnly {
+            get {
+                return ResourceManager.GetString("ResourceDictionaryIsReadOnly", resourceCulture);
             }
         }
         

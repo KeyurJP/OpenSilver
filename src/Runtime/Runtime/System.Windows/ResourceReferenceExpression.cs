@@ -132,17 +132,14 @@ internal sealed class ResourceReferenceExpression : Expression
             }
         }
 
-        object resource;
-        if (_mentorCache is IInternalFrameworkElement fe)
+        object resource = _mentorCache switch
         {
             // If there is a mentor do a FindResource call starting at that node
-            resource = FindResourceInTree(fe, _resourceKey);
-        }
-        else
-        {
+            FrameworkElement fe => FrameworkElement.FindResourceInternal(fe, dp, _resourceKey, null, false),
+            IInternalFrameworkElement ife => FindResourceInTree(ife, _resourceKey),
             // If there is no mentor then simply search the App and the Themes for the right resource
-            resource = FindResourceFromApp(_resourceKey);
-        }
+            _ => FindResourceFromApp(_resourceKey),
+        };
 
         // Assuming that null means the value doesn't exist in the resources section
         resource ??= DependencyProperty.UnsetValue;
@@ -174,23 +171,25 @@ internal sealed class ResourceReferenceExpression : Expression
         return FindResourceFromApp(resourceKey);
     }
 
-    private static object FindResourceFromApp(object resourceKey)
-    {
-        if (Application.Current is Application app)
-        {
-            if (app.HasResources && app.Resources.TryGetResource(resourceKey, out object resource))
-            {
-                return resource;
-            }
+    //private static object FindResourceFromApp(object resourceKey)
+    //{
+    //    if (Application.Current is Application app)
+    //    {
+    //        if (app.HasResources && app.Resources.TryGetResource(resourceKey, out object resource))
+    //        {
+    //            return resource;
+    //        }
 
-            if (app.Theme is Theme theme && theme.TryGetResource(resourceKey, out resource))
-            {
-                return resource;
-            }
-        }
+    //        if (app.Theme is Theme theme && theme.TryGetResource(resourceKey, out resource))
+    //        {
+    //            return resource;
+    //        }
+    //    }
 
-        return DependencyProperty.UnsetValue;
-    }
+    //    return DependencyProperty.UnsetValue;
+    //}
+
+    private static object FindResourceFromApp(object resourceKey) => Application.Current?.FindResourceInternal(resourceKey);
 
     /// <summary>
     ///     This event handler is called to invalidate the cached value held in

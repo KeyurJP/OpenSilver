@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using System.Windows.Controls;
-using System.Windows.Media;
 using OpenSilver.Internal;
 
 namespace System.Windows
@@ -220,50 +219,11 @@ namespace System.Windows
                     boundaryElement = fe.TemplatedParent;
                 }
 
-                object implicitStyle;
-                // First, try to find an implicit style in parents' resources.
-                FrameworkElement f = fe;
-                InheritanceBehavior inheritanceBehavior = InheritanceBehavior.Default;
-                while (f != null)
+                object implicitStyle = FindResourceInternal(fe, StyleProperty, resourceKey, boundaryElement, true);
+                if (implicitStyle != DependencyProperty.UnsetValue)
                 {
-                    inheritanceBehavior = f.ResourceLookupMode;
-                    if (inheritanceBehavior != InheritanceBehavior.Default)
-                    {
-                        break;
-                    }
-
-                    if (f.HasResources)
-                    {
-                        implicitStyle = f.Resources[resourceKey];
-                        if (implicitStyle != null)
-                        {
-                            return implicitStyle;
-                        }
-                    }
-
-                    f = (f.Parent ?? VisualTreeHelper.GetParent(f)) as FrameworkElement;
-                    if (boundaryElement != null && f == boundaryElement)
-                    {
-                        return null;
-                    }
+                    return implicitStyle;
                 }
-
-                if ((inheritanceBehavior == InheritanceBehavior.Default ||
-                     inheritanceBehavior == InheritanceBehavior.SkipToAppNow)
-                    && boundaryElement == null)
-                {
-                    // Then we try to find the resource in the App's Resources
-                    // if we can't find it in the parents.
-                    Application app = Application.Current;
-                    if (app != null)
-                    {
-                        implicitStyle = app.FindImplicitResource(resourceKey);
-                        if (implicitStyle != null)
-                        {
-                            return implicitStyle;
-                        }
-                    }
-                }                
             }
 
             return null;

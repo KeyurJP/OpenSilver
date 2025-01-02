@@ -138,23 +138,58 @@ namespace OpenSilver.Internal.Xaml.Context
             while (frame.Depth >= 1)
             {
                 object inst = frame.Instance;
-                if (inst is IInternalFrameworkElement fe)
+                switch (inst)
                 {
-                    if (fe.HasResources)
-                    {
-                        yield return fe.Resources;
-                    }
-                }
-                else if (inst is ResourceDictionary)
-                {
-                    yield return inst;
-                }
-                else if (inst is Application app)
-                {
-                    if (app.HasResources)
-                    {
-                        yield return app.Resources;
-                    }
+                    case FrameworkElement fe:
+                        {
+                            if (fe.HasResources)
+                            {
+                                yield return fe.Resources;
+                            }
+                            for (Style style = fe.Style; style is not null; style = style.BasedOn)
+                            {
+                                if (style.HasResources)
+                                {
+                                    yield return style.Resources;
+                                }
+                            }
+                            if (fe.TemplateInternal is FrameworkTemplate template && template.HasResources)
+                            {
+                                yield return template.Resources;
+                            }
+                        }
+                        break;
+                    case ResourceDictionary:
+                        yield return inst;
+                        break;
+                    case Style style:
+                        do
+                        {
+                            if (style.HasResources)
+                            {
+                                yield return style.Resources;
+                            }
+                            style = style.BasedOn;
+                        } while (style is not null);
+                        break;
+                    case FrameworkTemplate template:
+                        if (template.HasResources)
+                        {
+                            yield return template.Resources;
+                        }
+                        break;
+                    case Application app:
+                        if (app.HasResources)
+                        {
+                            yield return app.Resources;
+                        }
+                        break;
+                    case IInternalFrameworkElement ife:
+                        if (ife.HasResources)
+                        {
+                            yield return ife.Resources;
+                        }
+                        break;
                 }
 
                 frame = frame.Previous;

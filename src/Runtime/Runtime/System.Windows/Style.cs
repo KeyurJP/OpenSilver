@@ -25,12 +25,13 @@ namespace System.Windows;
 /// </summary>
 [DictionaryKeyProperty(nameof(TargetType))]
 [ContentProperty(nameof(Setters))]
-public class Style : DependencyObject //was sealed but we unsealed it because telerik has xaml files with styles as their roots (and the file we generate from xaml files create a type that inherits the type of the root of the xaml).
+public class Style : DependencyObject, ISealable
 {
     private bool _sealed;
     private SetterBaseCollection _setters;
     private Type _targetType;
     private Style _basedOn;
+    private ResourceDictionary _resources;
 
     // Style tables (includes based-on data)
     internal new Dictionary<int, object> EffectiveValues { get; private set; }
@@ -98,6 +99,7 @@ public class Style : DependencyObject //was sealed but we unsealed it because te
     /// <returns>
     /// A defined style that is the basis of the current style. The default value is null.
     /// </returns>
+    [Ambient]
     public Style BasedOn
     {
         get => _basedOn;
@@ -146,6 +148,55 @@ public class Style : DependencyObject //was sealed but we unsealed it because te
     }
 
     /// <summary>
+    /// Gets or sets the collection of resources that can be used within the scope of this style.
+    /// </summary>
+    /// <returns>
+    /// The resources that can be used within the scope of this style.
+    /// </returns>
+    [Ambient]
+    public ResourceDictionary Resources
+    {
+        get
+        {
+            if (_resources is null)
+            {
+                _resources = new ResourceDictionary();
+
+                if (_sealed)
+                {
+                    _resources.IsReadOnly = true;
+                }
+            }
+
+            return _resources;
+        }
+        set
+        {
+            if (_sealed)
+            {
+                throw new InvalidOperationException(string.Format(Strings.CannotChangeAfterSealed, nameof(Style)));
+            }
+
+            _resources = value;
+        }
+    }
+
+    internal bool HasResources => _resources is not null && !_resources.IsEmpty;
+
+    internal object FindResource(object resourceKey)
+    {
+        if (_resources is not null && _resources.TryGetResource(resourceKey, out object value))
+        {
+            return value;
+        }
+        if (_basedOn is not null)
+        {
+            return _basedOn.FindResource(resourceKey);
+        }
+        return DependencyProperty.UnsetValue;
+    }
+
+    /// <summary>
     /// Locks the style so that the <see cref="TargetType"/> property or any <see cref="Setter"/>
     /// in the <see cref="Setters"/> collection cannot be changed.
     /// </summary>
@@ -159,14 +210,14 @@ public class Style : DependencyObject //was sealed but we unsealed it because te
 
         // Most parameter checking is done as "upstream" as possible, but some
         //  can't be checked until Style is sealed.
-        if (_targetType == null)
+        if (_targetType is null)
         {
             throw new InvalidOperationException(string.Format(Strings.NullPropertyIllegal, nameof(TargetType)));
         }
 
-        if (_basedOn != null)
+        if (_basedOn is not null)
         {
-            if (_basedOn.TargetType == null || !_basedOn.TargetType.IsAssignableFrom(_targetType))
+            if (_basedOn.TargetType is null || !_basedOn.TargetType.IsAssignableFrom(_targetType))
             {
                 throw new InvalidOperationException(string.Format(Strings.MustBaseOnStyleOfABaseType, _targetType.Name));
             }
@@ -178,6 +229,12 @@ public class Style : DependencyObject //was sealed but we unsealed it because te
 
         // Seal BasedOn Style chain
         _basedOn?.Seal();
+
+        // Seal the ResourceDictionary
+        if (_resources is not null)
+        {
+            _resources.IsReadOnly = true;
+        }
 
         // Seal setters
         _setters?.Seal();
@@ -196,7 +253,7 @@ public class Style : DependencyObject //was sealed but we unsealed it because te
 
     internal void CheckTargetType(object element)
     {
-        if (TargetType == null)
+        if (TargetType is null)
         {
             throw new InvalidOperationException(string.Format(Strings.NullPropertyIllegal, nameof(TargetType)));
         }
@@ -337,4 +394,10 @@ public class Style : DependencyObject //was sealed but we unsealed it because te
             }
         }
     }
+
+    bool ISealable.CanSeal => true;
+
+    bool ISealable.IsSealed => IsSealed;
+
+    void ISealable.Seal() => Seal();
 }

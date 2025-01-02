@@ -362,6 +362,9 @@
   <data name="MarkupExtensionResourceKey" xml:space="preserve">
     <value>Resource markup extension must have ResourceKey property set before ProvideValue can be called.</value>
   </data>
+  <data name="MarkupExtensionResourceNotFound" xml:space="preserve">
+    <value>'{0}' resource not found.</value>
+  </data>
   <data name="MarkupExtensionStaticMember" xml:space="preserve">
     <value>StaticExtension must have Member property set before ProvideValue can be called.</value>
   </data>
@@ -493,6 +496,9 @@
   </data>
   <data name="ResourceDictionaryInvalidMergedDictionary" xml:space="preserve">
     <value>The merged dictionary is invalid. Either a ResourceDictionary is being placed into its own MergedDictionaries collection or a it is being added to the same MergedDictionary collection twice.</value>
+  </data>
+  <data name="ResourceDictionaryIsReadOnly" xml:space="preserve">
+    <value>ResourceDictionary is read-only and cannot be modified.</value>
   </data>
   <data name="ResourceDictionaryKeyMustBeTypeOrString" xml:space="preserve">
     <value>Key must be a Type, a DataTemplateKey or a String.</value>
