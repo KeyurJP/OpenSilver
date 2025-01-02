@@ -312,13 +312,8 @@ internal abstract class TimelineClock
         {
             SetCompletedForRoot();
 
-            if (Timeline.FillBehavior == FillBehavior.Stop)
-            {
-                ResetCachedStateToStopped();
-                return;
-            }
-
             CurrentState = ClockState.Filling;
+
             localTime = effectiveDuration.TimeSpan;
         }
         else
