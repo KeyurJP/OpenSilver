@@ -47,7 +47,8 @@ internal static class GlobalEventManager
     // registering the corresponding RoutedEvent
     internal static void RegisterClassHandler(Type classType, RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
     {
-        Debug.Assert(typeof(UIElement).IsAssignableFrom(classType), "Class Handlers can be registered only for UIElement and their sub types");
+        Debug.Assert(typeof(DependencyObject).IsAssignableFrom(classType) && typeof(IUIElement).IsAssignableFrom(classType),
+            "Class Handlers can be registered only for UIElement and their sub types");
         Debug.Assert(routedEvent.IsLegalHandler(handler), "Handler Type mismatch");
 
         // We map the classType to a DType use DTypeMap for storage

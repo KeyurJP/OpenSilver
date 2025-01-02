@@ -28,24 +28,24 @@ namespace System.Windows
 
         private void EnsureEventHandlersStore() => EventHandlersStore ??= new EventHandlersStore();
 
-        private static void RegisterEvents(Type type)
+        private static void RegisterEvents()
         {
-            EventManager.RegisterClassHandler(type, MouseMoveEvent, new MouseEventHandler(OnMouseMoveThunk), false);
-            EventManager.RegisterClassHandler(type, MouseLeftButtonDownEvent, new MouseButtonEventHandler(OnMouseLeftButtonDownThunk), false);
-            EventManager.RegisterClassHandler(type, MouseRightButtonDownEvent, new MouseButtonEventHandler(OnMouseRightButtonDownThunk), false);
-            EventManager.RegisterClassHandler(type, MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheelThunk), false);
-            EventManager.RegisterClassHandler(type, MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnMouseLeftButtonUpThunk), false);
-            EventManager.RegisterClassHandler(type, MouseEnterEvent, new MouseEventHandler(OnMouseEnterThunk), false);
-            EventManager.RegisterClassHandler(type, MouseLeaveEvent, new MouseEventHandler(OnMouseLeaveThunk), false);
-            EventManager.RegisterClassHandler(type, TextInputStartEvent, new TextCompositionEventHandler(OnTextInputStartThunk), false);
-            EventManager.RegisterClassHandler(type, TextInputEvent, new TextCompositionEventHandler(OnTextInputThunk), false);
-            EventManager.RegisterClassHandler(type, TappedEvent, new TappedEventHandler(OnTappedThunk), false);
-            EventManager.RegisterClassHandler(type, MouseRightButtonUpEvent, new MouseButtonEventHandler(OnMouseRightButtonUpThunk), false);
-            EventManager.RegisterClassHandler(type, KeyDownEvent, new KeyEventHandler(OnKeyDownThunk), false);
-            EventManager.RegisterClassHandler(type, KeyUpEvent, new KeyEventHandler(OnKeyUpThunk), false);
-            EventManager.RegisterClassHandler(type, GotFocusEvent, new RoutedEventHandler(OnGotFocusThunk), false);
-            EventManager.RegisterClassHandler(type, LostFocusEvent, new RoutedEventHandler(OnLostFocusThunk), false);
-            EventManager.RegisterClassHandler(type, LostMouseCaptureEvent, new MouseEventHandler(OnLostMouseCaptureThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseMoveEvent, new MouseEventHandler(OnMouseMoveThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseLeftButtonDownEvent, new MouseButtonEventHandler(OnMouseLeftButtonDownThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseRightButtonDownEvent, new MouseButtonEventHandler(OnMouseRightButtonDownThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseWheelEvent, new MouseWheelEventHandler(OnMouseWheelThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseLeftButtonUpEvent, new MouseButtonEventHandler(OnMouseLeftButtonUpThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseEnterEvent, new MouseEventHandler(OnMouseEnterThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseLeaveEvent, new MouseEventHandler(OnMouseLeaveThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(TextInputStartEvent, new TextCompositionEventHandler(OnTextInputStartThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(TextInputEvent, new TextCompositionEventHandler(OnTextInputThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(TappedEvent, new TappedEventHandler(OnTappedThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(MouseRightButtonUpEvent, new MouseButtonEventHandler(OnMouseRightButtonUpThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(KeyDownEvent, new KeyEventHandler(OnKeyDownThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(KeyUpEvent, new KeyEventHandler(OnKeyUpThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(GotFocusEvent, new RoutedEventHandler(OnGotFocusThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(LostFocusEvent, new RoutedEventHandler(OnLostFocusThunk), false);
+            EventManager.RegisterClassHandler<UIElement>(LostMouseCaptureEvent, new MouseEventHandler(OnLostMouseCaptureThunk), false);
         }
 
         private static void OnMouseMoveThunk(object sender, MouseEventArgs e) => ((UIElement)sender).OnMouseMove(e);

@@ -29,8 +29,8 @@ namespace System.Windows.Controls
         {
             FocusableProperty.OverrideMetadata(typeof(Control), new FrameworkPropertyMetadata(BooleanBoxes.TrueBox));
 
-            EventManager.RegisterClassHandler(typeof(Control), MouseLeftButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
-            EventManager.RegisterClassHandler(typeof(Control), MouseRightButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
+            EventManager.RegisterClassHandler<Control>(MouseLeftButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
+            EventManager.RegisterClassHandler<Control>(MouseRightButtonDownEvent, new MouseButtonEventHandler(HandleDoubleClick), true);
         }
 
         /// <summary>

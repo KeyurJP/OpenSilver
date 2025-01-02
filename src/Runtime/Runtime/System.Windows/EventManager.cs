@@ -76,6 +76,21 @@ public static class EventManager
     /// <summary>
     /// Registers a class handler for a particular routed event.
     /// </summary>
+    /// <param name="routedEvent">
+    /// The routed event identifier of the event to handle.
+    /// </param>
+    /// <param name="handler">
+    /// A reference to the class handler implementation.
+    /// </param>
+    public static void RegisterClassHandler<TClassType>(RoutedEvent routedEvent, Delegate handler)
+        where TClassType : DependencyObject, IUIElement
+    {
+        RegisterClassHandler<TClassType>(routedEvent, handler, false);
+    }
+
+    /// <summary>
+    /// Registers a class handler for a particular routed event.
+    /// </summary>
     /// <param name="classType">
     /// The type of the class that is declaring class handling.
     /// </param>
@@ -87,6 +102,41 @@ public static class EventManager
     /// </param>
     public static void RegisterClassHandler(Type classType, RoutedEvent routedEvent, Delegate handler)
         => RegisterClassHandler(classType, routedEvent, handler, false);
+
+    /// <summary>
+    /// Registers a class handler for a particular routed event, with the option to handle events where 
+    /// event data is already marked handled.
+    /// </summary>
+    /// <param name="routedEvent">
+    /// The routed event identifier of the event to handle.
+    /// </param>
+    /// <param name="handler">
+    /// A reference to the class handler implementation.
+    /// </param>
+    /// <param name="handledEventsToo">
+    /// true to invoke this class handler even if arguments of the routed event have been marked as handled; 
+    /// false to retain the default behavior of not invoking the handler on any marked-handled event.
+    /// </param>
+    public static void RegisterClassHandler<TClassType>(RoutedEvent routedEvent, Delegate handler, bool handledEventsToo)
+        where TClassType : DependencyObject, IUIElement
+    {
+        if (routedEvent is null)
+        {
+            throw new ArgumentNullException(nameof(routedEvent));
+        }
+
+        if (handler is null)
+        {
+            throw new ArgumentNullException(nameof(handler));
+        }
+
+        if (!routedEvent.IsLegalHandler(handler))
+        {
+            throw new ArgumentException(Strings.HandlerTypeIllegal);
+        }
+
+        GlobalEventManager.RegisterClassHandler(typeof(TClassType), routedEvent, handler, handledEventsToo);
+    }
 
     /// <summary>
     /// Registers a class handler for a particular routed event, with the option to handle events where 
@@ -122,7 +172,7 @@ public static class EventManager
             throw new ArgumentNullException(nameof(handler));
         }
 
-        if (!typeof(UIElement).IsAssignableFrom(classType))
+        if (!typeof(DependencyObject).IsAssignableFrom(classType) || !typeof(IUIElement).IsAssignableFrom(classType))
         {
             throw new ArgumentException(Strings.ClassTypeIllegal);
         }

@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using System.Collections.Generic;
-using System.Globalization;
 using System.Windows.Media.Effects;
 using System.Diagnostics;
 using System.ComponentModel;
@@ -31,7 +30,7 @@ namespace System.Windows
     {
         static UIElement()
         {
-            RegisterEvents(typeof(UIElement));
+            RegisterEvents();
         }
 
         internal bool IsConnectedToLiveTree { get; set; }
