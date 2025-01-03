@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using OpenSilver.Internal;
 using OpenSilver.Internal.Data;
@@ -337,15 +336,15 @@ namespace System.Windows
 
             PropertyMetadata metadata = SetupPropertyChange(dp);
 
-            if (GetStorage(dp, metadata, false) is Storage storage && storage.Clock == clock)
+            if (GetStorage(dp, metadata, false) is Storage storage)
             {
-                if (clock.CurrentState == ClockState.Stopped)
+                if (storage.Clock == clock)
                 {
-                    DependencyObjectStore.ClearAnimatedValue(storage, this, dp, metadata);
-                }
-                else
-                {
-                    DependencyObjectStore.SetAnimatedValue(storage, this, dp, metadata, clock.GetCurrentValue());
+                    DependencyObjectStore.SetAnimatedValue(storage,
+                        this,
+                        dp,
+                        metadata,
+                        clock.GetCurrentValue());
                 }
             }
         }
