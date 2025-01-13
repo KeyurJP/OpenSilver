@@ -643,42 +643,46 @@ namespace System.Windows.Data
 
             object rawValue = GetRawProposedValue();
             Type expectedType = _propertyPathWalker.FinalNode.Type;
-            ValidationError vError = null;
+            ValidationError oldValidationError = _baseValidationError;
+            object convertedValue = rawValue;
+
+            if (expectedType != null && ParentBinding.Converter != null)
+            {
+                convertedValue = ConvertBackHelper(ParentBinding.Converter,
+                    convertedValue,
+                    expectedType,
+                    ParentBinding.ConverterParameter,
+                    ParentBinding.ConverterCulture);
+
+                if (convertedValue == DependencyProperty.UnsetValue)
+                {
+                    return;
+                }
+            }
+
+            if (!DependencyProperty.IsValidType(convertedValue, expectedType))
+            {
+                convertedValue = ConvertBackHelper(DynamicConverter,
+                    convertedValue,
+                    expectedType,
+                    null,
+                    ParentBinding.ConverterCulture);
+            }
+
+            if (convertedValue == DependencyProperty.UnsetValue)
+            {
+                if (_baseValidationError == oldValidationError)
+                {
+                    UpdateValidationError(new ValidationError(this)
+                    {
+                        ErrorContent = string.Format(Strings.Validation_ConversionFailed, rawValue),
+                    });
+                }
+                return;
+            }
 
             try
             {
-                object convertedValue = rawValue;
-
-                if (expectedType != null && ParentBinding.Converter != null)
-                {
-                    convertedValue = ParentBinding.Converter.ConvertBack(convertedValue,
-                        expectedType,
-                        ParentBinding.ConverterParameter,
-                        ParentBinding.ConverterCulture);
-
-                    if (convertedValue == DependencyProperty.UnsetValue)
-                    {
-                        return;
-                    }
-                }
-
-                if (!DependencyProperty.IsValidType(convertedValue, expectedType))
-                {
-                    convertedValue = DynamicConverter.Convert(convertedValue,
-                        expectedType,
-                        null,
-                        ParentBinding.ConverterCulture);
-
-                    if (convertedValue == DependencyProperty.UnsetValue)
-                    {
-                        UpdateValidationError(new ValidationError(this)
-                        {
-                            ErrorContent = string.Format(Strings.Validation_ConversionFailed, rawValue),
-                        });
-                        return;
-                    }
-                }
-
                 UpdateSource(convertedValue);
             }
             catch (Exception ex)
@@ -689,18 +693,13 @@ namespace System.Windows.Data
                     throw;
                 }
 
-                if (ValidatesOnExceptions)
-                {
-                    vError = new ValidationError(this)
-                    {
-                        Exception = ex,
-                        ErrorContent = ex.Message,
-                    };
-                }
+                ProcessException(ex, ValidatesOnExceptions);
             }
 
-            vError ??= GetBaseValidationError();
-            UpdateValidationError(vError);
+            if (_baseValidationError == oldValidationError)
+            {
+                UpdateValidationError(GetBaseValidationError());
+            }
         }
 
         private object GetRawProposedValue() => Target.GetValue(TargetProperty);
@@ -716,6 +715,41 @@ namespace System.Windows.Data
             {
                 EndSourceUpdate();
             }
+        }
+
+        private object ConvertBackHelper(IValueConverter converter, object value, Type sourceType, object parameter, CultureInfo culture)
+        {
+            object convertedValue;
+            try
+            {
+                convertedValue = converter.ConvertBack(value, sourceType, parameter, culture);
+            }
+            catch (Exception ex)
+            {
+                ex = CriticalExceptions.Unwrap(ex);
+                if (CriticalExceptions.IsCriticalApplicationException(ex))
+                {
+                    throw;
+                }
+
+                ProcessException(ex, ValidatesOnExceptions);
+                convertedValue = DependencyProperty.UnsetValue;
+            }
+            return convertedValue;
+        }
+
+        private void ProcessException(Exception ex, bool validate)
+        {
+            if (!validate)
+            {
+                return;
+            }
+
+            UpdateValidationError(new ValidationError(this)
+            {
+                Exception = ex,
+                ErrorContent = ex.Message,
+            });
         }
 
         private ValidationError GetBaseValidationError()
