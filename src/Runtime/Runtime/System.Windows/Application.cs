@@ -578,25 +578,36 @@ namespace System.Windows
         #region Exit event
 
         /// <summary>
-        /// Occurs just before an application shuts down and cannot be canceled.
+        /// Occurs just before an application shuts down.
         /// </summary>
-        public event EventHandler Exit;
+        public event ExitEventHandler Exit;
 
         /// <summary>
-        /// Raises the Exit event
+        /// Raises the <see cref="Exit"/> event.
         /// </summary>
-        void ProcessOnExit(object jsEventArg)
-        {
-            OnExit(EventArgs.Empty);
-        }
+        /// <param name="e">
+        /// An <see cref="ExitEventArgs"/> that contains the event data.
+        /// </param>
+        protected virtual void OnExit(ExitEventArgs e) => Exit?.Invoke(this, e);
 
-        /// <summary>
-        /// Raises the Exit event
-        /// </summary>
-        /// <param name="eventArgs">The arguments for the event.</param>
-        protected virtual void OnExit(EventArgs eventArgs)
+        private void ProcessOnExit(object jsEventArg)
         {
-            Exit?.Invoke(this, eventArgs);
+            var e = new ExitEventArgs(0);
+
+            try
+            {
+                OnExit(e);
+            }
+            finally
+            {
+                Environment.ExitCode = e.ExitCode;
+
+                if (e.Handled)
+                {
+                    OpenSilver.Interop.ExecuteJavaScriptVoid(
+                        $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.preventDefault()");
+                }
+            }
         }
 
         #endregion

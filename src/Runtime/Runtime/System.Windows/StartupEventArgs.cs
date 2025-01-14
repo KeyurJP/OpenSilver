@@ -11,25 +11,34 @@
 *  
 \*====================================================================================*/
 
-using System;
 using System.Collections.Generic;
 
-namespace System.Windows
-{
-    /// <summary>
-    /// Contains the event data for the <see cref="Application.Startup"/> event.
-    /// </summary>
-    public sealed partial class StartupEventArgs : EventArgs
-    {
-        internal StartupEventArgs() { }
+namespace System.Windows;
 
-        /// <summary>
-        /// Gets the initialization parameters that were passed as part of HTML initialization of a 
-        /// Silverlight plug-in.
-        /// </summary>
-        /// <returns>
-        /// The set of initialization parameters, as a dictionary with key strings and value strings.
-        /// </returns>
-        public IDictionary<string, string> InitParams => Application.Current.Host.InitParams;
-    }
+/// <summary>
+/// Contains the event data for the <see cref="Application.Startup"/> event.
+/// </summary>
+public sealed class StartupEventArgs : EventArgs
+{
+    internal StartupEventArgs() { }
+
+    /// <summary>
+    /// Gets the initialization parameters that were passed as part of HTML initialization of a 
+    /// Silverlight plug-in.
+    /// </summary>
+    /// <returns>
+    /// The set of initialization parameters, as a dictionary with key strings and value strings.
+    /// </returns>
+    public IDictionary<string, string> InitParams => Application.Current.Host.InitParams;
 }
+
+/// <summary>
+/// Represents the method that will handle the <see cref="Application.Startup"/> event.
+/// </summary>
+/// <param name="sender">
+/// The object that raised the event.
+/// </param>
+/// <param name="e">
+/// The event data.
+/// </param>
+public delegate void StartupEventHandler(object sender, StartupEventArgs e);

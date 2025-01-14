@@ -150,6 +150,7 @@
     <Compile Include="System.Windows.Media.Animation\VectorKeyFrame.cs" />
     <Compile Include="System.Windows\DynamicResourceExtension.cs" />
     <Compile Include="System.Windows\EventManager.cs" />
+    <Compile Include="System.Windows\ExitEventArgs.cs" />
     <Compile Include="System.Windows\FrameworkElement.Resources.cs" />
     <Compile Include="System.Windows\GlobalEventManager.cs" />
     <Compile Include="System.Windows\HierarchicalDataTemplate.cs" />
@@ -945,7 +946,6 @@
     <Compile Include="System.Windows\SizeChangedEventArgs.cs" />
     <Compile Include="System.Windows\SizeChangedEventHandler.cs" />
     <Compile Include="System.Windows\StartupEventArgs.cs" />
-    <Compile Include="System.Windows\StartupEventHandler.cs" />
     <Compile Include="System.Windows\Style.cs" />
     <Compile Include="System.Windows\TemplatePartAttribute.cs" />
     <Compile Include="System.Windows\TemplateVisualStateAttribute.cs" />
