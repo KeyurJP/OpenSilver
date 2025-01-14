@@ -265,6 +265,12 @@ namespace System.Windows
             {
                 return value;
             }
+
+            if (_theme is Theme theme && theme.TryGetResource(resourceKey, out value))
+            {
+                return value;
+            }
+
             return null;
         }
 

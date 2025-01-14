@@ -171,24 +171,6 @@ internal sealed class ResourceReferenceExpression : Expression
         return FindResourceFromApp(resourceKey);
     }
 
-    //private static object FindResourceFromApp(object resourceKey)
-    //{
-    //    if (Application.Current is Application app)
-    //    {
-    //        if (app.HasResources && app.Resources.TryGetResource(resourceKey, out object resource))
-    //        {
-    //            return resource;
-    //        }
-
-    //        if (app.Theme is Theme theme && theme.TryGetResource(resourceKey, out resource))
-    //        {
-    //            return resource;
-    //        }
-    //    }
-
-    //    return DependencyProperty.UnsetValue;
-    //}
-
     private static object FindResourceFromApp(object resourceKey) => Application.Current?.FindResourceInternal(resourceKey);
 
     /// <summary>
