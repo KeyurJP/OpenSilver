@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -26,8 +25,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ScrollBarAutomationPeer(new ScrollBar());
             var point = peer.GetClickablePoint();
-            double.IsNaN(point.X).Should().BeTrue();
-            double.IsNaN(point.Y).Should().BeTrue();
+
+            Assert.IsTrue(double.IsNaN(point.X));
+            Assert.IsTrue(double.IsNaN(point.Y));
         }
 
         [TestMethod]
@@ -37,9 +37,10 @@ namespace System.Windows.Automation.Peers.Tests
             var peer = new ScrollBarAutomationPeer(scrollbar);
 
             scrollbar.Orientation = Orientation.Horizontal;
-            peer.GetOrientation().Should().Be(AutomationOrientation.Horizontal);
+            Assert.AreEqual(peer.GetOrientation(), AutomationOrientation.Horizontal);
+
             scrollbar.Orientation = Orientation.Vertical;
-            peer.GetOrientation().Should().Be(AutomationOrientation.Vertical);
+            Assert.AreEqual(peer.GetOrientation(), AutomationOrientation.Vertical);
         }
     }
 }

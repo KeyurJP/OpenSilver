@@ -11,9 +11,9 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver;
+using OpenSilver.Internal.Helpers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
@@ -28,16 +28,17 @@ namespace System.Windows.Automation.Peers.Tests
             var listbox = new ListBox();
             var peer = new ListBoxAutomationPeer(listbox);
             var provider = peer.GetPattern(PatternInterface.Selection) as ISelectionProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             listbox.SelectionMode = SelectionMode.Single;
-            provider.CanSelectMultiple.Should().BeFalse();
+            Assert.IsFalse(provider.CanSelectMultiple);
 
             listbox.SelectionMode = SelectionMode.Multiple;
-            provider.CanSelectMultiple.Should().BeTrue();
+            Assert.IsTrue(provider.CanSelectMultiple);
 
             listbox.SelectionMode = SelectionMode.Extended;
-            provider.CanSelectMultiple.Should().BeTrue();
+            Assert.IsTrue(provider.CanSelectMultiple);
         }
 
         [TestMethod]
@@ -45,8 +46,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ListBoxAutomationPeer(new ListBox());
             var provider = peer.GetPattern(PatternInterface.Selection) as ISelectionProvider;
-            provider.Should().NotBeNull();
-            provider.IsSelectionRequired.Should().BeFalse();
+
+            Assert.IsNotNull(provider);
+            Assert.IsFalse(provider.IsSelectionRequired);
         }
 
         [TestMethod]
@@ -59,24 +61,27 @@ namespace System.Windows.Automation.Peers.Tests
             listbox.Items.Add("Item 4");
             var peer = new ListBoxAutomationPeer(listbox);
             var provider = peer.GetPattern(PatternInterface.Selection) as ISelectionProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             using (var wrapper = new FocusableControlWrapper<ListBox>(listbox))
             {
                 listbox.SelectedItem = "Item 2";
                 var selection = provider.GetSelection();
-                selection.Length.Should().Be(1);
-                selection[0].Peer.Should().BeOfType<ListBoxItemAutomationPeer>();
-                selection[0].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer.Should().BeSameAs(peer);
+
+                Assert.AreEqual(selection.Length, 1);
+                Assert.IsInstanceOfType<ListBoxItemAutomationPeer>(selection[0].Peer);
+                Assert.AreSame(selection[0].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer, peer);
 
                 listbox.SelectionMode = SelectionMode.Multiple;
                 listbox.SelectedItems.Add("Item 4");
                 selection = provider.GetSelection();
-                selection.Length.Should().Be(2);
-                selection[0].Peer.Should().BeOfType<ListBoxItemAutomationPeer>();
-                selection[0].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer.Should().BeSameAs(peer);
-                selection[1].Peer.Should().BeOfType<ListBoxItemAutomationPeer>();
-                selection[1].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer.Should().BeSameAs(peer);
+
+                Assert.AreEqual(selection.Length, 2);
+                Assert.IsInstanceOfType<ListBoxItemAutomationPeer>(selection[0].Peer);
+                Assert.AreSame(selection[0].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer, peer);
+                Assert.IsInstanceOfType<ListBoxItemAutomationPeer>(selection[1].Peer);
+                Assert.AreSame(selection[1].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer, peer);
             }
         }
     }

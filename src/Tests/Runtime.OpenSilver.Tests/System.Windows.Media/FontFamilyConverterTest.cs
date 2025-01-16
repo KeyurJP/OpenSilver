@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,45 +26,37 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontFamily()
         {
-            Converter.ConvertFrom("Verdana")
-                .Should()
-                .BeOfType<FontFamily>()
-                .Which
-                .Source
-                .Should()
-                .Be("Verdana");
+            object value = Converter.ConvertFrom("Verdana");
+
+            Assert.IsInstanceOfType<FontFamily>(value);
+
+            FontFamily fontFamily = value as FontFamily;
+
+            Assert.AreEqual(fontFamily.Source, "Verdana");
         }
 
         [TestMethod]
@@ -89,17 +80,13 @@ namespace System.Windows.Media.Tests
         {
             var ff = new FontFamily("Comic Sans");
             
-            Converter.ConvertTo(ff, typeof(string))
-                .Should()
-                .Be(ff.Source);
+            Assert.AreEqual(Converter.ConvertTo(ff, typeof(string)), ff.Source);
         }
 
         [TestMethod]
         public void ConvertTo_String_Should_Return_String_Empty()
         {
-            Converter.ConvertTo(new FontFamily(null), typeof(string))
-                .Should()
-                .Be(string.Empty);
+            Assert.AreEqual(Converter.ConvertTo(new FontFamily(null), typeof(string)), string.Empty);
         }
 
         [TestMethod]

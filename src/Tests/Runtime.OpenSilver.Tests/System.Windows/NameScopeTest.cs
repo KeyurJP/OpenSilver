@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver.Internal.Xaml.Context;
 using OpenSilver.Internal.Xaml;
@@ -29,77 +28,82 @@ namespace System.Windows.Tests
         [TestMethod]
         public void FindName_When_Target_Has_NameScope()
         {
-            _uc1.FindName("name1").Should().Be(_uc1.name1);
-            _uc1.FindName("name2").Should().Be(_uc1.name2);
-            _uc1.FindName("name3").Should().Be(_uc1.name3);
-            _uc1.FindName("name6").Should().Be(_uc1.name6);
-            _uc1.FindName("name7").Should().Be(_uc1.name7);
+            Assert.AreEqual(_uc1.FindName("name1"), _uc1.name1);
+            Assert.AreEqual(_uc1.FindName("name2"), _uc1.name2);
+            Assert.AreEqual(_uc1.FindName("name3"), _uc1.name3);
+            Assert.AreEqual(_uc1.FindName("name6"), _uc1.name6);
+            Assert.AreEqual(_uc1.FindName("name7"), _uc1.name7);
         }
 
         [TestMethod]
         public void FindName_Should_Use_Logical_Tree()
         {
-            _uc1.name2.FindName("name1").Should().Be(_uc1.name1);
-            _uc1.name2.FindName("name2").Should().Be(_uc1.name2);
-            _uc1.name2.FindName("name3").Should().Be(_uc1.name3);
-            _uc1.name2.FindName("name6").Should().Be(_uc1.name6);
-            _uc1.name2.FindName("name7").Should().Be(_uc1.name7);
+            Assert.AreEqual(_uc1.name2.FindName("name1"), _uc1.name1);
+            Assert.AreEqual(_uc1.name2.FindName("name2"), _uc1.name2);
+            Assert.AreEqual(_uc1.name2.FindName("name3"), _uc1.name3);
+            Assert.AreEqual(_uc1.name2.FindName("name6"), _uc1.name6);
+            Assert.AreEqual(_uc1.name2.FindName("name7"), _uc1.name7);
         }
 
         [TestMethod]
         public void FindName_Should_Use_TemplatedParent()
         {
             Control2 control2 = _uc1.name2.Children[4] as Control2;
-            control2.Should().NotBeNull();
+
+            Assert.IsNotNull(control2);
 
             ContentControl child = control2.Child as ContentControl;
 
-            child.FindName("name1").Should().Be(_uc1.name1);
-            child.FindName("name2").Should().Be(_uc1.name2);
-            child.FindName("name3").Should().Be(_uc1.name3);
-            child.FindName("name6").Should().Be(_uc1.name6);
-            child.FindName("name7").Should().Be(_uc1.name7);
+            Assert.AreEqual(child.FindName("name1"), _uc1.name1);
+            Assert.AreEqual(child.FindName("name2"), _uc1.name2);
+            Assert.AreEqual(child.FindName("name3"), _uc1.name3);
+            Assert.AreEqual(child.FindName("name6"), _uc1.name6);
+            Assert.AreEqual(child.FindName("name7"), _uc1.name7);
         }
 
         [TestMethod]
         public void FindName_Should_Use_VisualTree_1()
         {
             ItemsControl ic = _uc1.name2.Children[2] as ItemsControl;
-            ic.Should().NotBeNull();
+
+            Assert.IsNotNull(ic);
 
             FrameworkElement container = ic.ItemContainerGenerator.ContainerFromIndex(0) as FrameworkElement;
-            container.Should().NotBeNull();
 
-            container.FindName("name1").Should().Be(_uc1.name1);
-            container.FindName("name2").Should().Be(_uc1.name2);
-            container.FindName("name3").Should().Be(_uc1.name3);
-            container.FindName("name6").Should().Be(_uc1.name6);
-            container.FindName("name7").Should().Be(_uc1.name7);
+            Assert.IsNotNull(container);
+
+            Assert.AreEqual(container.FindName("name1"), _uc1.name1);
+            Assert.AreEqual(container.FindName("name2"), _uc1.name2);
+            Assert.AreEqual(container.FindName("name3"), _uc1.name3);
+            Assert.AreEqual(container.FindName("name6"), _uc1.name6);
+            Assert.AreEqual(container.FindName("name7"), _uc1.name7);
         }
 
         [TestMethod]
         public void FindName_Should_Use_VisualTree_2()
         {
             ContentPresenter cp = _uc1.name2.Children[5] as ContentPresenter;
-            cp.Should().NotBeNull();
+
+            Assert.IsNotNull(cp);
 
             ContentControl cc = cp.Content as ContentControl;
-            cc.Should().NotBeNull();
 
-            cc.FindName("name1").Should().Be(_uc1.name1);
-            cc.FindName("name2").Should().Be(_uc1.name2);
-            cc.FindName("name3").Should().Be(_uc1.name3);
-            cc.FindName("name6").Should().Be(_uc1.name6);
-            cc.FindName("name7").Should().Be(_uc1.name7);
+            Assert.IsNotNull(cc);
+
+            Assert.AreEqual(cc.FindName("name1"), _uc1.name1);
+            Assert.AreEqual(cc.FindName("name2"), _uc1.name2);
+            Assert.AreEqual(cc.FindName("name3"), _uc1.name3);
+            Assert.AreEqual(cc.FindName("name6"), _uc1.name6);
+            Assert.AreEqual(cc.FindName("name7"), _uc1.name7);
         }
 
         [TestMethod]
         public void FindName_Should_Not_Look_In_External_Templates()
         {
-            _uc1.FindName("name4").Should().BeNull();
-            _uc1.FindName("name5").Should().BeNull();
-            _uc1.name2.FindName("name4").Should().BeNull();
-            _uc1.name2.FindName("name5").Should().BeNull();
+            Assert.IsNull(_uc1.FindName("name4"));
+            Assert.IsNull(_uc1.FindName("name5"));
+            Assert.IsNull(_uc1.name2.FindName("name4"));
+            Assert.IsNull(_uc1.name2.FindName("name5"));
         }
 
         [TestMethod]
@@ -107,14 +111,15 @@ namespace System.Windows.Tests
         {
             Border child = VisualTreeHelper.GetChild(_uc1.name3, 0) as Border;
             Border childOfChild = child.Child as Border;
-            child.Should().NotBeNull();
-            childOfChild.Should().NotBeNull();
 
-            child.FindName("name4").Should().Be(child);
-            child.FindName("name5").Should().Be(childOfChild);
+            Assert.IsNotNull(child);
+            Assert.IsNotNull(childOfChild);
 
-            childOfChild.FindName("name4").Should().Be(child);
-            childOfChild.FindName("name5").Should().Be(childOfChild);
+            Assert.AreEqual(child.FindName("name4"), child);
+            Assert.AreEqual(child.FindName("name5"), childOfChild);
+
+            Assert.AreEqual(childOfChild.FindName("name4"), child);
+            Assert.AreEqual(childOfChild.FindName("name5"), childOfChild);
         }
 
         [TestMethod]
@@ -122,68 +127,72 @@ namespace System.Windows.Tests
         {
             Border child = VisualTreeHelper.GetChild(_uc1.name3, 0) as Border;
             Border childOfChild = child.Child as Border;
-            child.Should().NotBeNull();
-            childOfChild.Should().NotBeNull();
 
-            child.FindName("name1").Should().BeNull();
-            child.FindName("name2").Should().BeNull();
-            child.FindName("name3").Should().BeNull();
-            child.FindName("name6").Should().BeNull();
-            child.FindName("name7").Should().BeNull();
+            Assert.IsNotNull(child);
+            Assert.IsNotNull(childOfChild);
+            Assert.IsNull(child.FindName("name1"));
+            Assert.IsNull(child.FindName("name2"));
+            Assert.IsNull(child.FindName("name3"));
+            Assert.IsNull(child.FindName("name6"));
+            Assert.IsNull(child.FindName("name7"));
 
-            childOfChild.FindName("name1").Should().BeNull();
-            childOfChild.FindName("name2").Should().BeNull();
-            childOfChild.FindName("name3").Should().BeNull();
-            childOfChild.FindName("name6").Should().BeNull();
-            childOfChild.FindName("name7").Should().BeNull();
+            Assert.IsNull(childOfChild.FindName("name1"));
+            Assert.IsNull(childOfChild.FindName("name2"));
+            Assert.IsNull(childOfChild.FindName("name3"));
+            Assert.IsNull(childOfChild.FindName("name6"));
+            Assert.IsNull(childOfChild.FindName("name7"));
         }
 
         [TestMethod]
         public void FindName_Should_Stop_At_First_NameScope()
         {
-            _uc1.name6.FindName("uc_name1").Should().Be(_uc1.name6.uc_name1);
-            _uc1.name7.FindName("uc_name1").Should().Be(_uc1.name6.uc_name1);
+            Assert.AreEqual(_uc1.name6.FindName("uc_name1"), _uc1.name6.uc_name1);
+            Assert.AreEqual(_uc1.name7.FindName("uc_name1"), _uc1.name6.uc_name1);
 
-            _uc1.name6.FindName("name1").Should().BeNull();
-            _uc1.name6.FindName("name2").Should().BeNull();
-            _uc1.name6.FindName("name3").Should().BeNull();
-            _uc1.name6.FindName("name6").Should().BeNull();
-            _uc1.name6.FindName("name7").Should().BeNull();
+            Assert.IsNull(_uc1.name6.FindName("name1"));
+            Assert.IsNull(_uc1.name6.FindName("name2"));
+            Assert.IsNull(_uc1.name6.FindName("name3"));
+            Assert.IsNull(_uc1.name6.FindName("name6"));
+            Assert.IsNull(_uc1.name6.FindName("name7"));
 
-            _uc1.name7.FindName("name1").Should().BeNull();
-            _uc1.name7.FindName("name2").Should().BeNull();
-            _uc1.name7.FindName("name3").Should().BeNull();
-            _uc1.name7.FindName("name6").Should().BeNull();
-            _uc1.name7.FindName("name7").Should().BeNull();
+            Assert.IsNull(_uc1.name7.FindName("name1"));
+            Assert.IsNull(_uc1.name7.FindName("name2"));
+            Assert.IsNull(_uc1.name7.FindName("name3"));
+            Assert.IsNull(_uc1.name7.FindName("name6"));
+            Assert.IsNull(_uc1.name7.FindName("name7"));
         }
 
         [TestMethod]
         public void FindName_Template_Should_Have_Priority()
         {
             Control1 control1 = _uc1.name2.Children[3] as Control1;
-            control1.Should().NotBeNull();
+
+            Assert.IsNotNull(control1);
 
             Border border = VisualTreeHelper.GetChild(control1, 0) as Border;
-            border.Should().NotBeNull();
+
+            Assert.IsNotNull(border);
 
             UserControl2 uc2 = border.Child as UserControl2;
-            uc2.Should().NotBeNull();
+
+            Assert.IsNotNull(uc2);
 
             ContentControl cc = uc2.Children[0] as ContentControl;
-            cc.Should().NotBeNull();
 
-            border.FindName("name8").Should().Be(border);
-            border.FindName("name9").Should().Be(uc2);
-            border.FindName("name10").Should().Be(cc);
-            uc2.FindName("name8").Should().Be(border);
-            uc2.FindName("name9").Should().Be(uc2);
-            uc2.FindName("name10").Should().Be(cc);
-            cc.FindName("name8").Should().Be(border);
-            cc.FindName("name9").Should().Be(uc2);
-            cc.FindName("name10").Should().Be(cc);
+            Assert.IsNotNull(cc);
 
-            uc2.FindName("uc_name1").Should().BeNull();
-            cc.FindName("uc_name1").Should().BeNull();
+            Assert.AreEqual(border.FindName("name8"), border);
+            Assert.AreEqual(border.FindName("name9"), uc2);
+            Assert.AreEqual(border.FindName("name10"), cc);
+            Assert.AreEqual(uc2.FindName("name8"), border);
+            Assert.AreEqual(uc2.FindName("name9"), uc2);
+            Assert.AreEqual(uc2.FindName("name10"), cc);
+            Assert.AreEqual(cc.FindName("name8"), border);
+            Assert.AreEqual(cc.FindName("name9"), uc2);
+            Assert.AreEqual(cc.FindName("name10"), cc);
+
+            Assert.IsNull(uc2.FindName("uc_name1"));
+            Assert.IsNull(cc.FindName("uc_name1"));
         }
 
         /*

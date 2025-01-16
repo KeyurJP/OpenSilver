@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Controls;
 
@@ -60,9 +59,9 @@ namespace System.Windows.Tests
         public void CheckTargetType_When_TargetType_Is_Null()
         {
             var s = new Style();
-            s.TargetType.Should().BeNull();
             var cc = new ContentControl();
 
+            Assert.IsNull(s.TargetType);
             Assert.ThrowsException<InvalidOperationException>(() => s.CheckTargetType(cc));
         }
 
@@ -97,18 +96,19 @@ namespace System.Windows.Tests
 
             s1.Seal();
 
-            s1.IsSealed.Should().BeTrue();
-            s1.Setters.IsSealed.Should().BeTrue();
+            Assert.IsTrue(s1.IsSealed);
+            Assert.IsTrue(s1.Setters.IsSealed);
 
             // Check s1.EffectiveValues
             var effectiveValues = s1.EffectiveValues;
-            effectiveValues.Count.Should().Be(3);
-            effectiveValues.ContainsKey(FrameworkElement.HeightProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[FrameworkElement.HeightProperty.GlobalIndex].Should().Be(40d);
-            effectiveValues.ContainsKey(FrameworkElement.WidthProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[FrameworkElement.WidthProperty.GlobalIndex].Should().Be(20d);
-            effectiveValues.ContainsKey(ContentControl.ContentTemplateProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[ContentControl.ContentTemplateProperty.GlobalIndex].Should().Be(contentTemplate);
+
+            Assert.AreEqual(effectiveValues.Count, 3);
+            Assert.IsTrue(effectiveValues.ContainsKey(FrameworkElement.HeightProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[FrameworkElement.HeightProperty.GlobalIndex], 40d);
+            Assert.IsTrue(effectiveValues.ContainsKey(FrameworkElement.WidthProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[FrameworkElement.WidthProperty.GlobalIndex], 20d);
+            Assert.IsTrue(effectiveValues.ContainsKey(ContentControl.ContentTemplateProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[ContentControl.ContentTemplateProperty.GlobalIndex], contentTemplate);
         }
 
         [TestMethod]
@@ -130,25 +130,26 @@ namespace System.Windows.Tests
 
             s1.Seal();
 
-            s1.IsSealed.Should().BeTrue();
-            s2.IsSealed.Should().BeTrue();
-            s3.IsSealed.Should().BeTrue();
-            s1.Setters.IsSealed.Should().BeTrue();
-            s2.Setters.IsSealed.Should().BeTrue();
-            s3.Setters.IsSealed.Should().BeTrue();
+            Assert.IsTrue(s1.IsSealed);
+            Assert.IsTrue(s2.IsSealed);
+            Assert.IsTrue(s3.IsSealed);
+            Assert.IsTrue(s1.Setters.IsSealed);
+            Assert.IsTrue(s2.Setters.IsSealed);
+            Assert.IsTrue(s3.Setters.IsSealed);
 
             var effectiveValues = s1.EffectiveValues;
-            effectiveValues.Count.Should().Be(5);
-            effectiveValues.ContainsKey(ListBox.SelectionModeProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[ListBox.SelectionModeProperty.GlobalIndex].Should().Be(SelectionMode.Extended);
-            effectiveValues.ContainsKey(ItemsControl.DisplayMemberPathProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[ItemsControl.DisplayMemberPathProperty.GlobalIndex].Should().Be("DisplayMemberPathListBox");
-            effectiveValues.ContainsKey(ItemsControl.ItemTemplateProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[ItemsControl.ItemTemplateProperty.GlobalIndex].Should().Be(itemTemplate);
-            effectiveValues.ContainsKey(FrameworkElement.WidthProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[FrameworkElement.WidthProperty.GlobalIndex].Should().Be(22d);
-            effectiveValues.ContainsKey(FrameworkElement.HeightProperty.GlobalIndex).Should().BeTrue();
-            effectiveValues[FrameworkElement.HeightProperty.GlobalIndex].Should().Be(40d);
+
+            Assert.AreEqual(effectiveValues.Count, 5);
+            Assert.IsTrue(effectiveValues.ContainsKey(ListBox.SelectionModeProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[ListBox.SelectionModeProperty.GlobalIndex], SelectionMode.Extended);
+            Assert.IsTrue(effectiveValues.ContainsKey(ItemsControl.DisplayMemberPathProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[ItemsControl.DisplayMemberPathProperty.GlobalIndex], "DisplayMemberPathListBox");
+            Assert.IsTrue(effectiveValues.ContainsKey(ItemsControl.ItemTemplateProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[ItemsControl.ItemTemplateProperty.GlobalIndex], itemTemplate);
+            Assert.IsTrue(effectiveValues.ContainsKey(FrameworkElement.WidthProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[FrameworkElement.WidthProperty.GlobalIndex], 22d);
+            Assert.IsTrue(effectiveValues.ContainsKey(FrameworkElement.HeightProperty.GlobalIndex));
+            Assert.AreEqual(effectiveValues[FrameworkElement.HeightProperty.GlobalIndex], 40d);
         }
     }
 }

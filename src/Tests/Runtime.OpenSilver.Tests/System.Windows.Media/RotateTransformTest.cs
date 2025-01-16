@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -23,15 +22,17 @@ namespace System.Windows.Media.Tests
         {
             var transform = new RotateTransform { Angle = 30 };
             var invertedTransform = transform.Inverse as MatrixTransform;
-            invertedTransform.Should().NotBeNull();
+
+            Assert.IsNotNull(invertedTransform);
+
             var m = invertedTransform.Matrix;
 
-            m.M11.Should().BeInRange(0.866025, 0.866026);
-            m.M12.Should().BeInRange(-0.5, -0.499999);
-            m.M21.Should().BeInRange(0.499999, 0.5);
-            m.M22.Should().BeInRange(0.866025, 0.866026);
-            m.OffsetX.Should().BeInRange(-0.000001, 0.000001);
-            m.OffsetY.Should().BeInRange(-0.000001, 0.000001);
+            Assert.IsTrue(m.M11 >= 0.866025 && m.M11 <= 0.866026);
+            Assert.IsTrue(m.M12 >= -0.5 && m.M12 <= - 0.499999);
+            Assert.IsTrue(m.M21 >= 0.499999 && m.M21 <= 0.5);
+            Assert.IsTrue(m.M22 >= 0.866025 && m.M22 <= 0.866026);
+            Assert.IsTrue(m.OffsetX >= -0.000001 && m.OffsetX <= 0.000001);
+            Assert.IsTrue(m.OffsetY >= -0.000001 && m.OffsetY <= 0.000001);
         }
 
         [TestMethod]
@@ -40,10 +41,11 @@ namespace System.Windows.Media.Tests
             var rect = new Rect(-5, -5, 25, 10);
             var transform = new RotateTransform { Angle = 45 };
             var result = transform.TransformBounds(rect);
-            result.X.Should().BeInRange(-7.071068, -7.071067);
-            result.Y.Should().BeInRange(-7.071068, -7.071067);
-            result.Height.Should().BeInRange(24.748737, 24.748738);
-            result.Width.Should().BeInRange(24.748737, 24.748738);
+
+            Assert.IsTrue(result.X >= -7.071068 && result.X <= - 7.071067);
+            Assert.IsTrue(result.Y >= -7.071068 && result.Y <= - 7.071067);
+            Assert.IsTrue(result.Height >= 24.748737 && result.Height <= 24.748738);
+            Assert.IsTrue(result.Width >= 24.748737 && result.Width <= 24.748738);
         }
 
         [TestMethod]
@@ -52,9 +54,10 @@ namespace System.Windows.Media.Tests
             var point = new Point(10, 10);
             var transform = new RotateTransform { Angle = 90 };
             var result = transform.TryTransform(point, out var outPoint);
-            result.Should().BeTrue();
-            outPoint.X.Should().Be(-10);
-            outPoint.Y.Should().Be(10);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(outPoint.X, -10);
+            Assert.AreEqual(outPoint.Y, 10);
         }
     }
 }

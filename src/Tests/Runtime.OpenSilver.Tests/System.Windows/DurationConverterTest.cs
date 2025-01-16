@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,41 +26,31 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_Should_Return_False_1()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Should_Return_False_2()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Duration()
         {
-            Converter.ConvertFrom("1")
-                .Should()
-                .Be(new Duration(TimeSpan.FromDays(1)));
+            Assert.AreEqual(Converter.ConvertFrom("1"), new Duration(TimeSpan.FromDays(1)));
         }
 
         [TestMethod]

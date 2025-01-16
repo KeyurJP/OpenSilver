@@ -11,9 +11,9 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver;
+using OpenSilver.Internal.Helpers;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -39,11 +39,11 @@ namespace System.Windows.Tests
 
             var style = new Style(typeof(TestFE1));
 
-            style.IsSealed.Should().BeFalse();
+            Assert.IsFalse(style.IsSealed);
 
             fe.Style = style;
 
-            style.IsSealed.Should().BeTrue();
+            Assert.IsTrue(style.IsSealed);
         }
 
         [TestMethod]
@@ -51,8 +51,8 @@ namespace System.Windows.Tests
         {
             var fe = TestFeWithStyle();
 
-            fe.Prop1.Should().Be(55d);
-            fe.Prop2.Should().BeNull();
+            Assert.AreEqual(fe.Prop1, 55d);
+            Assert.IsNull(fe.Prop2);
         }
 
         [TestMethod]
@@ -62,8 +62,8 @@ namespace System.Windows.Tests
 
             fe.Style = null;
 
-            fe.Prop1.Should().Be((double)TestFE1.Prop1Property.GetMetadata(fe.GetType()).DefaultValue);
-            fe.Prop2.Should().Be((Brush)TestFE1.Prop2Property.GetMetadata(fe.GetType()).DefaultValue);
+            Assert.AreEqual(fe.Prop1, (double)TestFE1.Prop1Property.GetMetadata(fe.GetType()).DefaultValue);
+            Assert.AreEqual(fe.Prop2, (Brush)TestFE1.Prop2Property.GetMetadata(fe.GetType()).DefaultValue);
         }
 
         [TestMethod]
@@ -77,9 +77,9 @@ namespace System.Windows.Tests
 
             fe.Style = style;
 
-            fe.Prop1.Should().Be(1d);
-            fe.Prop2.Should().Be((Brush)TestFE1.Prop2Property.GetMetadata(fe.GetType()).DefaultValue);
-            fe.Margin.Should().Be(new Thickness(-10d));
+            Assert.AreEqual(fe.Prop1, 1d);
+            Assert.AreEqual(fe.Prop2, (Brush)TestFE1.Prop2Property.GetMetadata(fe.GetType()).DefaultValue);
+            Assert.AreEqual(fe.Margin, new Thickness(-10d));
         }
 
         [TestMethod]
@@ -93,7 +93,7 @@ namespace System.Windows.Tests
 
             fe.Style = style;
 
-            fe.Prop1.Should().Be(100d);
+            Assert.AreEqual(fe.Prop1, 100d);
         }
 
         [TestMethod]
@@ -110,11 +110,11 @@ namespace System.Windows.Tests
 
             fe1.Style = style;
 
-            fe1.Prop1.Should().Be(100d);
+            Assert.AreEqual(fe1.Prop1, 100d);
 
             fe2.Style = style;
 
-            fe2.Prop1.Should().Be(200d);
+            Assert.AreEqual(fe2.Prop1, 200d);
         }
 
         [TestMethod]
@@ -130,10 +130,11 @@ namespace System.Windows.Tests
 
             using (var wrapper = new FocusableControlWrapper<Border>(border))
             {
-                fe1.Style.Should().BeNull();
-                fe1.ImplicitStyle.Should().BeSameAs(implicitStyle);
-                fe1.Prop1.Should().Be(100d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Black);
+                Assert.IsNull(fe1.Style);
+                Assert.AreSame(fe1.ImplicitStyle, implicitStyle);
+                Assert.AreEqual(fe1.Prop1, 100d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Black);
             }
         }
 
@@ -153,10 +154,11 @@ namespace System.Windows.Tests
 
             using (var wrapper = new FocusableControlWrapper<Border>(border))
             {
-                fe1.Style.Should().BeNull();
-                fe1.ImplicitStyle.Should().BeSameAs(implicitStyle);
-                fe1.Prop1.Should().Be(42d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Red);
+                Assert.IsNull(fe1.Style);
+                Assert.AreSame(fe1.ImplicitStyle, implicitStyle);
+                Assert.AreEqual(fe1.Prop1, 42d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Red);
             }
         }
 
@@ -176,10 +178,11 @@ namespace System.Windows.Tests
 
             using (var wrapper = new FocusableControlWrapper<Border>(border))
             {
-                fe1.Style.Should().BeSameAs(style);
-                fe1.ImplicitStyle.Should().BeSameAs(implicitStyle);
-                fe1.Prop1.Should().Be(200d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Red);
+                Assert.AreSame(fe1.Style, style);
+                Assert.AreSame(fe1.ImplicitStyle, implicitStyle);
+                Assert.AreEqual(fe1.Prop1, 200d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Red);
             }
         }
 
@@ -199,15 +202,17 @@ namespace System.Windows.Tests
 
             using (var wrapper = new FocusableControlWrapper<Border>(border))
             {
-                fe1.Style.Should().BeSameAs(style);
-                fe1.ImplicitStyle.Should().BeSameAs(implicitStyle);
-                fe1.Prop1.Should().Be(200d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Red);
+                Assert.AreSame(fe1.Style, style);
+                Assert.AreSame(fe1.ImplicitStyle, implicitStyle);
+                Assert.AreEqual(fe1.Prop1, 200d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Red);
 
                 fe1.ClearValue(FrameworkElement.StyleProperty);
 
-                fe1.Prop1.Should().Be(100d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Green);
+                Assert.AreEqual(fe1.Prop1, 100d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Green);
             }
         }
 
@@ -224,17 +229,19 @@ namespace System.Windows.Tests
 
             using (var wrapper = new FocusableControlWrapper<Border>(border))
             {
-                fe1.Style.Should().BeNull();
-                fe1.ImplicitStyle.Should().BeSameAs(implicitStyle);
-                fe1.Prop1.Should().Be(100d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Yellow);
+                Assert.IsNull(fe1.Style);
+                Assert.AreSame(fe1.ImplicitStyle, implicitStyle);
+                Assert.AreEqual(fe1.Prop1, 100d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Yellow);
 
                 var style = new Style(typeof(TestFE1));
                 style.Setters.Add(new Setter(TestFE1.Prop2Property, new SolidColorBrush(Colors.Blue)));
                 fe1.Style = style;
 
-                fe1.Prop1.Should().Be(42d);
-                fe1.Prop2.Should().BeOfType<SolidColorBrush>().Subject.Color.Should().Be(Colors.Blue);
+                Assert.AreEqual(fe1.Prop1, 42d);
+                Assert.IsInstanceOfType<SolidColorBrush>(fe1.Prop2);
+                Assert.AreEqual(fe1.Prop2.As<SolidColorBrush>().Color, Colors.Blue);
             }
         }
     }

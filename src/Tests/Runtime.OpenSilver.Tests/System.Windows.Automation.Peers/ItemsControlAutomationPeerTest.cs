@@ -11,8 +11,8 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenSilver.Internal.Helpers;
 using System.Windows.Controls;
 
 namespace System.Windows.Automation.Peers.Tests
@@ -26,7 +26,8 @@ namespace System.Windows.Automation.Peers.Tests
             var ic = new ItemsControlTest();
             var peer = FrameworkElementAutomationPeer.CreatePeerForElement(ic).As<ItemsControlTestAutomationPeer>();
             var children = peer.GetChildren();
-            children.Should().BeNull();
+
+            Assert.IsNull(children);
         }
 
         [TestMethod]
@@ -38,8 +39,9 @@ namespace System.Windows.Automation.Peers.Tests
             ic.Items.Add(new TextBlock());
             var peer = FrameworkElementAutomationPeer.CreatePeerForElement(ic).As<ItemsControlTestAutomationPeer>();
             var children = peer.GetChildren();
-            children.Should().NotBeNull();
-            children.Count.Should().Be(0);
+
+            Assert.IsNotNull(children);
+            Assert.AreEqual(children.Count, 0);
         }
 
         [TestMethod]
@@ -51,15 +53,17 @@ namespace System.Windows.Automation.Peers.Tests
             ic.Items.Add(new ItemTest());
             var peer = FrameworkElementAutomationPeer.CreatePeerForElement(ic).As<ItemsControlTestAutomationPeer>();
             var children = peer.GetChildren();
-            children.Should().NotBeNull();
-            children.Count.Should().Be(3);
+
+            Assert.IsNotNull(children);
+            Assert.AreEqual(children.Count, 3);
             
             for (int i = 0; i < children.Count; i++)
             {
                 var item = children[i].As<ItemTestAutomationPeer>();
-                item.Should().NotBeNull();
-                item.ItemsControlAutomationPeer.Should().BeSameAs(peer);
-                item.Item.Should().BeSameAs(ic.Items[i]);
+
+                Assert.IsNotNull(item);
+                Assert.AreSame(item.ItemsControlAutomationPeer, peer);
+                Assert.AreSame(item.Item, ic.Items[i]);
             }
         }
 
@@ -73,13 +77,14 @@ namespace System.Windows.Automation.Peers.Tests
             var peer = FrameworkElementAutomationPeer.CreatePeerForElement(ic).As<ItemsControlTestAutomationPeer>();
             var children = peer.GetChildren();
             
-            children.Should().NotBeNull();
-            children.Count.Should().Be(1);
+            Assert.IsNotNull(children);
+            Assert.AreEqual(children.Count, 1);
             
             var child = children[0].As<ItemTestAutomationPeer>();
-            child.Should().NotBeNull();
-            child.ItemsControlAutomationPeer.Should().BeSameAs(peer);
-            child.Item.Should().BeSameAs(ic.Items[1]);
+
+            Assert.IsNotNull(child);
+            Assert.AreSame(child.ItemsControlAutomationPeer, peer);
+            Assert.AreSame(child.Item, ic.Items[1]);
         }
 
         private class ItemsControlTest : ItemsControl

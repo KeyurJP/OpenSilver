@@ -11,7 +11,6 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -35,7 +34,7 @@ namespace System.Windows.Automation.Peers.Tests
             var buttonAutoPeer = new ButtonAutomationPeer(button);
             var invokeProvider = buttonAutoPeer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
             
-            invokeProvider.Should().NotBeNull();
+            Assert.IsNotNull(invokeProvider);
             
             invokeProvider.Invoke();
 

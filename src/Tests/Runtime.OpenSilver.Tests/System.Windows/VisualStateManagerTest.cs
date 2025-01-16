@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver.Internal;
 using System.Windows.Controls;
@@ -39,19 +38,19 @@ namespace System.Windows.Tests
             var myControl1 = new MyControl1();
 
             // 1 - Move from no current state to a state
-            myControl1.GoToState1().Should().BeTrue();
+            Assert.IsTrue(myControl1.GoToState1());
 
             // 2 - Move to the current state
-            myControl1.GoToState1().Should().BeTrue();
+            Assert.IsTrue(myControl1.GoToState1());
 
             // 3 - Move from a state to a state in the same group
-            myControl1.GoToState2().Should().BeTrue();
+            Assert.IsTrue(myControl1.GoToState2());
 
             // 4 - Move from a group to another
-            myControl1.GoToState4().Should().BeTrue();
+            Assert.IsTrue(myControl1.GoToState4());
 
             // 5 - Move to a state that does not exist
-            VisualStateManager.GoToState(myControl1, "some_state_that_does_not_exist", false).Should().BeFalse();
+            Assert.IsFalse(VisualStateManager.GoToState(myControl1, "some_state_that_does_not_exist", false));
         }
 
         [TestMethod]
@@ -59,22 +58,22 @@ namespace System.Windows.Tests
         {
             var myControl2 = new MyControl2();
 
-            myControl2.InnerControl.CurrentState.Should().BeNull();
+            Assert.IsNull(myControl2.InnerControl.CurrentState);
 
-            myControl2.GoToState1().Should().BeTrue();
-            myControl2.InnerControl.CurrentState.Should().Be("state1");
+            Assert.IsTrue(myControl2.GoToState1());
+            Assert.AreEqual(myControl2.InnerControl.CurrentState, "state1");
 
-            myControl2.GoToState2().Should().BeTrue();
-            myControl2.InnerControl.CurrentState.Should().Be("state2");
+            Assert.IsTrue(myControl2.GoToState2());
+            Assert.AreEqual(myControl2.InnerControl.CurrentState, "state2");
 
-            myControl2.GoToState3().Should().BeTrue();
-            myControl2.InnerControl.CurrentState.Should().Be("state3");
+            Assert.IsTrue(myControl2.GoToState3());
+            Assert.AreEqual(myControl2.InnerControl.CurrentState, "state3");
 
-            myControl2.GoToState4().Should().BeTrue();
-            myControl2.InnerControl.CurrentState.Should().Be("state4");
+            Assert.IsTrue(myControl2.GoToState4());
+            Assert.AreEqual(myControl2.InnerControl.CurrentState, "state4");
 
-            VisualStateManager.GoToState(myControl2, "some_state_that_does_not_exist", false).Should().BeFalse();
-            myControl2.InnerControl.CurrentState.Should().BeNull();
+            Assert.IsFalse(VisualStateManager.GoToState(myControl2, "some_state_that_does_not_exist", false));
+            Assert.IsNull(myControl2.InnerControl.CurrentState);
         }
 
         private class MyControl1 : Control

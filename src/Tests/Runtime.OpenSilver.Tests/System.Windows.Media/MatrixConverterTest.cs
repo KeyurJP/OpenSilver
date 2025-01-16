@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,65 +26,49 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Matrix_Identity()
         {
-            Converter.ConvertFrom("Identity")
-                .Should()
-                .Be(Matrix.Identity);
+            Assert.AreEqual(Converter.ConvertFrom("Identity"), Matrix.Identity);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Matrix_1()
         {
-            Converter.ConvertFrom("1,2,3,4,5,6")
-                .Should()
-                .Be(new Matrix(1, 2, 3, 4, 5, 6));
+            Assert.AreEqual(Converter.ConvertFrom("1,2,3,4,5,6"), new Matrix(1, 2, 3, 4, 5, 6));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Matrix_2()
         {
-            Converter.ConvertFrom("1 2 3 4 5 6")
-                .Should()
-                .Be(new Matrix(1, 2, 3, 4, 5, 6));
+            Assert.AreEqual(Converter.ConvertFrom("1 2 3 4 5 6"), new Matrix(1, 2, 3, 4, 5, 6));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Matrix_3()
         {
-            Converter.ConvertFrom("  1,2 3, 4 5  6 ")
-                .Should()
-                .Be(new Matrix(1, 2, 3, 4, 5, 6));
+            Assert.AreEqual(Converter.ConvertFrom("  1,2 3, 4 5  6 "), new Matrix(1, 2, 3, 4, 5, 6));
         }
 
         [TestMethod]
@@ -115,9 +98,7 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(new Matrix(1, 2, 3, 4, 5, 6), typeof(string))
-                .Should()
-                .Be("1,2,3,4,5,6");
+            Assert.AreEqual(Converter.ConvertTo(new Matrix(1, 2, 3, 4, 5, 6), typeof(string)), "1,2,3,4,5,6");
         }
 
         [TestMethod]

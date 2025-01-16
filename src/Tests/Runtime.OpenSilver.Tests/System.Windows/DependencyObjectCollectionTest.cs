@@ -11,7 +11,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -25,9 +24,7 @@ namespace System.Windows.Tests
             DependencyObjectCollection<DependencyObject> dependencyObjectCollection =
                 new DependencyObjectCollection<DependencyObject>();
 
-            dependencyObjectCollection.IndexOf(new DependencyObject())
-                .Should()
-                .Be(-1);
+            Assert.AreEqual(dependencyObjectCollection.IndexOf(new DependencyObject()), -1);
         }
 
         [TestMethod]
@@ -36,10 +33,9 @@ namespace System.Windows.Tests
             DependencyObjectCollection<object> dependencyObjectCollection =
                 new DependencyObjectCollection<object>();
 
-            dependencyObjectCollection.Invoking(c => c.IndexOf("Some item"))
-                .Should()
-                .Throw<ArgumentException>()
-                .WithMessage("item is not a DependencyObject.");
+            Assert.ThrowsException<ArgumentException>(
+                () => dependencyObjectCollection.IndexOf("Some Item"),
+                "item is not a DependencyObject.");
         }
     }
 }

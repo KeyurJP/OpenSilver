@@ -13,13 +13,13 @@
 
 using System.Globalization;
 using System.Reflection;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NullableConverter2 = System.ComponentModel.TypeConverterHelper.NullableConverter2;
 using System.Windows.Input;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using OpenSilver.Internal.Helpers;
 
 namespace System.ComponentModel.Tests
 {
@@ -29,694 +29,584 @@ namespace System.ComponentModel.Tests
         [TestMethod]
         public void GetConverter_When_Cursor()
         {
-            TypeConverterHelper.GetConverter(typeof(Cursor))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<CursorConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Cursor));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<CursorConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_KeyTime()
         {
-            TypeConverterHelper.GetConverter(typeof(KeyTime))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<KeyTimeConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(KeyTime));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<KeyTimeConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_RepeatBehavior()
         {
-            TypeConverterHelper.GetConverter(typeof(RepeatBehavior))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<RepeatBehaviorConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(RepeatBehavior));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<RepeatBehaviorConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Brush()
         {
-            TypeConverterHelper.GetConverter(typeof(Brush))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<BrushConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Brush));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<BrushConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_SolidColorBrush()
         {
-            TypeConverterHelper.GetConverter(typeof(SolidColorBrush))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<BrushConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(SolidColorBrush));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<BrushConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Color()
         {
-            TypeConverterHelper.GetConverter(typeof(Color))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<ColorConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Color));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<ColorConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_DoubleCollection()
         {
-            TypeConverterHelper.GetConverter(typeof(DoubleCollection))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<DoubleCollectionConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(DoubleCollection));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<DoubleCollectionConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_FontFamily()
         {
-            TypeConverterHelper.GetConverter(typeof(FontFamily))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<FontFamilyConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(FontFamily));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<FontFamilyConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Geometry()
         {
-            TypeConverterHelper.GetConverter(typeof(Geometry))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<GeometryConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Geometry));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<GeometryConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_PathGeometry()
         {
-            TypeConverterHelper.GetConverter(typeof(PathGeometry))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<GeometryConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(PathGeometry));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<GeometryConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Matrix()
         {
-            TypeConverterHelper.GetConverter(typeof(Matrix))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<MatrixConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Matrix));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<MatrixConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_PointCollection()
         {
-            TypeConverterHelper.GetConverter(typeof(PointCollection))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<PointCollectionConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(PointCollection));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<PointCollectionConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Transform()
         {
-            TypeConverterHelper.GetConverter(typeof(Transform))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<TransformConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Transform));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<TransformConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_MatrixTransform()
         {
-            TypeConverterHelper.GetConverter(typeof(MatrixTransform))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<TransformConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(MatrixTransform));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<TransformConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_CacheMode()
         {
-            TypeConverterHelper.GetConverter(typeof(CacheMode))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<CacheModeConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(CacheMode));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<CacheModeConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_CornerRadius()
         {
-            TypeConverterHelper.GetConverter(typeof(CornerRadius))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<CornerRadiusConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(CornerRadius));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<CornerRadiusConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Duration()
         {
-            TypeConverterHelper.GetConverter(typeof(Duration))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<DurationConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Duration));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<DurationConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_FontWeight()
         {
-            TypeConverterHelper.GetConverter(typeof(FontWeight))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<FontWeightConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(FontWeight));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<FontWeightConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_GridLength()
         {
-            TypeConverterHelper.GetConverter(typeof(GridLength))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<GridLengthConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(GridLength));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<GridLengthConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Point()
         {
-            TypeConverterHelper.GetConverter(typeof(Point))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<PointConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Point));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<PointConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_PropertyPath()
         {
-            TypeConverterHelper.GetConverter(typeof(PropertyPath))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<PropertyPathConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(PropertyPath));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<PropertyPathConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Rect()
         {
-            TypeConverterHelper.GetConverter(typeof(Rect))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<RectConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Rect));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<RectConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Size()
         {
-            TypeConverterHelper.GetConverter(typeof(Size))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<SizeConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Size));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<SizeConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Thickness()
         {
-            TypeConverterHelper.GetConverter(typeof(Thickness))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<ThicknessConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Thickness));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<ThicknessConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_FontStretch()
         {
-            TypeConverterHelper.GetConverter(typeof(FontStretch))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<FontStretchConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(FontStretch));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<FontStretchConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_FontStyle()
         {
-            TypeConverterHelper.GetConverter(typeof(FontStyle))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<FontStyleConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(FontStyle));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<FontStyleConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_TextDecorationCollection()
         {
-            TypeConverterHelper.GetConverter(typeof(TextDecorationCollection))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<TextDecorationCollectionConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(TextDecorationCollection));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<TextDecorationCollectionConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Boolean()
         {
-            TypeConverterHelper.GetConverter(typeof(bool))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<BooleanConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(bool));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<BooleanConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Byte()
         {
-            TypeConverterHelper.GetConverter(typeof(byte))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<ByteConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(byte));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<ByteConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_SByte()
         {
-            TypeConverterHelper.GetConverter(typeof(sbyte))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<SByteConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(sbyte));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<SByteConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Char()
         {
-            TypeConverterHelper.GetConverter(typeof(char))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<CharConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(char));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<CharConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Double()
         {
-            TypeConverterHelper.GetConverter(typeof(double))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<DoubleConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(double));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<DoubleConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_String()
         {
-            TypeConverterHelper.GetConverter(typeof(string))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<StringConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(string));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<StringConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Int16()
         {
-            TypeConverterHelper.GetConverter(typeof(short))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<Int16Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(short));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<Int16Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Int32()
         {
-            TypeConverterHelper.GetConverter(typeof(int))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<Int32Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(int));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<Int32Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Int64()
         {
-            TypeConverterHelper.GetConverter(typeof(long))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<Int64Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(long));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<Int64Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Single()
         {
-            TypeConverterHelper.GetConverter(typeof(float))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<SingleConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(float));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<SingleConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_UInt16()
         {
-            TypeConverterHelper.GetConverter(typeof(ushort))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<UInt16Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(ushort));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<UInt16Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_UInt32()
         {
-            TypeConverterHelper.GetConverter(typeof(uint))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<UInt32Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(uint));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<UInt32Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_UInt64()
         {
-            TypeConverterHelper.GetConverter(typeof(ulong))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<UInt64Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(ulong));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<UInt64Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_CultureInfo()
         {
-            TypeConverterHelper.GetConverter(typeof(CultureInfo))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<CultureInfoConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(CultureInfo));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<CultureInfoConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Derived_From_CultureInfo()
         {
-            TypeConverterHelper.GetConverter(typeof(CultureInfo2))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<CultureInfoConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(CultureInfo2));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<CultureInfoConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_DateTime()
         {
-            TypeConverterHelper.GetConverter(typeof(DateTime))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<DateTimeConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(DateTime));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<DateTimeConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_DateTimeOffset()
         {
-            TypeConverterHelper.GetConverter(typeof(DateTimeOffset))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<DateTimeOffsetConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(DateTimeOffset));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<DateTimeOffsetConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Decimal()
         {
-            TypeConverterHelper.GetConverter(typeof(decimal))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<DecimalConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(decimal));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<DecimalConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_TimeSpan()
         {
-            TypeConverterHelper.GetConverter(typeof(TimeSpan))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<TimeSpanConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(TimeSpan));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<TimeSpanConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Guid()
         {
-            TypeConverterHelper.GetConverter(typeof(Guid))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<GuidConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Guid));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<GuidConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Uri()
         {
-            TypeConverterHelper.GetConverter(typeof(Uri))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<UriTypeConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Uri));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<UriTypeConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Derived_From_Uri()
         {
-            TypeConverterHelper.GetConverter(typeof(Uri2))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<UriTypeConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(Uri2));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<UriTypeConverter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_Enum()
         {
-            var converter = TypeConverterHelper.GetConverter(typeof(MyEnum1));
-            converter.Should()
-                .NotBeNull()
-                .And
-                .BeOfType<EnumConverter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(MyEnum1));
 
-            ((Type)typeof(EnumConverter)
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<EnumConverter>(converter);
+
+            Type enumType = ((Type)typeof(EnumConverter)
                 .GetProperty("EnumType", BindingFlags.Instance | BindingFlags.NonPublic)
-                .GetValue(converter))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeSameAs(typeof(MyEnum1));
+                .GetValue(converter));
+
+            Assert.IsNotNull(enumType);
+            Assert.AreSame(enumType, typeof(MyEnum1));
         }
 
         [TestMethod]
         public void GetConverter_When_Nullable_Of_IntrinsicType()
         {
             var converter = TypeConverterHelper.GetConverter(typeof(int?));
-            converter.Should()
-                .NotBeNull()
-                .And
-                .BeOfType<NullableConverter2>();
 
-            converter.As<NullableConverter2>()
-                .NullableType
-                .Should()
-                .BeSameAs(typeof(int?));
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<NullableConverter2>(converter);
 
-            converter.As<NullableConverter2>()
-                .UnderlyingType
-                .Should()
-                .BeSameAs(typeof(int));
-
-            converter.As<NullableConverter2>()
-                .UnderlyingTypeConverter
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<Int32Converter>();
+            Assert.AreSame(converter.As<NullableConverter2>().NullableType, typeof(int?));
+            Assert.AreSame(converter.As<NullableConverter2>().UnderlyingType, typeof(int));
+            Assert.IsNotNull(converter.As<NullableConverter2>().UnderlyingTypeConverter);
+            Assert.IsInstanceOfType<Int32Converter>(converter.As<NullableConverter2>().UnderlyingTypeConverter);
         }
 
         [TestMethod]
         public void GetConverter_When_Nullable_Of_CoreType()
         {
             var converter = TypeConverterHelper.GetConverter(typeof(Point?));
-            converter.Should()
-                .NotBeNull()
-                .And
-                .BeOfType<NullableConverter2>();
 
-            converter.As<NullableConverter2>()
-                .NullableType
-                .Should()
-                .BeSameAs(typeof(Point?));
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<NullableConverter2>(converter);
 
-            converter.As<NullableConverter2>()
-                .UnderlyingType
-                .Should()
-                .BeSameAs(typeof(Point));
-
-            converter.As<NullableConverter2>()
-                .UnderlyingTypeConverter
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<PointConverter>();
+            Assert.AreSame(converter.As<NullableConverter2>().NullableType, typeof(Point?));
+            Assert.AreSame(converter.As<NullableConverter2>().UnderlyingType, typeof(Point));
+            Assert.IsNotNull(converter.As<NullableConverter2>().UnderlyingTypeConverter);
+            Assert.IsInstanceOfType<PointConverter>(converter.As<NullableConverter2>().UnderlyingTypeConverter);
         }
 
         [TestMethod]
         public void GetConverter_When_Nullable_Of_TypeConverterAttribute()
         {
             var converter = TypeConverterHelper.GetConverter(typeof(MyStruct1?));
-            converter.Should()
-                .NotBeNull()
-                .And
-                .BeOfType<NullableConverter2>();
 
-            converter.As<NullableConverter2>()
-                .NullableType
-                .Should()
-                .BeSameAs(typeof(MyStruct1?));
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<NullableConverter2>(converter);
 
-            converter.As<NullableConverter2>()
-                .UnderlyingType
-                .Should()
-                .BeSameAs(typeof(MyStruct1));
-
-            converter.As<NullableConverter2>()
-                .UnderlyingTypeConverter
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<MyStruct1Converter>();
+            Assert.AreSame(converter.As<NullableConverter2>().NullableType, typeof(MyStruct1?));
+            Assert.AreSame(converter.As<NullableConverter2>().UnderlyingType, typeof(MyStruct1));
+            Assert.IsNotNull(converter.As<NullableConverter2>().UnderlyingTypeConverter);
+            Assert.IsInstanceOfType<MyStruct1Converter>(converter.As<NullableConverter2>().UnderlyingTypeConverter);
         }
 
         [TestMethod]
         public void GetConverter_When_ICommand()
         {
-            TypeConverterHelper.GetConverter(typeof(ICommand))
-                .Should()
-                .BeNull();
+            Assert.IsNull(TypeConverterHelper.GetConverter(typeof(ICommand)));
         }
 
         [TestMethod]
         public void GetConverter_When_TypeConverterAttribute_1()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass1))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<MyClass1Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(MyClass1));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<MyClass1Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_TypeConverterAttribute_2()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass2))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<MyClass1Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(MyClass2));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<MyClass1Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_TypeConverterAttribute_3()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass3))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<MyClass3Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(MyClass3));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<MyClass3Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_TypeConverterAttribute_4()
         {
-            TypeConverterHelper.GetConverter(typeof(IMyClass4))
-                .Should()
-                .NotBeNull()
-                .And
-                .BeOfType<IMyClass4Converter>();
+            TypeConverter converter = TypeConverterHelper.GetConverter(typeof(IMyClass4));
+
+            Assert.IsNotNull(converter);
+            Assert.IsInstanceOfType<IMyClass4Converter>(converter);
         }
 
         [TestMethod]
         public void GetConverter_When_TypeConverterAttribute_5()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass4))
-                .Should()
-                .BeNull();
+            Assert.IsNull(TypeConverterHelper.GetConverter(typeof(MyClass4)));
         }
 
         [TestMethod]
         public void GetConverter_When_No_TypeConverterAttribute()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass5))
-                .Should()
-                .BeNull();
+            Assert.IsNull(TypeConverterHelper.GetConverter(typeof(MyClass5)));
         }
 
         [TestMethod]
         public void GetConverter_Should_Cache_Intrinsic_TypeConverter()
         {
-            TypeConverterHelper.GetConverter(typeof(long))
-                .Should()
-                .BeSameAs(TypeConverterHelper.GetConverter(typeof(long)));
+            Assert.AreSame(TypeConverterHelper.GetConverter(typeof(long)), TypeConverterHelper.GetConverter(typeof(long)));
         }
 
         [TestMethod]
         public void GetConverter_Should_Cache_Nullable_TypeConverter()
         {
-            TypeConverterHelper.GetConverter(typeof(MyStruct1?))
-                .Should()
-                .BeSameAs(TypeConverterHelper.GetConverter(typeof(MyStruct1?)));
+            Assert.AreSame(TypeConverterHelper.GetConverter(typeof(MyStruct1?)), TypeConverterHelper.GetConverter(typeof(MyStruct1?)));
         }
 
         [TestMethod]
         public void GetConverter_Should_Cache_Enum_TypeConverter()
         {
-            TypeConverterHelper.GetConverter(typeof(MyEnum1))
-                .Should()
-                .BeSameAs(TypeConverterHelper.GetConverter(typeof(MyEnum1)));
+            Assert.AreSame(TypeConverterHelper.GetConverter(typeof(MyEnum1)), TypeConverterHelper.GetConverter(typeof(MyEnum1)));
         }
 
         [TestMethod]
         public void GetConverter_Should_Cache_TypeConverterAttribute_TypeConverter_1()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass1))
-                .Should()
-                .BeSameAs(TypeConverterHelper.GetConverter(typeof(MyClass1)));
+            Assert.AreSame(TypeConverterHelper.GetConverter(typeof(MyClass1)), TypeConverterHelper.GetConverter(typeof(MyClass1)));
         }
 
         [TestMethod]
         public void GetConverter_Should_Cache_TypeConverterAttribute_TypeConverter_2()
         {
-            TypeConverterHelper.GetConverter(typeof(MyClass1))
-                .Should()
-                .BeSameAs(TypeConverterHelper.GetConverter(typeof(MyClass2)));
+            Assert.AreSame(TypeConverterHelper.GetConverter(typeof(MyClass1)), TypeConverterHelper.GetConverter(typeof(MyClass2)));
         }
 
         private class CultureInfo2 : CultureInfo

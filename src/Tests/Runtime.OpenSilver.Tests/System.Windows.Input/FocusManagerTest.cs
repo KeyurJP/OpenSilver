@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver;
 using System.Windows.Controls;
 
@@ -14,7 +13,7 @@ namespace System.Windows.Input.Tests
             var element = new Control();
             FocusManager.SetFocusedElement(Window.Current, element);
 
-            FocusManager.GetFocusedElement().Should().BeSameAs(element);
+            Assert.AreSame(FocusManager.GetFocusedElement(), element);
         }
 
         [TestMethod]
@@ -29,21 +28,19 @@ namespace System.Windows.Input.Tests
             FocusManager.SetFocusedElement(window, element);
 
             var focusedElement = FocusManager.GetFocusedElement(window);
-            focusedElement.Should().BeSameAs(element);
+            Assert.AreSame(focusedElement, element);
 
             FocusManager.SetFocusedElement(window, otherElement);
 
             focusedElement = FocusManager.GetFocusedElement(window);
-            focusedElement.Should().BeSameAs(otherElement);
-
-
-            FocusManager.GetFocusedElement(otherWindow).Should().BeNull();
+            Assert.AreSame(focusedElement, otherElement);
+            Assert.IsNull(FocusManager.GetFocusedElement(otherWindow));
         }
 
         [TestMethod]
         public void GetFocusedElement_WithNonWindowScope_ShouldReturnNull()
         {
-            FocusManager.GetFocusedElement(new TextBlock()).Should().BeNull();
+            Assert.IsNull(FocusManager.GetFocusedElement(new TextBlock()));
         }
 
         [TestMethod]
@@ -54,7 +51,7 @@ namespace System.Windows.Input.Tests
             
             try
             {
-                FocusManager.GetFocusedElement().Should().BeNull();
+                Assert.IsNull(FocusManager.GetFocusedElement());
             }
             finally
             {
@@ -70,7 +67,7 @@ namespace System.Windows.Input.Tests
 
             try
             {
-                FocusManager.GetFocusedElement().Should().BeNull();
+                Assert.IsNull(FocusManager.GetFocusedElement());
             }
             finally
             {
@@ -84,7 +81,7 @@ namespace System.Windows.Input.Tests
             using (var element = new FocusableControlWrapper<Control>(new Control()))
             {
                 element.Control.Focus();
-                FocusManager.GetFocusedElement().Should().Be(element.Control);
+                Assert.AreSame(FocusManager.GetFocusedElement(), element.Control);
             }
         }
 
@@ -97,11 +94,11 @@ namespace System.Windows.Input.Tests
             try
             {
                 firstElement.Control.Focus();
-                FocusManager.GetFocusedElement().Should().Be(firstElement.Control);
+                Assert.AreSame(FocusManager.GetFocusedElement(), firstElement.Control);
 
                 secondElement.Control.Focus();
-                FocusManager.GetFocusedElement().Should().NotBe(firstElement.Control);
-                FocusManager.GetFocusedElement().Should().Be(secondElement.Control);
+                Assert.AreNotSame(FocusManager.GetFocusedElement(), firstElement.Control);
+                Assert.AreSame(FocusManager.GetFocusedElement(), secondElement.Control);
             }
             finally
             {

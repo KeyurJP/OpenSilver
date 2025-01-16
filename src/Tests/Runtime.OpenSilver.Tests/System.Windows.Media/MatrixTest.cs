@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver.Internal;
 
@@ -24,24 +23,24 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void Identity()
         {
-            Matrix.Identity.IsIdentity.Should().BeTrue();
+            Assert.IsTrue(Matrix.Identity.IsIdentity);
 
             var m = new Matrix();
 
             // ctor returns Matrix.Identity
-            m.IsIdentity.Should().BeTrue();
-            m.Should().Be(Matrix.Identity);
+            Assert.IsTrue(m.IsIdentity);
+
+            Assert.AreEqual(m, Matrix.Identity);
 
             // Invert of Identity is Identity
             m.Invert();
-            m.Should().Be(Matrix.Identity);
-
-            m.M11.Should().Be(1);
-            m.M12.Should().Be(0);
-            m.M21.Should().Be(0);
-            m.M22.Should().Be(1);
-            m.OffsetX.Should().Be(0);
-            m.OffsetY.Should().Be(0);
+            Assert.AreEqual(m, Matrix.Identity);
+            Assert.AreEqual(m.M11, 1);
+            Assert.AreEqual(m.M12, 0);
+            Assert.AreEqual(m.M21, 0);
+            Assert.AreEqual(m.M22, 1);
+            Assert.AreEqual(m.OffsetX, 0);
+            Assert.AreEqual(m.OffsetY, 0);
         }
 
         #endregion Identity
@@ -54,9 +53,10 @@ namespace System.Windows.Media.Tests
             var left = GetIncrementalMatrix(0, 1);
             var right = GetTranslateMatrix(10, 12);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(0, 1, 
-                                     2, 3, 
-                                     14, 17));
+
+            Assert.AreEqual(m, new Matrix(0, 1, 
+                                          2, 3, 
+                                          14, 17));
         }
 
         [TestMethod]
@@ -65,9 +65,10 @@ namespace System.Windows.Media.Tests
             var left = GetTranslateMatrix(10, 12);
             var right = GetIncrementalMatrix(0, 1);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(0, 1, 
-                                     2, 3, 
-                                     28, 51));
+
+            Assert.AreEqual(m, new Matrix(0, 1, 
+                                          2, 3, 
+                                          28, 51));
         }
 
         [TestMethod]
@@ -76,9 +77,10 @@ namespace System.Windows.Media.Tests
             var left = GetScaleMatrix(1.2, 2);
             var right = GetScaleMatrix(-10, 10);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(-12, 0, 
-                                     0, 20, 
-                                     0, 0));
+
+            Assert.AreEqual(m, new Matrix(-12, 0, 
+                                          0, 20, 
+                                          0, 0));
         }
 
         [TestMethod]
@@ -87,9 +89,10 @@ namespace System.Windows.Media.Tests
             var left = GetScaleMatrix(1.2, 2);
             var right = GetScaleTranslateMatrix(2, 3, 4, 5);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(2.4, 0, 
-                                     0, 6, 
-                                     4, 5));
+
+            Assert.AreEqual(m, new Matrix(2.4, 0, 
+                                          0, 6, 
+                                          4, 5));
         }
 
         [TestMethod]
@@ -98,9 +101,10 @@ namespace System.Windows.Media.Tests
             var left = GetScaleTranslateMatrix(2, 3, 4, 5);
             var right = GetScaleMatrix(1.2, 2);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(2.4, 0, 
-                                     0, 6, 
-                                     4.8, 10));
+
+            Assert.AreEqual(m, new Matrix(2.4, 0, 
+                                          0, 6, 
+                                          4.8, 10));
         }
 
         [TestMethod]
@@ -109,9 +113,10 @@ namespace System.Windows.Media.Tests
             var left = GetScaleTranslateMatrix(2, 3, 4, 5);
             var right = GetScaleTranslateMatrix(-1, 10, -2, -3);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(-2, 0, 
-                                     0, 30, 
-                                     -6, 47));
+
+            Assert.AreEqual(m, new Matrix(-2, 0, 
+                                          0, 30, 
+                                          -6, 47));
         }
 
         [TestMethod]
@@ -129,9 +134,10 @@ namespace System.Windows.Media.Tests
             var left = GetIncrementalMatrix(0, 1);
             var right = GetIncrementalMatrix(1, 2);
             var m = Matrix.Multiply(left, right);
-            m.Should().Be(new Matrix(5, 7,
-                                     17, 27,
-                                     38, 58));
+
+            Assert.AreEqual(m, new Matrix(5, 7,
+                                          17, 27,
+                                          38, 58));
         }
 
         #endregion Multiplication
@@ -142,25 +148,29 @@ namespace System.Windows.Media.Tests
         public void Invert_When_Invertible()
         {
             var m = GetIncrementalMatrix(0, 1);
-            m.HasInverse.Should().BeTrue();
+
+            Assert.IsTrue(m.HasInverse);
+
             m.Invert();
-            m.Should().Be(new Matrix(-1.5, 0.5, 1, 0, 1, -2));
+
+            Assert.AreEqual(m, new Matrix(-1.5, 0.5, 1, 0, 1, -2));
             
             // make sure the operation is reversible
-            m.HasInverse.Should().BeTrue();
+            Assert.IsTrue(m.HasInverse);
+
             m.Invert();
-            m.Should().Be(GetIncrementalMatrix(0, 1));
+
+            Assert.AreEqual(m, GetIncrementalMatrix(0, 1));
         }
 
         [TestMethod]
         public void Invert_When_Not_Invertible()
         {
             var m = GetSingularMatrix(2, 6);
-            m.HasInverse.Should().BeFalse();
 
+            Assert.IsFalse(m.HasInverse);
             Assert.ThrowsException<InvalidOperationException>(() => m.Invert());
-            
-            m.Should().Be(GetSingularMatrix(2, 6));
+            Assert.AreEqual(m, GetSingularMatrix(2, 6));
         }
 
         #endregion Invert
@@ -173,7 +183,8 @@ namespace System.Windows.Media.Tests
             Point p = new Point(10, 25);
             Matrix m = Matrix.Identity;
             m.MultiplyPoint(ref p._x, ref p._y);
-            p.Should().Be(new Point(10, 25));
+
+            Assert.AreEqual(p, new Point(10, 25));
         }
 
         [TestMethod]
@@ -182,7 +193,8 @@ namespace System.Windows.Media.Tests
             Point p = new Point(10, 25);
             Matrix m = GetTranslateMatrix(-10, 5);
             m.MultiplyPoint(ref p._x, ref p._y);
-            p.Should().Be(new Point(0, 30));
+
+            Assert.AreEqual(p, new Point(0, 30));
         }
 
         [TestMethod]
@@ -191,7 +203,8 @@ namespace System.Windows.Media.Tests
             Point p = new Point(10, 25);
             Matrix m = GetScaleMatrix(0.8, -1.5);
             m.MultiplyPoint(ref p._x, ref p._y);
-            p.Should().Be(new Point(8, -37.5));
+
+            Assert.AreEqual(p, new Point(8, -37.5));
         }
 
         [TestMethod]
@@ -200,7 +213,8 @@ namespace System.Windows.Media.Tests
             Point p = new Point(10, 25);
             Matrix m = GetScaleTranslateMatrix(2, 3, 1, -3);
             m.MultiplyPoint(ref p._x, ref p._y);
-            p.Should().Be(new Point(21, 72));
+
+            Assert.AreEqual(p, new Point(21, 72));
         }
 
         [TestMethod]
@@ -209,7 +223,8 @@ namespace System.Windows.Media.Tests
             Point p = new Point(10, 25);
             Matrix m = GetIncrementalMatrix(2, 0.5);
             m.MultiplyPoint(ref p._x, ref p._y);
-            p.Should().Be(new Point(99, 117));
+
+            Assert.AreEqual(p, new Point(99, 117));
         }
 
         #endregion MultiplyPoint
@@ -220,9 +235,10 @@ namespace System.Windows.Media.Tests
         public void Equal_Operator_With_DistinguishedIdentity()
         {
             Matrix m = new Matrix();
-            m._type.Should().Be(MatrixTypes.TRANSFORM_IS_IDENTITY);
-            (m == Matrix.Identity).Should().BeTrue();
-            (GetIncrementalMatrix(0, 1) == m).Should().BeFalse();
+
+            Assert.AreEqual(m._type, MatrixTypes.TRANSFORM_IS_IDENTITY);
+            Assert.IsTrue(m == Matrix.Identity);
+            Assert.IsFalse(GetIncrementalMatrix(0, 1) == m);
         }
 
         [TestMethod]
@@ -230,18 +246,19 @@ namespace System.Windows.Media.Tests
         {
             Matrix m = new Matrix(1, 0, 1, 1, 0, 0);
             m.M21 = 0;
-            m._type.Should().Be(MatrixTypes.TRANSFORM_IS_UNKNOWN);
-            m.IsIdentity.Should().BeTrue();
-            (Matrix.Identity == m).Should().BeTrue();
-            (m == GetIncrementalMatrix(0, 1)).Should().BeFalse();
+
+            Assert.AreEqual(m._type, MatrixTypes.TRANSFORM_IS_UNKNOWN);
+            Assert.IsTrue(m.IsIdentity);
+            Assert.IsTrue(Matrix.Identity == m);
+            Assert.IsFalse(m == GetIncrementalMatrix(0, 1));
         }
 
         [TestMethod]
         public void Equal_Operator()
         {
-            (GetIncrementalMatrix(0, 1) == GetIncrementalMatrix(0, 2)).Should().BeFalse();
-            (GetIncrementalMatrix(0, 2) == GetIncrementalMatrix(0, 1)).Should().BeFalse();
-            (GetIncrementalMatrix(0, 1) == GetIncrementalMatrix(0, 1)).Should().BeTrue();
+            Assert.IsFalse(GetIncrementalMatrix(0, 1) == GetIncrementalMatrix(0, 2));
+            Assert.IsFalse(GetIncrementalMatrix(0, 2) == GetIncrementalMatrix(0, 1));
+            Assert.IsTrue(GetIncrementalMatrix(0, 1) == GetIncrementalMatrix(0, 1));
         }
 
         #endregion Equal Operator
@@ -254,7 +271,8 @@ namespace System.Windows.Media.Tests
             var r = Rect.Empty;
             var m = GetIncrementalMatrix(1, 2);
             MatrixUtil.TransformRect(ref r, ref m);
-            r.Should().Be(Rect.Empty);
+
+            Assert.AreEqual(r, Rect.Empty);
         }
 
         [TestMethod]
@@ -265,7 +283,8 @@ namespace System.Windows.Media.Tests
             var r = rInit;
             var m = Matrix.Identity;
             MatrixUtil.TransformRect(ref r, ref m);
-            r.Should().Be(rInit);
+
+            Assert.AreEqual(r, rInit);
         }
 
         [TestMethod]
@@ -274,7 +293,8 @@ namespace System.Windows.Media.Tests
             var r = new Rect(10, 12, 30, 3);
             var m = GetScaleMatrix(2, -5);
             MatrixUtil.TransformRect(ref r, ref m);
-            r.Should().Be(new Rect(20, -75, 60, 15));
+
+            Assert.AreEqual(r, new Rect(20, -75, 60, 15));
         }
 
         [TestMethod]
@@ -283,7 +303,8 @@ namespace System.Windows.Media.Tests
             var r = new Rect(10, 12, 30, 3);
             var m = GetTranslateMatrix(-12, -5);
             MatrixUtil.TransformRect(ref r, ref m);
-            r.Should().Be(new Rect(-2, 7, 30, 3));
+
+            Assert.AreEqual(r, new Rect(-2, 7, 30, 3));
         }
 
         [TestMethod]
@@ -292,7 +313,8 @@ namespace System.Windows.Media.Tests
             var r = new Rect(10, 12, 30, 3);
             var m = GetIncrementalMatrix(1, 2);
             MatrixUtil.TransformRect(ref r, ref m);
-            r.Should().Be(new Rect(79, 125, 45, 111));
+
+            Assert.AreEqual(r, new Rect(79, 125, 45, 111));
         }
 
         #endregion MatrixUtil.TransformRect

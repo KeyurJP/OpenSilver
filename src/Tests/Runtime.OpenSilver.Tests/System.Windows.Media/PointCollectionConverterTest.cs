@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,78 +26,67 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_PointCollection_1()
         {
-            Converter.ConvertFrom("1, 1, 2, 2")
-                .Should()
-                .BeOfType<PointCollection>()
-                .Which
-                .Should()
-                .HaveCount(2)
-                .And
-                .HaveElementAt(0, new Point(1, 1))
-                .And
-                .HaveElementAt(1, new Point(2, 2));
+            object value = Converter.ConvertFrom("1, 1, 2, 2");
+
+            Assert.IsInstanceOfType<PointCollection>(value);
+
+            PointCollection pointCollection = value as PointCollection;
+
+            Assert.AreEqual(pointCollection.Count, 2);
+            Assert.AreEqual(pointCollection[0], new Point(1, 1));
+            Assert.AreEqual(pointCollection[1], new Point(2, 2));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_PointCollection_2()
         {
-            Converter.ConvertFrom(" 1 1  2 2")
-                .Should()
-                .BeOfType<PointCollection>()
-                .Which
-                .Should()
-                .HaveCount(2)
-                .And
-                .HaveElementAt(0, new Point(1, 1))
-                .And
-                .HaveElementAt(1, new Point(2, 2));
+            object value = Converter.ConvertFrom(" 1 1  2 2");
+
+            Assert.IsInstanceOfType<PointCollection>(value);
+
+            PointCollection pointCollection = value as PointCollection;
+
+            Assert.AreEqual(pointCollection.Count, 2);
+            Assert.AreEqual(pointCollection[0], new Point(1, 1));
+            Assert.AreEqual(pointCollection[1], new Point(2, 2));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_PointCollection_3()
         {
-            Converter.ConvertFrom(" 1,1 , 2 2  ")
-                .Should()
-                .BeOfType<PointCollection>()
-                .Which
-                .Should()
-                .HaveCount(2)
-                .And
-                .HaveElementAt(0, new Point(1, 1))
-                .And
-                .HaveElementAt(1, new Point(2, 2));
+            object value = Converter.ConvertFrom(" 1,1 , 2 2  ");
+
+            Assert.IsInstanceOfType<PointCollection>(value);
+
+            PointCollection pointCollection = value as PointCollection;
+
+            Assert.AreEqual(pointCollection.Count, 2);
+            Assert.AreEqual(pointCollection[0], new Point(1, 1));
+            Assert.AreEqual(pointCollection[1], new Point(2, 2));
         }
 
         [TestMethod]
@@ -134,9 +122,7 @@ namespace System.Windows.Media.Tests
                 new Point(2.0, -2.0) 
             };
             
-            Converter.ConvertTo(collection, typeof(string))
-                .Should()
-                .Be(collection.ToString());
+            Assert.AreEqual(Converter.ConvertTo(collection, typeof(string)), collection.ToString());
         }
 
         [TestMethod]

@@ -11,7 +11,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ComponentModel.Tests
@@ -22,123 +21,108 @@ namespace System.ComponentModel.Tests
         public void GetProperties_Inheritance_1()
         {
             var properties = TypeConverterHelper.GetProperties(typeof(_MyType1));
-            properties.Should().HaveCount(2);
-            properties[nameof(_MyType1.IntProperty)].Should().NotBeNull();
-            properties[nameof(_MyType1.DoubleProperty)].Should().NotBeNull();
+
+            Assert.AreEqual(properties.Count, 2);
+            Assert.IsNotNull(properties[nameof(_MyType1.IntProperty)]);
+            Assert.IsNotNull(properties[nameof(_MyType1.DoubleProperty)]);
         }
 
         [TestMethod]
         public void GetProperties_Inheritance_2()
         {
             var properties = TypeConverterHelper.GetProperties(typeof(_MyType2));
-            properties.Should().HaveCount(3);
-            properties[nameof(_MyType1.IntProperty)].Should().NotBeNull();
-            properties[nameof(_MyType1.DoubleProperty)].Should().NotBeNull();
-            properties[nameof(_MyType2.StringProperty)].Should().NotBeNull();
+
+            Assert.AreEqual(properties.Count, 3);
+            Assert.IsNotNull(properties[nameof(_MyType1.IntProperty)]);
+            Assert.IsNotNull(properties[nameof(_MyType1.DoubleProperty)]);
+            Assert.IsNotNull(properties[nameof(_MyType2.StringProperty)]);
         }
 
         [TestMethod]
         public void GetProperties_Inheritance_3()
         {
             var properties = TypeConverterHelper.GetProperties(typeof(_MyType3));
-            properties.Should().HaveCount(4);
-            properties[nameof(_MyType1.IntProperty)].Should().NotBeNull();
-            properties[nameof(_MyType1.DoubleProperty)].Should().NotBeNull();
-            properties[nameof(_MyType2.StringProperty)].Should().NotBeNull();
-            properties[nameof(_MyType3.DateTimeProperty)].Should().NotBeNull();
+
+            Assert.AreEqual(properties.Count, 4);
+            Assert.IsNotNull(properties[nameof(_MyType1.IntProperty)]);
+            Assert.IsNotNull(properties[nameof(_MyType1.DoubleProperty)]);
+            Assert.IsNotNull(properties[nameof(_MyType2.StringProperty)]);
+            Assert.IsNotNull(properties[nameof(_MyType3.DateTimeProperty)]);
         }
 
         [TestMethod]
         public void GetProperties_When_New_Property_Hides_Base_Property()
         {
             var properties = TypeConverterHelper.GetProperties(typeof(_MyType5));
-            properties.Should().HaveCount(1);
-            properties[0].Name.Should().Be(nameof(_MyType5.FloatProperty));
-            properties[0].ComponentType.Should().BeSameAs(typeof(_MyType5));
+
+            Assert.AreEqual(properties.Count, 1);
+            Assert.AreEqual(properties[0].Name, nameof(_MyType5.FloatProperty));
+            Assert.AreSame(properties[0].ComponentType, typeof(_MyType5));
         }
 
         [TestMethod]
         public void GetProperties_When_Property_Is_Overridden()
         {
             var properties = TypeConverterHelper.GetProperties(typeof(_MyClass2));
-            properties.Should().HaveCount(1);
-            properties[0].Name.Should().Be(nameof(_MyClass2.ByteProperty));
-            properties[0].ComponentType.Should().BeSameAs(typeof(_MyClass2));
+
+            Assert.AreEqual(properties.Count, 1);
+            Assert.AreEqual(properties[0].Name, nameof(_MyClass2.ByteProperty));
+            Assert.AreSame(properties[0].ComponentType, typeof(_MyClass2));
         }
 
         [TestMethod]
         public void GetProperties_InternalConverter_When_No_TypeConverterAttribute()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)]
-                .InternalConverter
-                .Should()
-                .BeNull();
+            Assert.IsNull(TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)].InternalConverter);
         }
 
         [TestMethod]
         public void GetProperties_InternalConverter_When_TypeConverterAttribute()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyType3))[nameof(_MyType3.DateTimeProperty)]
-                .InternalConverter
-                .Should()
-                .BeOfType<_MyDateTimeConverter>();
+            Assert.IsInstanceOfType<_MyDateTimeConverter>(
+                TypeConverterHelper.GetProperties(typeof(_MyType3))[nameof(_MyType3.DateTimeProperty)].InternalConverter);
         }
 
         [TestMethod]
         public void GetProperties_InternalConverter_When_Property_Is_Overridden_And_Base_Has_TypeConverterAttribute()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyClass2))[nameof(_MyClass2.ByteProperty)]
-               .InternalConverter
-               .Should()
-               .BeNull();
+            Assert.IsNull(TypeConverterHelper.GetProperties(typeof(_MyClass2))[nameof(_MyClass2.ByteProperty)].InternalConverter);
         }
 
         [TestMethod]
         public void GetProperties_InternalConverter_Should_Be_Cached()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)]
-                .InternalConverter
-                .Should()
-                .BeSameAs(
-                    TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)]
-                    .InternalConverter
-                );
+            Assert.AreSame(
+                TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)].InternalConverter,
+                TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)].InternalConverter);
         }
 
         [TestMethod]
         public void GetProperties_Converter_When_No_TypeConverterAttribute_And_PropertyType_Has_No_TypeConverter()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyClass5))[nameof(_MyClass5.MyType1Property)]
-                .Converter
-                .Should()
-                .BeNull();
+            Assert.IsNull(TypeConverterHelper.GetProperties(typeof(_MyClass5))[nameof(_MyClass5.MyType1Property)].Converter);
         }
 
         [TestMethod]
         public void GetProperties_Converter_When_No_TypeConverterAttribute_And_PropertyType_Has_TypeConverter()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)]
-                .Converter
-                .Should()
-                .BeSameAs(TypeConverterHelper.GetConverter(typeof(int)));
+            Assert.AreSame(
+                TypeConverterHelper.GetProperties(typeof(_MyType1))[nameof(_MyType1.IntProperty)].Converter,
+                TypeConverterHelper.GetConverter(typeof(int)));
         }
 
         [TestMethod]
         public void GetProperties_Converter_When_TypeConverterAttribute_And_PropertyType_Has_No_TypeConverter()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyClass3))[nameof(_MyClass3.ByteProperty)]
-                .Converter
-                .Should()
-                .BeOfType<_MyByteConverter1>();
+            Assert.IsInstanceOfType<_MyByteConverter1>(
+                TypeConverterHelper.GetProperties(typeof(_MyClass3))[nameof(_MyClass3.ByteProperty)].Converter);
         }
 
         [TestMethod]
         public void GetProperties_Converter_When_TypeConverterAttribute_And_PropertyType_Has_TypeConverter()
         {
-            TypeConverterHelper.GetProperties(typeof(_MyClass3))[nameof(_MyClass3.ByteProperty)]
-                .Converter
-                .Should()
-                .BeOfType<_MyByteConverter1>();
+            Assert.IsInstanceOfType<_MyByteConverter1>(
+                TypeConverterHelper.GetProperties(typeof(_MyClass3))[nameof(_MyClass3.ByteProperty)].Converter);
         }
 
         private class _MyType1

@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -23,14 +22,17 @@ namespace System.Windows.Media.Tests
         {
             var transform = new TranslateTransform { X = 123, Y = 321 };
             var invertedTransform = transform.Inverse as MatrixTransform;
-            invertedTransform.Should().NotBeNull();
+
+            Assert.IsNotNull(invertedTransform);
+
             var m = invertedTransform.Matrix;
-            m.M11.Should().Be(1);
-            m.M12.Should().Be(0);
-            m.M21.Should().Be(0);
-            m.M22.Should().Be(1);
-            m.OffsetX.Should().Be(-123);
-            m.OffsetY.Should().Be(-321);
+
+            Assert.AreEqual(m.M11, 1);
+            Assert.AreEqual(m.M12, 0);
+            Assert.AreEqual(m.M21, 0);
+            Assert.AreEqual(m.M22, 1);
+            Assert.AreEqual(m.OffsetX, -123);
+            Assert.AreEqual(m.OffsetY, -321);
         }
 
         [TestMethod]
@@ -39,10 +41,11 @@ namespace System.Windows.Media.Tests
             var rect = new Rect(0, 0, 100, 100);
             var transform = new TranslateTransform { X = 100, Y = 200 };
             var result = transform.TransformBounds(rect);
-            result.X.Should().Be(100);
-            result.Y.Should().Be(200);
-            result.Width.Should().Be(100);
-            result.Height.Should().Be(100);
+
+            Assert.AreEqual(result.X, 100);
+            Assert.AreEqual(result.Y, 200);
+            Assert.AreEqual(result.Width, 100);
+            Assert.AreEqual(result.Height, 100);
         }
 
         [TestMethod]
@@ -51,9 +54,10 @@ namespace System.Windows.Media.Tests
             var point = new Point(0, 0);
             var transform = new TranslateTransform { X = 100, Y = 200 };
             var result = transform.TryTransform(point, out var outPoint);
-            result.Should().BeTrue();
-            outPoint.X.Should().Be(100);
-            outPoint.Y.Should().Be(200);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(outPoint.X, 100);
+            Assert.AreEqual(outPoint.Y, 200);
         }
     }
 }

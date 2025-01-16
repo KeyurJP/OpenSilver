@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 
@@ -27,7 +26,8 @@ namespace System.Windows.Automation.Peers.Tests
             var toggle = new ToggleButton { IsEnabled = false };
             var peer = new ToggleButtonAutomationPeer(toggle);
             var provider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Toggle());
         }
 
@@ -37,13 +37,17 @@ namespace System.Windows.Automation.Peers.Tests
             var toggle = new ToggleButton { IsThreeState = true, IsChecked = true };
             var peer = new ToggleButtonAutomationPeer(toggle);
             var provider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
+
             provider.Toggle();
-            toggle.IsChecked.Should().BeNull();
+            Assert.IsNull(toggle.IsChecked);
+
             provider.Toggle();
-            toggle.IsChecked.Should().BeFalse();
+            Assert.IsFalse(toggle.IsChecked);
+
             provider.Toggle();
-            toggle.IsChecked.Should().BeTrue();
+            Assert.IsTrue(toggle.IsChecked);
         }
 
         [TestMethod]
@@ -52,16 +56,17 @@ namespace System.Windows.Automation.Peers.Tests
             var toggle = new ToggleButton { IsThreeState = true };
             var peer = new ToggleButtonAutomationPeer(toggle);
             var provider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             toggle.IsChecked = true;
-            provider.ToggleState.Should().Be(ToggleState.On);
+            Assert.AreEqual(provider.ToggleState, ToggleState.On);
 
             toggle.IsChecked = false;
-            provider.ToggleState.Should().Be(ToggleState.Off);
+            Assert.AreEqual(provider.ToggleState, ToggleState.Off);
 
             toggle.IsChecked = null;
-            provider.ToggleState.Should().Be(ToggleState.Indeterminate);
+            Assert.AreEqual(provider.ToggleState, ToggleState.Indeterminate);
         }
     }
 }

@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -28,7 +27,7 @@ namespace System.Windows.Tests
             var setter = new Setter(Control.IsTabStopProperty, false);
             setter.Value = DependencyProperty.UnsetValue;
 
-            setter.Value.Should().BeNull();
+            Assert.IsNull(setter.Value);
         }
 
         #endregion region Setter.Value
@@ -72,7 +71,7 @@ namespace System.Windows.Tests
         {
             var setter = new Setter(Border.BackgroundProperty, DependencyProperty.UnsetValue);
 
-            setter.Value.Should().BeNull();
+            Assert.IsNull(setter.Value);
         }
 
         #endregion Constructor(DependencyProperty, object)
@@ -84,11 +83,11 @@ namespace System.Windows.Tests
         {
             var setter = new Setter(UIElement.IsHitTestVisibleProperty, true);
 
-            setter.IsSealed.Should().BeFalse();
+            Assert.IsFalse(setter.IsSealed);
             
             setter.Seal();
 
-            setter.IsSealed.Should().BeTrue();
+            Assert.IsTrue(setter.IsSealed);
         }
 
         [TestMethod]

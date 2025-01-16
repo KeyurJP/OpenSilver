@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,65 +26,54 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_DoubleCollection_1()
         {
-            Converter.ConvertFrom("1.0, 2.0")
-                .Should()
-                .BeOfType<DoubleCollection>()
-                .Which
-                .Should()
-                .HaveCount(2)
-                .And
-                .HaveElementAt(0, 1.0)
-                .And
-                .HaveElementAt(1, 2.0);
+            object value = Converter.ConvertFrom("1.0, 2.0");
+
+            Assert.IsInstanceOfType<DoubleCollection>(value);
+
+            DoubleCollection doubleCollection = value as DoubleCollection;
+
+            Assert.AreEqual(doubleCollection.Count, 2);
+            Assert.AreEqual(doubleCollection[0], 1.0);
+            Assert.AreEqual(doubleCollection[1], 2.0);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_DoubleCollection_2()
         {
-            Converter.ConvertFrom(" 1.0  2.0 4.0  ")
-                .Should()
-                .BeOfType<DoubleCollection>()
-                .Which
-                .Should()
-                .HaveCount(3)
-                .And
-                .HaveElementAt(0, 1.0)
-                .And
-                .HaveElementAt(1, 2.0)
-                .And
-                .HaveElementAt(2, 4.0);
+            object value = Converter.ConvertFrom(" 1.0  2.0 4.0  ");
+
+            Assert.IsInstanceOfType<DoubleCollection>(value);
+
+            DoubleCollection doubleCollection = value as DoubleCollection;
+
+            Assert.AreEqual(doubleCollection.Count, 3);
+            Assert.AreEqual(doubleCollection[0], 1.0);
+            Assert.AreEqual(doubleCollection[1], 2.0);
+            Assert.AreEqual(doubleCollection[2], 4.0);
         }
 
         [TestMethod]
@@ -109,9 +97,7 @@ namespace System.Windows.Media.Tests
         {
             var collection = new DoubleCollection() { 1.0, 2.0, 3.0 };
             
-            Converter.ConvertTo(collection, typeof(string))
-                .Should()
-                .Be(collection.ToString());
+            Assert.AreEqual(Converter.ConvertTo(collection, typeof(string)), collection.ToString());
         }
 
         [TestMethod]

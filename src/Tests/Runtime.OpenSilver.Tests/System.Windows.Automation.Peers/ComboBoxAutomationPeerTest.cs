@@ -12,8 +12,8 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using OpenSilver;
+using OpenSilver.Internal.Helpers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
@@ -28,9 +28,12 @@ namespace System.Windows.Automation.Peers.Tests
             var comboBox = new ComboBox();
             var peer = new ComboBoxAutomationPeer(comboBox);
             comboBox.IsEnabled = false;
-            peer.IsEnabled().Should().BeFalse();
+
+            Assert.IsFalse(peer.IsEnabled());
+
             var provider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Expand());
         }
 
@@ -43,10 +46,13 @@ namespace System.Windows.Automation.Peers.Tests
                 ComboBox comboBox = wrapper.Control;
                 var peer = new ComboBoxAutomationPeer(comboBox);
                 var provider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-                provider.Should().NotBeNull();
-                comboBox.IsDropDownOpen.Should().BeFalse();
+
+                Assert.IsNotNull(provider);
+                Assert.IsFalse(comboBox.IsDropDownOpen);
+
                 provider.Expand();
-                comboBox.IsDropDownOpen.Should().BeTrue();
+
+                Assert.IsTrue(comboBox.IsDropDownOpen);
             }
         }
 
@@ -56,9 +62,12 @@ namespace System.Windows.Automation.Peers.Tests
             var comboBox = new ComboBox();
             var peer = new ComboBoxAutomationPeer(comboBox);
             comboBox.IsEnabled = false;
-            peer.IsEnabled().Should().BeFalse();
+
+            Assert.IsFalse(peer.IsEnabled());
+
             var provider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Collapse());
         }
 
@@ -72,10 +81,13 @@ namespace System.Windows.Automation.Peers.Tests
                 comboBox.IsDropDownOpen = true;
                 var peer = new ComboBoxAutomationPeer(comboBox);
                 var provider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-                provider.Should().NotBeNull();
-                comboBox.IsDropDownOpen.Should().BeTrue();
+
+                Assert.IsNotNull(provider);
+                Assert.IsTrue(comboBox.IsDropDownOpen);
+
                 provider.Collapse();
-                comboBox.IsDropDownOpen.Should().BeFalse();
+
+                Assert.IsFalse(comboBox.IsDropDownOpen);
             };
 
         }
@@ -89,10 +101,13 @@ namespace System.Windows.Automation.Peers.Tests
                 ComboBox comboBox = wrapper.Control;
                 var peer = new ComboBoxAutomationPeer(comboBox);
                 var provider = peer.GetPattern(PatternInterface.ExpandCollapse) as IExpandCollapseProvider;
-                provider.Should().NotBeNull();
-                provider.ExpandCollapseState.Should().Be(ExpandCollapseState.Collapsed);
+
+                Assert.IsNotNull(provider);
+                Assert.AreEqual(provider.ExpandCollapseState, ExpandCollapseState.Collapsed);
+
                 comboBox.IsDropDownOpen = true;
-                provider.ExpandCollapseState.Should().Be(ExpandCollapseState.Expanded);
+
+                Assert.AreEqual(provider.ExpandCollapseState, ExpandCollapseState.Expanded);
             }
         }
 
@@ -101,8 +116,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ComboBoxAutomationPeer(new ComboBox());
             var provider = peer.GetPattern(PatternInterface.Selection) as ISelectionProvider;
-            provider.Should().NotBeNull();
-            provider.CanSelectMultiple.Should().BeFalse();
+
+            Assert.IsNotNull(provider);
+            Assert.IsFalse(provider.CanSelectMultiple);
         }
 
         [TestMethod]
@@ -110,8 +126,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ComboBoxAutomationPeer(new ComboBox());
             var provider = peer.GetPattern(PatternInterface.Selection) as ISelectionProvider;
-            provider.Should().NotBeNull();
-            provider.IsSelectionRequired.Should().BeFalse();
+
+            Assert.IsNotNull(provider);
+            Assert.IsFalse(provider.IsSelectionRequired);
         }
 
         [TestMethod]
@@ -125,14 +142,16 @@ namespace System.Windows.Automation.Peers.Tests
 
             var peer = new ComboBoxAutomationPeer(comboBox);
             var provider = peer.GetPattern(PatternInterface.Selection) as ISelectionProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             using (var wrapper = new FocusableControlWrapper<ComboBox>(comboBox))
             {
                 IRawElementProviderSimple[] selection = provider.GetSelection();
-                selection.Length.Should().Be(1);
-                selection[0].Peer.Should().BeOfType<ListBoxItemAutomationPeer>();
-                selection[0].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer.Should().BeSameAs(peer);
+
+                Assert.AreEqual(selection.Length, 1);
+                Assert.IsInstanceOfType<ListBoxItemAutomationPeer>(selection[0].Peer);
+                Assert.AreSame(selection[0].Peer.As<ListBoxItemAutomationPeer>().ItemsControlAutomationPeer, peer);
             }
         }
     }

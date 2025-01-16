@@ -12,10 +12,10 @@
 \*====================================================================================*/
 
 using System.Linq;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver;
 using System.Windows.Controls;
+using OpenSilver.Internal.Helpers;
 
 namespace System.Windows.Automation.Peers.Tests
 {
@@ -41,7 +41,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var textblock = new TextBlock();
             AutomationProperties.SetAcceleratorKey(textblock, "key");
-            new ItemTestAutomationPeer(textblock).GetAcceleratorKey().Should().Be("key");
+
+            Assert.AreEqual(new ItemTestAutomationPeer(textblock).GetAcceleratorKey(), "key");
         }
 
         [TestMethod]
@@ -51,9 +52,12 @@ namespace System.Windows.Automation.Peers.Tests
             {
                 var peer = FrameworkElementAutomationPeer.CreatePeerForElement(wrapper.Control);
                 var itemPeer = peer.GetChildren().FirstOrDefault().As<ItemTestAutomationPeer>();
-                itemPeer.Should().NotBeNull();
+
+                Assert.IsNotNull(itemPeer);
+
                 AutomationProperties.SetAcceleratorKey(wrapper.Control.ItemContainerGenerator.ContainerFromItem("Item"), "key");
-                itemPeer.GetAcceleratorKey().Should().Be("key");
+
+                Assert.AreEqual(itemPeer.GetAcceleratorKey(), "key");
             }
         }
 
@@ -62,7 +66,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var textblock = new TextBlock();
             AutomationProperties.SetAccessKey(textblock, "key");
-            new ItemTestAutomationPeer(textblock).GetAccessKey().Should().Be("key");
+
+            Assert.AreEqual(new ItemTestAutomationPeer(textblock).GetAccessKey(), "key");
         }
 
         [TestMethod]
@@ -72,9 +77,12 @@ namespace System.Windows.Automation.Peers.Tests
             {
                 var peer = FrameworkElementAutomationPeer.CreatePeerForElement(wrapper.Control);
                 var itemPeer = peer.GetChildren().FirstOrDefault().As<ItemTestAutomationPeer>();
-                itemPeer.Should().NotBeNull();
+
+                Assert.IsNotNull(itemPeer);
+
                 AutomationProperties.SetAccessKey(wrapper.Control.ItemContainerGenerator.ContainerFromItem("Item"), "key");
-                itemPeer.GetAccessKey().Should().Be("key");
+
+                Assert.AreEqual(itemPeer.GetAccessKey(), "key");
             }
         }
 
@@ -85,7 +93,7 @@ namespace System.Windows.Automation.Peers.Tests
             var icPeer = FrameworkElementAutomationPeer.CreatePeerForElement(ic).As<ItemsControlTestAutomationPeer>();
             var peer = new ItemTestAutomationPeer("Item", icPeer);
 
-            peer.GetParent().Should().BeSameAs(icPeer);
+            Assert.AreSame(peer.GetParent(), icPeer);
         }
 
         private static ItemsControl CreateItemsControl()

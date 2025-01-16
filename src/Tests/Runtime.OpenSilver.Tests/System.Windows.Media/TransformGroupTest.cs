@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -26,7 +25,8 @@ namespace System.Windows.Media.Tests
             transform.Children.Add(new TranslateTransform() { X = 1, Y = 9 });
             transform.Children.Add(new SkewTransform() { AngleX = 0.5, AngleY = 0.9 });
             var invertedTransform = transform.Inverse;
-            invertedTransform.Should().BeNull();
+
+            Assert.IsNull(invertedTransform);
         }
 
         [TestMethod]
@@ -36,14 +36,17 @@ namespace System.Windows.Media.Tests
             transform.Children.Add(new TranslateTransform() { X = 1, Y = 9 });
             transform.Children.Add(new ScaleTransform() { ScaleX = -2, ScaleY = 6 });
             var invertedTransform = transform.Inverse as MatrixTransform;
-            invertedTransform.Should().NotBeNull();
+
+            Assert.IsNotNull(invertedTransform);
+
             var m = invertedTransform.Matrix;
-            m.M11.Should().Be(-0.5);
-            m.M12.Should().Be(0);
-            m.M21.Should().Be(0);
-            m.M22.Should().Be(1.0 / 6.0);
-            m.OffsetX.Should().Be(-1);
-            m.OffsetY.Should().Be(-9);
+
+            Assert.AreEqual(m.M11, -0.5);
+            Assert.AreEqual(m.M12, 0);
+            Assert.AreEqual(m.M21, 0);
+            Assert.AreEqual(m.M22, 1.0 / 6.0);
+            Assert.AreEqual(m.OffsetX, -1);
+            Assert.AreEqual(m.OffsetY, -9);
         }
 
         [TestMethod]
@@ -57,14 +60,17 @@ namespace System.Windows.Media.Tests
             nestedTransform.Children.Add(new ScaleTransform() { ScaleX = -0.5, ScaleY = 1.0 / 6.0 });
             transform.Children.Add(nestedTransform);
             var invertedTransform = transform.Inverse as MatrixTransform;
-            invertedTransform.Should().NotBeNull();
+
+            Assert.IsNotNull(invertedTransform);
+
             var m = invertedTransform.Matrix;
-            m.M11.Should().Be(1);
-            m.M12.Should().Be(0);
-            m.M21.Should().Be(0);
-            m.M22.Should().Be(1);
-            m.OffsetX.Should().Be(-1.5);
-            m.OffsetY.Should().Be(-7.5);
+
+            Assert.AreEqual(m.M11, 1);
+            Assert.AreEqual(m.M12, 0);
+            Assert.AreEqual(m.M21, 0);
+            Assert.AreEqual(m.M22, 1);
+            Assert.AreEqual(m.OffsetX, -1.5);
+            Assert.AreEqual(m.OffsetY, -7.5);
         }
 
         [TestMethod]
@@ -75,10 +81,11 @@ namespace System.Windows.Media.Tests
             transform.Children.Add(new TranslateTransform() { X = 1, Y = 9 });
             transform.Children.Add(new MatrixTransform(MatrixTest.GetIncrementalMatrix(3, 1)));
             var result = transform.TransformBounds(rect);
-            result.X.Should().Be(55);
-            result.Y.Should().Be(66);
-            result.Width.Should().Be(800);
-            result.Height.Should().Be(1000);
+
+            Assert.AreEqual(result.X, 55);
+            Assert.AreEqual(result.Y, 66);
+            Assert.AreEqual(result.Width, 800);
+            Assert.AreEqual(result.Height, 1000);
         }
 
         [TestMethod]
@@ -93,10 +100,11 @@ namespace System.Windows.Media.Tests
             nestedTransform.Children.Add(new ScaleTransform() { ScaleX = -0.5, ScaleY = 1.0 / 6.0 });
             transform.Children.Add(nestedTransform);
             var result = transform.TransformBounds(rect);
-            result.X.Should().Be(-88.5);
-            result.Y.Should().BeInRange(12.166666, 12.166667);
-            result.Width.Should().Be(55);
-            result.Height.Should().BeInRange(23.333333, 23.333334);
+
+            Assert.AreEqual(result.X, -88.5);
+            Assert.IsTrue(result.Y >= 12.166666 && result.Y <= 12.166667);
+            Assert.AreEqual(result.Width, 55);
+            Assert.IsTrue(result.Height >= 23.333333 && result.Height <= 23.333334);
         }
 
         [TestMethod]
@@ -107,9 +115,10 @@ namespace System.Windows.Media.Tests
             transform.Children.Add(new TranslateTransform() { X = 1, Y = 9 });
             transform.Children.Add(new MatrixTransform(MatrixTest.GetIncrementalMatrix(3, 4)));
             var result = transform.TryTransform(point, out var outPoint);
-            result.Should().BeTrue();
-            outPoint.X.Should().Be(146);
-            outPoint.Y.Should().Be(202);
+
+            Assert.IsTrue(result);
+            Assert.AreEqual(outPoint.X, 146);
+            Assert.AreEqual(outPoint.Y, 202);
         }
 
         [TestMethod]
@@ -124,9 +133,10 @@ namespace System.Windows.Media.Tests
             nestedTransform.Children.Add(new RotateTransform() { Angle = 25 });
             transform.Children.Add(nestedTransform);
             var result = transform.TryTransform(point, out var outPoint);
-            result.Should().BeTrue();
-            outPoint.X.Should().BeInRange(29.810417, 29.810418);
-            outPoint.Y.Should().BeInRange(92.240658, 92.240659);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(outPoint.X >= 29.810417 && outPoint.X <= 29.810418);
+            Assert.IsTrue(outPoint.Y >= 92.240658 && outPoint.Y <= 92.240659);
         }
     }
 }

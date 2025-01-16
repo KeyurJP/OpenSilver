@@ -11,7 +11,6 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -26,7 +25,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ProgressBarAutomationPeer(new ProgressBar());
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<InvalidOperationException>(() => provider.SetValue(42));
         }
 
@@ -35,8 +35,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ProgressBarAutomationPeer(new ProgressBar());
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.IsReadOnly.Should().BeTrue();
+
+            Assert.IsNotNull(provider);
+            Assert.IsTrue(provider.IsReadOnly);
         }
 
         [TestMethod]
@@ -44,8 +45,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ProgressBarAutomationPeer(new ProgressBar());
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.LargeChange.Should().Be(double.NaN);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.LargeChange, double.NaN);
         }
 
         [TestMethod]
@@ -53,8 +55,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new ProgressBarAutomationPeer(new ProgressBar());
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.SmallChange.Should().Be(double.NaN);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.SmallChange, double.NaN);
         }
 
         [TestMethod]
@@ -63,8 +66,9 @@ namespace System.Windows.Automation.Peers.Tests
             var progressBar = new ProgressBar { Minimum = 50d, Maximum = 100d };
             var peer = new ProgressBarAutomationPeer(progressBar);
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.Minimum.Should().Be(50d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Minimum, 50d);
         }
 
         [TestMethod]
@@ -73,8 +77,9 @@ namespace System.Windows.Automation.Peers.Tests
             var progressBar = new ProgressBar { Minimum = 50d, Maximum = 100d };
             var peer = new ProgressBarAutomationPeer(progressBar);
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.Maximum.Should().Be(100d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Maximum, 100d);
         }
 
         [TestMethod]
@@ -83,8 +88,9 @@ namespace System.Windows.Automation.Peers.Tests
             var progressBar = new ProgressBar { Minimum = 50d, Maximum = 100d, Value = 61d, };
             var peer = new ProgressBarAutomationPeer(progressBar);
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.Value.Should().Be(61d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Value, 61d);
         }
     }
 }

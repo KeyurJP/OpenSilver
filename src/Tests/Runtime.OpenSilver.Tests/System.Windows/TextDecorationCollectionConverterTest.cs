@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,81 +26,61 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_TextDecorationCollection_1()
         {
-            Converter.ConvertFrom("Underline")
-                .Should()
-                .Be(TextDecorations.Underline);
+            Assert.AreEqual(Converter.ConvertFrom("Underline"), TextDecorations.Underline);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_TextDecorationCollection_2()
         {
-            Converter.ConvertFrom("underline")
-                .Should()
-                .Be(TextDecorations.Underline);
+            Assert.AreEqual(Converter.ConvertFrom("underline"), TextDecorations.Underline);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_TextDecorationCollection_3()
         {
-            Converter.ConvertFrom("Strikethrough")
-                .Should()
-                .Be(TextDecorations.Strikethrough);
+            Assert.AreEqual(Converter.ConvertFrom("Strikethrough"), TextDecorations.Strikethrough);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_TextDecorationCollection_4()
         {
-            Converter.ConvertFrom("strikethrough")
-                .Should()
-                .Be(TextDecorations.Strikethrough);
+            Assert.AreEqual(Converter.ConvertFrom("strikethrough"), TextDecorations.Strikethrough);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_TextDecorationCollection_5()
         {
-            Converter.ConvertFrom("OverLine")
-                .Should()
-                .Be(TextDecorations.OverLine);
+            Assert.AreEqual(Converter.ConvertFrom("OverLine"), TextDecorations.OverLine);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_TextDecorationCollection_6()
         {
-            Converter.ConvertFrom("overline")
-                .Should()
-                .Be(TextDecorations.OverLine);
+            Assert.AreEqual(Converter.ConvertFrom("overline"), TextDecorations.OverLine);
         }
 
         [TestMethod]
@@ -131,9 +110,7 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(TextDecorations.Underline, typeof(string))
-                .Should()
-                .Be(TextDecorations.Underline.ToString());
+            Assert.AreEqual(Converter.ConvertTo(TextDecorations.Underline, typeof(string)), TextDecorations.Underline.ToString());
         }
 
         [TestMethod]

@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver.Internal;
 
@@ -28,7 +27,8 @@ namespace System.Windows.Media.Tests
                 SkewY = 45
             };
             var invertedTransform = transform.Inverse;
-            invertedTransform.Should().BeNull();
+
+            Assert.IsNull(invertedTransform);
         }
 
         [TestMethod]
@@ -45,14 +45,17 @@ namespace System.Windows.Media.Tests
                 Rotation = 90,
             };
             var invertedTransform = transform.Inverse as MatrixTransform;
-            invertedTransform.Should().NotBeNull();
+
+            Assert.IsNotNull(invertedTransform);
+
             var m = invertedTransform.Matrix;
-            (DoubleUtil.IsZero(m.M11)).Should().BeTrue();
-            (DoubleUtil.IsZero(m.M12 - 1)).Should().BeTrue();
-            (DoubleUtil.IsZero(m.M21 - 0.5)).Should().BeTrue();
-            (DoubleUtil.IsZero(m.M22)).Should().BeTrue();
-            (DoubleUtil.IsZero(m.OffsetX - -2.5)).Should().BeTrue();
-            (DoubleUtil.IsZero(m.OffsetY - -10)).Should().BeTrue();
+
+            Assert.IsTrue(DoubleUtil.IsZero(m.M11));
+            Assert.IsTrue(DoubleUtil.IsZero(m.M12 - 1));
+            Assert.IsTrue(DoubleUtil.IsZero(m.M21 - 0.5));
+            Assert.IsTrue(DoubleUtil.IsZero(m.M22));
+            Assert.IsTrue(DoubleUtil.IsZero(m.OffsetX - -2.5));
+            Assert.IsTrue(DoubleUtil.IsZero(m.OffsetY - -10));
         }
 
         [TestMethod]
@@ -70,10 +73,11 @@ namespace System.Windows.Media.Tests
                 Rotation = 180,
             };
             var result = transform.TransformBounds(rect);
-            result.X.Should().Be(-40);
-            result.Y.Should().Be(10);
-            result.Width.Should().Be(40);
-            result.Height.Should().Be(10);
+
+            Assert.AreEqual(result.X, -40);
+            Assert.AreEqual(result.Y, 10);
+            Assert.AreEqual(result.Width, 40);
+            Assert.AreEqual(result.Height, 10);
         }
 
         [TestMethod]
@@ -91,9 +95,10 @@ namespace System.Windows.Media.Tests
                 Rotation = 25,
             };
             var result = transform.TryTransform(point, out var outPoint);
-            result.Should().BeTrue();
-            outPoint.X.Should().BeInRange(-3.783502, -3.783501);
-            outPoint.Y.Should().BeInRange(102.649236, 102.649237);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(outPoint.X >= -3.783502 && outPoint.X <= -3.783501);
+            Assert.IsTrue(outPoint.Y >= 102.649236 && outPoint.Y <= 102.649237);
         }
     }
 }

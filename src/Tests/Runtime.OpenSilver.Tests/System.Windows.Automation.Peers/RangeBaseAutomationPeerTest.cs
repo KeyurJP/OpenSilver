@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -27,7 +26,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new RangeBaseAutomationPeer(new MyRangeBase { IsEnabled = false });
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.SetValue(0.5d));
         }
 
@@ -40,7 +40,8 @@ namespace System.Windows.Automation.Peers.Tests
                 Maximum = 1d,
             });
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => provider.SetValue(-1d));
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => provider.SetValue(2d));
         }
@@ -55,9 +56,12 @@ namespace System.Windows.Automation.Peers.Tests
             };
             var peer = new RangeBaseAutomationPeer(range);
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
+
             provider.SetValue(0.42d);
-            range.Value.Should().Be(0.42d);
+
+            Assert.AreEqual(range.Value, 0.42d);
         }
 
         [TestMethod]
@@ -71,8 +75,9 @@ namespace System.Windows.Automation.Peers.Tests
             };
             var peer = new RangeBaseAutomationPeer(range);
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.Value.Should().Be(0.69d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Value, 0.69d);
         }
 
         [TestMethod]
@@ -81,13 +86,14 @@ namespace System.Windows.Automation.Peers.Tests
             var range = new MyRangeBase();
             var peer = new RangeBaseAutomationPeer(range);
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             range.IsEnabled = true;
-            provider.IsReadOnly.Should().BeFalse();
+            Assert.IsFalse(provider.IsReadOnly);
 
             range.IsEnabled = false;
-            provider.IsReadOnly.Should().BeTrue();
+            Assert.IsTrue(provider.IsReadOnly);
         }
 
         [TestMethod]
@@ -99,8 +105,9 @@ namespace System.Windows.Automation.Peers.Tests
                 Maximum = 50d,
             });
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.Maximum.Should().Be(50d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Maximum, 50d);
         }
 
         [TestMethod]
@@ -112,8 +119,9 @@ namespace System.Windows.Automation.Peers.Tests
                 Maximum = 50d,
             });
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.Minimum.Should().Be(-50d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Minimum, -50d);
         }
 
         [TestMethod]
@@ -125,8 +133,9 @@ namespace System.Windows.Automation.Peers.Tests
                 LargeChange = 15d,
             });
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.SmallChange.Should().Be(3d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.SmallChange, 3d);
         }
 
         [TestMethod]
@@ -138,8 +147,9 @@ namespace System.Windows.Automation.Peers.Tests
                 LargeChange = 15d,
             });
             var provider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
-            provider.Should().NotBeNull();
-            provider.LargeChange.Should().Be(15d);
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.LargeChange, 15d);
         }
 
         private class MyRangeBase : RangeBase { }

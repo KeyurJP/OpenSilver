@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Animation.Tests
@@ -27,81 +26,61 @@ namespace System.Windows.Media.Animation.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Forever_Should_Return_RepeatBehavior_Forever_1()
         {
-            Converter.ConvertFrom("Forever")
-                .Should()
-                .Be(RepeatBehavior.Forever);
+            Assert.AreEqual(Converter.ConvertFrom("Forever"), RepeatBehavior.Forever);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Forever_Should_Return_RepeatBehavior_Forever_2()
         {
-            Converter.ConvertFrom("  foreveR  ")
-                .Should()
-                .Be(RepeatBehavior.Forever);
+            Assert.AreEqual(Converter.ConvertFrom("  foreveR  "), RepeatBehavior.Forever);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Iterations_Should_Return_RepeatBehavior_1()
         {
-            Converter.ConvertFrom("100x")
-                .Should()
-                .Be(new RepeatBehavior(100));
+            Assert.AreEqual(Converter.ConvertFrom("100x"), new RepeatBehavior(100));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Iterations_Should_Return_RepeatBehavior_2()
         {
-            Converter.ConvertFrom("   100x  ")
-                .Should()
-                .Be(new RepeatBehavior(100));
+            Assert.AreEqual(Converter.ConvertFrom("   100x  "), new RepeatBehavior(100));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Iterations_Should_Return_RepeatBehavior_3()
         {
-            Converter.ConvertFrom("   100X  ")
-                .Should()
-                .Be(new RepeatBehavior(100));
+            Assert.AreEqual(Converter.ConvertFrom("   100X  "), new RepeatBehavior(100));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Iterations_Should_Return_RepeatBehavior_4()
         {
-            Converter.ConvertFrom("   100XxxX  ")
-                .Should()
-                .Be(new RepeatBehavior(100));
+            Assert.AreEqual(Converter.ConvertFrom("   100XxxX  "), new RepeatBehavior(100));
         }
 
         [TestMethod]
@@ -109,9 +88,7 @@ namespace System.Windows.Media.Animation.Tests
         {
             string s = "100";
 
-            Converter.ConvertFrom(s)
-                .Should()
-                .Be(new RepeatBehavior(TimeSpan.Parse(s)));
+            Assert.AreEqual(Converter.ConvertFrom(s), new RepeatBehavior(TimeSpan.Parse(s)));
         }
 
         [TestMethod]
@@ -119,9 +96,7 @@ namespace System.Windows.Media.Animation.Tests
         {
             string s = "01:02:03.69420";
 
-            Converter.ConvertFrom(s)
-                .Should()
-                .Be(new RepeatBehavior(TimeSpan.Parse(s)));
+            Assert.AreEqual(Converter.ConvertFrom(s), new RepeatBehavior(TimeSpan.Parse(s)));
         }
 
         [TestMethod]
@@ -129,9 +104,7 @@ namespace System.Windows.Media.Animation.Tests
         {
             string s = "   01:02:03.69420   ";
 
-            Converter.ConvertFrom(s)
-                .Should()
-                .Be(new RepeatBehavior(TimeSpan.Parse(s)));
+            Assert.AreEqual(Converter.ConvertFrom(s), new RepeatBehavior(TimeSpan.Parse(s)));
         }
 
         [TestMethod]
@@ -153,9 +126,7 @@ namespace System.Windows.Media.Animation.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(RepeatBehavior.Forever, typeof(string))
-                .Should()
-                .Be(RepeatBehavior.Forever.ToString());
+            Assert.AreEqual(Converter.ConvertTo(RepeatBehavior.Forever, typeof(string)), RepeatBehavior.Forever.ToString());
         }
 
         [TestMethod]

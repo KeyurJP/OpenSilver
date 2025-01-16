@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Input.Tests
@@ -27,41 +26,31 @@ namespace System.Windows.Input.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Cursor_None()
         {
-            Converter.ConvertFrom("None")
-                .Should()
-                .BeSameAs(Cursors.None);
+            Assert.AreSame(Converter.ConvertFrom("None"), Cursors.None);
         }
 
         [TestMethod]
@@ -91,9 +80,7 @@ namespace System.Windows.Input.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(Cursors.Arrow, typeof(string))
-                .Should()
-                .Be(nameof(CursorType.Arrow));
+            Assert.AreEqual(Converter.ConvertTo(Cursors.Arrow, typeof(string)), nameof(CursorType.Arrow));
         }
 
         [TestMethod]
@@ -115,9 +102,7 @@ namespace System.Windows.Input.Tests
         [TestMethod]
         public void ConvertTo_String_Should_Return_StringEmpty()
         {
-            Converter.ConvertTo(null, typeof(string))
-                .Should()
-                .Be(string.Empty);
+            Assert.AreEqual(Converter.ConvertTo(null, typeof(string)), string.Empty);
         }
     }
 }

@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
 
@@ -26,7 +25,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new RepeatButtonAutomationPeer(new RepeatButton { IsEnabled = false });
             var provider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Invoke());
         }
 
@@ -42,7 +42,7 @@ namespace System.Windows.Automation.Peers.Tests
 
             provider.Invoke();
 
-            isButtonClicked.Should().BeTrue();
+            Assert.IsTrue(isButtonClicked);
         }
     }
 }

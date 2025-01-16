@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -26,7 +25,7 @@ namespace System.Windows.Tests
 
             rect1.Intersect(rect2);
 
-            rect1.Should().Be(new Rect(5, 0, 5, 10));
+            Assert.AreEqual(rect1, new Rect(5, 0, 5, 10));
         }
 
         [TestMethod]
@@ -36,13 +35,13 @@ namespace System.Windows.Tests
             var rect2 = new Rect(0, 0, 20, 20);
 
             rect1.Intersect(rect2);
-            rect1.Should().Be(new Rect(0, 0, 10, 10));
+            Assert.AreEqual(rect1, new Rect(0, 0, 10, 10));
 
             // Test the other way around.
             rect1 = new Rect(0, 0, 10, 10);
 
             rect2.Intersect(rect1);
-            rect2.Should().Be(new Rect(0, 0, 10, 10));
+            Assert.AreEqual(rect2, new Rect(0, 0, 10, 10));
         }
 
         [TestMethod]
@@ -53,7 +52,7 @@ namespace System.Windows.Tests
 
             rect1.Intersect(rect2);
 
-            rect1.Should().Be(Rect.Empty);
+            Assert.AreEqual(rect1, Rect.Empty);
         }
 
         [TestMethod]
@@ -64,7 +63,7 @@ namespace System.Windows.Tests
 
             rect1.Intersect(rect2);
 
-            rect1.Should().Be(Rect.Empty);
+            Assert.AreEqual(rect1, Rect.Empty);
         }
     }
 }

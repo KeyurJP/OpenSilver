@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,81 +26,61 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontStyle_1()
         {
-            Converter.ConvertFrom("Normal")
-                .Should()
-                .Be(FontStyles.Normal);
+            Assert.AreEqual(Converter.ConvertFrom("Normal"), FontStyles.Normal);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontStyle_2()
         {
-            Converter.ConvertFrom("normal")
-                .Should()
-                .Be(FontStyles.Normal);
+           Assert.AreEqual(Converter.ConvertFrom("normal"), FontStyles.Normal);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontStyle_3()
         {
-            Converter.ConvertFrom("Oblique")
-                .Should()
-                .Be(FontStyles.Oblique);
+            Assert.AreEqual(Converter.ConvertFrom("Oblique"), FontStyles.Oblique);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontStyle_4()
         {
-            Converter.ConvertFrom("oblique")
-                .Should()
-                .Be(FontStyles.Oblique);
+            Assert.AreEqual(Converter.ConvertFrom("oblique"), FontStyles.Oblique);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontStyle_5()
         {
-            Converter.ConvertFrom("Italic")
-                .Should()
-                .Be(FontStyles.Italic);
+            Assert.AreEqual(Converter.ConvertFrom("Italic"), FontStyles.Italic);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontStyle_6()
         {
-            Converter.ConvertFrom("italic")
-                .Should()
-                .Be(FontStyles.Italic);
+            Assert.AreEqual(Converter.ConvertFrom("italic"), FontStyles.Italic);
         }
 
         [TestMethod]
@@ -131,25 +110,19 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertTo_String_1()
         {
-            Converter.ConvertTo(FontStyles.Normal, typeof(string))
-                .Should()
-                .Be("Normal");
+            Assert.AreEqual(Converter.ConvertTo(FontStyles.Normal, typeof(string)), "Normal");
         }
 
         [TestMethod]
         public void ConvertTo_String_2()
         {
-            Converter.ConvertTo(FontStyles.Oblique, typeof(string))
-                .Should()
-                .Be("Oblique");
+            Assert.AreEqual(Converter.ConvertTo(FontStyles.Oblique, typeof(string)), "Oblique");
         }
 
         [TestMethod]
         public void ConvertTo_String_3()
         {
-            Converter.ConvertTo(FontStyles.Italic, typeof(string))
-                .Should()
-                .Be("Italic");
+            Assert.AreEqual(Converter.ConvertTo(FontStyles.Italic, typeof(string)), "Italic");
         }
 
         [TestMethod]

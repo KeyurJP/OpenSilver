@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,57 +26,43 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontWeight_1()
         {
-            Converter.ConvertFrom("Thin")
-                .Should()
-                .Be(FontWeights.Thin);
+            Assert.AreEqual(Converter.ConvertFrom("Thin"), FontWeights.Thin);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontWeight_2()
         {
-            Converter.ConvertFrom("thin")
-                .Should()
-                .Be(FontWeights.Thin);
+            Assert.AreEqual(Converter.ConvertFrom("thin"), FontWeights.Thin);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_FontWeight_3()
         {
-            Converter.ConvertFrom("100")
-                .Should()
-                .Be(FontWeights.Thin);
+            Assert.AreEqual(Converter.ConvertFrom("100"), FontWeights.Thin);
         }
 
         [TestMethod]
@@ -107,9 +92,7 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(FontWeights.Light, typeof(string))
-                .Should()
-                .Be("Light");
+            Assert.AreEqual(Converter.ConvertTo(FontWeights.Light, typeof(string)), "Light");
         }
 
         [TestMethod]

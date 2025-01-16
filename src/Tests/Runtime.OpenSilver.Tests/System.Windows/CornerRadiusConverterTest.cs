@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,72 +26,58 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(decimal)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(float)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(double)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(short)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(int)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(long)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(ushort)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(uint)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(ulong)).Should().BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(decimal)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(float)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(double)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(short)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(int)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(long)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(ushort)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(uint)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(ulong)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_CornerRadius_1()
         {
-            Converter.ConvertFrom("1,2,3,4")
-                .Should()
-                .Be(new CornerRadius(1, 2, 3, 4));
+            Assert.AreEqual(Converter.ConvertFrom("1,2,3,4"), new CornerRadius(1, 2, 3, 4));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_CornerRadius_2()
         {
-            Converter.ConvertFrom("1 2 3 4")
-                .Should()
-                .Be(new CornerRadius(1, 2, 3, 4));
+            Assert.AreEqual(Converter.ConvertFrom("1 2 3 4"), new CornerRadius(1, 2, 3, 4));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_CornerRadius_3()
         {
-            Converter.ConvertFrom(" 1, 2 ,3  4  ")
-                .Should()
-                .Be(new CornerRadius(1, 2, 3, 4));
+            Assert.AreEqual(Converter.ConvertFrom(" 1, 2 ,3  4  "), new CornerRadius(1, 2, 3, 4));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_CornerRadius_Uniform_1()
         {
-            Converter.ConvertFrom("1")
-                .Should()
-                .Be(new CornerRadius(1));
+            Assert.AreEqual(Converter.ConvertFrom("1"), new CornerRadius(1));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_CornerRadius_Uniform_2()
         {
-            Converter.ConvertFrom(" 1  ")
-                .Should()
-                .Be(new CornerRadius(1));
+            Assert.AreEqual(Converter.ConvertFrom(" 1  "), new CornerRadius(1));
         }
 
         [TestMethod]
@@ -122,9 +107,7 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(new CornerRadius(1, 2, 3, 4), typeof(string))
-                .Should()
-                .Be("1,2,3,4");
+            Assert.AreEqual(Converter.ConvertTo(new CornerRadius(1, 2, 3, 4), typeof(string)), "1,2,3,4");
         }
 
         [TestMethod]

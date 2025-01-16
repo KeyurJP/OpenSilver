@@ -11,7 +11,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -39,7 +38,7 @@ namespace System.Windows.Tests
             var child = new TestFE1();
             parent.Children.Add(child);
 
-            parent.Children[0].Parent.Should().Be(parent);
+            Assert.AreSame(parent.Children[0].Parent, parent);
         }
 
         [TestMethod]
@@ -61,7 +60,7 @@ namespace System.Windows.Tests
             var child = new TestFE2();
             parent.Children.Add(child);
 
-            child.Inherits.Should().Be(42d);
+            Assert.AreEqual(child.Inherits, 42d);
         }
 
         [TestMethod]
@@ -71,11 +70,11 @@ namespace System.Windows.Tests
             var child = new TestFE1();
             parent.Children.Add(child);
 
-            child.Parent.Should().Be(parent);
+            Assert.AreSame(child.Parent, parent);
 
             parent.Children.Remove(child);
 
-            child.Parent.Should().BeNull();
+            Assert.IsNull(child.Parent);
         }
 
         [TestMethod]
@@ -87,7 +86,7 @@ namespace System.Windows.Tests
             var otherParent = new TestFE1();
             otherParent.RemoveLogicalChild(child);
 
-            child.Parent.Should().Be(parent);
+            Assert.AreSame(child.Parent, parent);
         }
 
         [TestMethod]
@@ -98,11 +97,11 @@ namespace System.Windows.Tests
             var child = new TestFE2();
             parent.Children.Add(child);
 
-            child.Inherits.Should().Be(42d);
+            Assert.AreEqual(child.Inherits, 42d);
 
             parent.Children.Remove(child);
 
-            child.Inherits.Should().Be((double)TestFE2.InheritsProperty.GetMetadata(child.GetType()).DefaultValue);
+            Assert.AreEqual(child.Inherits, (double)TestFE2.InheritsProperty.GetMetadata(child.GetType()).DefaultValue);
         }
 
         #endregion Logical Tree

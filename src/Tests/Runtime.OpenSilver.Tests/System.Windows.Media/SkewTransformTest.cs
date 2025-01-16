@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -25,7 +24,8 @@ namespace System.Windows.Media.Tests
             // ( because tan(45°) = tan(Math.PI / 4) = 1 )
             var transform = new SkewTransform { AngleX = 45, AngleY = 45 };
             var invertedTransform = transform.Inverse;
-            invertedTransform.Should().BeNull();
+
+            Assert.IsNull(invertedTransform);
         }
 
         [TestMethod]
@@ -33,14 +33,17 @@ namespace System.Windows.Media.Tests
         {
             var transform = new SkewTransform { AngleX = 160, AngleY = 20 };
             var invertedTransform = transform.Inverse as MatrixTransform;
-            invertedTransform.Should().NotBeNull();
+
+            Assert.IsNotNull(invertedTransform);
+
             var m = invertedTransform.Matrix;
-            m.M11.Should().BeInRange(0.883022, 0.883023);
-            m.M12.Should().BeInRange(-0.321394, -0.321393);
-            m.M21.Should().BeInRange(0.321393, 0.321394);
-            m.M22.Should().BeInRange(0.883022, 0.883023);
-            m.OffsetX.Should().Be(0);
-            m.OffsetY.Should().Be(0);
+
+            Assert.IsTrue(m.M11 >= 0.883022 && m.M11 <= 0.883023);
+            Assert.IsTrue(m.M12 >= -0.321394 && m.M12 <= - 0.321393);
+            Assert.IsTrue(m.M21 >= 0.321393 && m.M21 <= 0.321394);
+            Assert.IsTrue(m.M22 >= 0.883022 && m.M22 <= 0.883023);
+            Assert.AreEqual(m.OffsetX, 0);
+            Assert.AreEqual(m.OffsetY, 0);
         }
 
         [TestMethod]
@@ -49,10 +52,11 @@ namespace System.Windows.Media.Tests
             var rect = new Rect(-5, 5, 100, 100);
             var transform = new SkewTransform { AngleX = 400, AngleY = 20 };
             var result = transform.TransformBounds(rect);
-            result.X.Should().BeInRange(-0.804502, -0.804501);
-            result.Y.Should().BeInRange(3.180148, 3.180149);
-            result.Width.Should().BeInRange(183.909963, 183.909964);
-            result.Height.Should().BeInRange(136.397023, 136.397024);
+
+            Assert.IsTrue(result.X >= -0.804502 && result.X <= - 0.804501);
+            Assert.IsTrue(result.Y >= 3.180148 && result.Y <= 3.180149);
+            Assert.IsTrue(result.Width >= 183.909963 && result.Width <= 183.909964);
+            Assert.IsTrue(result.Height >= 136.397023 && result.Height <= 136.397024);
         }
 
         [TestMethod]
@@ -61,9 +65,10 @@ namespace System.Windows.Media.Tests
             var point = new Point(2, 3);
             var transform = new SkewTransform { AngleX = 20, AngleY = -20 };
             var result = transform.TryTransform(point, out var outPoint);
-            result.Should().BeTrue();
-            outPoint.X.Should().BeInRange(3.091910, 3.091911);
-            outPoint.Y.Should().BeInRange(2.272059, 2.272060);
+
+            Assert.IsTrue(result);
+            Assert.IsTrue(outPoint.X >= 3.091910 && outPoint.X <= 3.091911);
+            Assert.IsTrue(outPoint.Y >= 2.272059 && outPoint.Y <= 2.272060);
         }
     }
 }

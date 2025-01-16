@@ -11,9 +11,9 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenSilver;
+using OpenSilver.Internal.Helpers;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -25,16 +25,13 @@ namespace System.Windows.Automation.Peers.Tests
         [TestMethod]
         public void CreatePeerForElement_Should_Return_Peer()
         {
-            FrameworkElementAutomationPeer.CreatePeerForElement(new FE1())
-                .Should()
-                .BeOfType<FE1AutomationPeer>();
+            Assert.IsInstanceOfType<FE1AutomationPeer>(FrameworkElementAutomationPeer.CreatePeerForElement(new FE1()));
         }
 
         [TestMethod]
         public void FromElement_Should_Return_Null()
         {
-            FrameworkElementAutomationPeer.FromElement(new FE1())
-                .Should().BeNull();
+            Assert.IsNull(FrameworkElementAutomationPeer.FromElement(new FE1()));
         }
 
         [TestMethod]
@@ -43,9 +40,7 @@ namespace System.Windows.Automation.Peers.Tests
             var fe = new FE1();
             _ = FrameworkElementAutomationPeer.CreatePeerForElement(fe);
 
-            FrameworkElementAutomationPeer.FromElement(fe)
-                .Should()
-                .BeOfType<FE1AutomationPeer>();
+            Assert.IsInstanceOfType<FE1AutomationPeer>(FrameworkElementAutomationPeer.FromElement(fe));
         }
 
         [TestMethod]
@@ -57,8 +52,8 @@ namespace System.Windows.Automation.Peers.Tests
             var peer2 = FrameworkElementAutomationPeer.CreatePeerForElement(fe);
             var peer3 = FrameworkElementAutomationPeer.FromElement(fe);
 
-            peer1.Should().BeSameAs(peer2);
-            peer2.Should().BeSameAs(peer3);
+            Assert.AreSame(peer1, peer2);
+            Assert.AreSame(peer2, peer3);
         }
 
         [TestMethod]
@@ -77,11 +72,8 @@ namespace System.Windows.Automation.Peers.Tests
         public void Owner_Should_Not_Be_Null()
         {
             var fe = new FE1();
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .As<FrameworkElementAutomationPeer>()
-                .Owner
-                .Should()
-                .BeSameAs(fe);
+
+            Assert.AreSame(FrameworkElementAutomationPeer.CreatePeerForElement(fe).As<FrameworkElementAutomationPeer>().Owner, fe);
         }
 
         [TestMethod]
@@ -91,10 +83,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "AcceleratorKey";
             AutomationProperties.SetAcceleratorKey(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetAcceleratorKey()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetAcceleratorKey(), value);
         }
 
         [TestMethod]
@@ -104,10 +93,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "AccessKey";
             AutomationProperties.SetAccessKey(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetAccessKey()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetAccessKey(), value);
         }
 
         [TestMethod]
@@ -117,10 +103,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "AutomationId";
             AutomationProperties.SetAutomationId(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetAutomationId()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetAutomationId(), value);
         }
 
         [TestMethod]
@@ -130,10 +113,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "HelpText";
             AutomationProperties.SetHelpText(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetHelpText()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetHelpText(), value);
         }
 
         [TestMethod]
@@ -143,10 +123,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "ItemStatus";
             AutomationProperties.SetItemStatus(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetItemStatus()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetItemStatus(), value);
         }
 
         [TestMethod]
@@ -156,10 +133,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "ItemType";
             AutomationProperties.SetItemType(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetItemType()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetItemType(), value);
         }
 
         [TestMethod]
@@ -169,10 +143,7 @@ namespace System.Windows.Automation.Peers.Tests
             var c = new C1();
             AutomationProperties.SetLabeledBy(fe, c);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetLabeledBy()
-                .Should()
-                .BeSameAs(FrameworkElementAutomationPeer.FromElement(c));
+            Assert.AreSame(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetLabeledBy(), FrameworkElementAutomationPeer.FromElement(c));
         }
 
         [TestMethod]
@@ -182,10 +153,7 @@ namespace System.Windows.Automation.Peers.Tests
             string value = "Name";
             AutomationProperties.SetName(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .GetName()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).GetName(), value);
         }
 
         [TestMethod]
@@ -195,55 +163,37 @@ namespace System.Windows.Automation.Peers.Tests
             bool value = true;
             AutomationProperties.SetIsRequiredForForm(fe, value);
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .IsRequiredForForm()
-                .Should()
-                .Be(value);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).IsRequiredForForm(), value);
         }
 
         [TestMethod]
         public void GetAutomationControlType_Should_Return_Custom()
         {
-            FrameworkElementAutomationPeer.CreatePeerForElement(new FE1())
-                .GetAutomationControlType()
-                .Should()
-                .Be(AutomationControlType.Custom);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(new FE1()).GetAutomationControlType(), AutomationControlType.Custom);
         }
 
         [TestMethod]
         public void GetClassName_Should_Return_String_Empty()
         {
-            FrameworkElementAutomationPeer.CreatePeerForElement(new FE1())
-                .GetClassName()
-                .Should()
-                .Be(string.Empty);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(new FE1()).GetClassName(), string.Empty);
         }
 
         [TestMethod]
         public void IsContentElement_Should_Return_True()
         {
-            FrameworkElementAutomationPeer.CreatePeerForElement(new FE1())
-                .IsContentElement()
-                .Should()
-                .Be(true);
+            Assert.IsTrue(FrameworkElementAutomationPeer.CreatePeerForElement(new FE1()).IsContentElement());
         }
 
         [TestMethod]
         public void IsControlElement_Should_Return_True()
         {
-            FrameworkElementAutomationPeer.CreatePeerForElement(new FE1())
-                .IsControlElement()
-                .Should()
-                .Be(true);
+            Assert.IsTrue(FrameworkElementAutomationPeer.CreatePeerForElement(new FE1()).IsControlElement());
         }
 
         [TestMethod]
         public void IsPassword_Should_Return_True()
         {
-            FrameworkElementAutomationPeer.CreatePeerForElement(new FE1())
-                .IsPassword()
-                .Should()
-                .Be(false);
+            Assert.IsFalse(FrameworkElementAutomationPeer.CreatePeerForElement(new FE1()).IsPassword());
         }
 
         [TestMethod]
@@ -252,17 +202,11 @@ namespace System.Windows.Automation.Peers.Tests
             var fe = new FE1();
             fe.IsEnabled = true;
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .IsEnabled()
-                .Should()
-                .Be(fe.IsEnabled);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).IsEnabled(), fe.IsEnabled);
 
             fe.IsEnabled = false;
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(fe)
-                .IsEnabled()
-                .Should()
-                .Be(fe.IsEnabled);
+            Assert.AreEqual(FrameworkElementAutomationPeer.CreatePeerForElement(fe).IsEnabled(), fe.IsEnabled);
         }
 
         [TestMethod]
@@ -273,35 +217,27 @@ namespace System.Windows.Automation.Peers.Tests
             foreach (AutomationControlType controlType in Enum.GetValues(typeof(AutomationControlType)))
             {
                 peer.AutomationControlType = controlType;
-                peer.GetLocalizedControlType()
-                    .Should()
-                    .Be(peer.GetAutomationControlType().ToString().ToLower());
+
+                Assert.AreEqual(peer.GetLocalizedControlType(), peer.GetAutomationControlType().ToString().ToLower());
             }
         }
 
         [TestMethod]
         public void GetLocalizedControl_Should_Return_String_Empty()
         {
-            new FE1AutomationPeer(new FE1()) { AutomationControlType = (AutomationControlType)50 }
-                .GetLocalizedControlType()
-                .Should()
-                .Be(string.Empty);
+            Assert.AreEqual(new FE1AutomationPeer(new FE1()) { AutomationControlType = (AutomationControlType)50 }.GetLocalizedControlType(), string.Empty);
         }
 
         [TestMethod]
         public void GetOrientation_Should_Return_None()
         {
-            new FE1AutomationPeer(new FE1()).GetOrientation()
-                .Should()
-                .Be(AutomationOrientation.None);
+            Assert.AreEqual(new FE1AutomationPeer(new FE1()).GetOrientation(), AutomationOrientation.None);
         }
 
         [TestMethod]
         public void GetParent_Should_Return_Null()
         {
-            new FE1AutomationPeer(new FE1()).GetParent()
-                .Should()
-                .BeNull();
+            Assert.IsNull(new FE1AutomationPeer(new FE1()).GetParent());
         }
 
         [TestMethod]
@@ -311,10 +247,7 @@ namespace System.Windows.Automation.Peers.Tests
             var c = new C1();
             fe.Content = c;
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(c)
-                .GetParent()
-                .Should()
-                .BeSameAs(FrameworkElementAutomationPeer.FromElement(fe));
+            Assert.AreSame(FrameworkElementAutomationPeer.CreatePeerForElement(c).GetParent(), FrameworkElementAutomationPeer.FromElement(fe));
         }
 
         [TestMethod]
@@ -333,10 +266,7 @@ namespace System.Windows.Automation.Peers.Tests
             panel.Children.Add(c);
             fe.Content = panel;
 
-            FrameworkElementAutomationPeer.CreatePeerForElement(c)
-                .GetParent()
-                .Should()
-                .BeSameAs(FrameworkElementAutomationPeer.FromElement(fe));
+            Assert.AreSame(FrameworkElementAutomationPeer.CreatePeerForElement(c).GetParent(), FrameworkElementAutomationPeer.FromElement(fe));
         }
 
         [TestMethod]
@@ -345,13 +275,13 @@ namespace System.Windows.Automation.Peers.Tests
             var fe = new FE1();
             var peer = new FE1AutomationPeer(fe);
 
-            fe.IsVisible.Should().Be(false);
-            peer.IsOffscreen().Should().Be(!fe.IsVisible);
+            Assert.IsFalse(fe.IsVisible);
+            Assert.AreEqual(peer.IsOffscreen(), !fe.IsVisible);
 
             using (var wrapper = new FocusableControlWrapper<FE1>(fe))
             {
-                fe.IsVisible.Should().Be(true);
-                peer.IsOffscreen().Should().Be(!fe.IsVisible);
+                Assert.IsTrue(fe.IsVisible);
+                Assert.AreEqual(peer.IsOffscreen(), !fe.IsVisible);
             }
         }
 
@@ -364,7 +294,7 @@ namespace System.Windows.Automation.Peers.Tests
 
                 peer.SetFocus();
 
-                FocusManager.GetFocusedElement().Should().BeSameAs(wrapper.Control);
+                Assert.AreSame(FocusManager.GetFocusedElement(), wrapper.Control);
 
                 FocusManager.SetFocusedElement(Window.Current, null);
 
@@ -372,7 +302,7 @@ namespace System.Windows.Automation.Peers.Tests
 
                 peer.SetFocus();
 
-                FocusManager.GetFocusedElement().Should().BeNull();
+                Assert.IsNull(FocusManager.GetFocusedElement());
             }
         }
 
@@ -384,19 +314,19 @@ namespace System.Windows.Automation.Peers.Tests
                 var peer = new FE1AutomationPeer(wrapper.Control);
                 peer.SetFocus();
 
-                FocusManager.GetFocusedElement().Should().BeNull();
+                Assert.IsNull(FocusManager.GetFocusedElement());
 
                 wrapper.Control.IsEnabled = false;
                 peer.SetFocus();
 
-                FocusManager.GetFocusedElement().Should().BeNull();
+                Assert.IsNull(FocusManager.GetFocusedElement());
             }
         }
 
         [TestMethod]
         public void GetChildren_Should_Return_Null()
         {
-            new FE1AutomationPeer(new FE1()).GetChildren().Should().BeNull();
+            Assert.IsNull(new FE1AutomationPeer(new FE1()).GetChildren());
         }
 
         [TestMethod]
@@ -421,11 +351,11 @@ namespace System.Windows.Automation.Peers.Tests
             var peer = new FE1AutomationPeer(fe);
             var children = peer.GetChildren();
 
-            children.Count.Should().Be(2);
-            children[0].Should().BeOfType<C1AutomationPeer>();
-            children[0].As<C1AutomationPeer>().Owner.Should().BeSameAs(c1);
-            children[1].Should().BeOfType<C1AutomationPeer>();
-            children[1].As<C1AutomationPeer>().Owner.Should().BeSameAs(c2);
+            Assert.AreEqual(children.Count, 2);
+            Assert.IsInstanceOfType<C1AutomationPeer>(children[0]);
+            Assert.AreSame(children[0].As<C1AutomationPeer>().Owner, c1);
+            Assert.IsInstanceOfType<C1AutomationPeer>(children[1]);
+            Assert.AreSame(children[1].As<C1AutomationPeer>().Owner, c2);
         }
 
         [TestMethod]
@@ -454,11 +384,11 @@ namespace System.Windows.Automation.Peers.Tests
             var peer = new FE1AutomationPeer(fe1);
             var children = peer.GetChildren();
 
-            children.Count.Should().Be(2);
-            children[0].Should().BeOfType<C1AutomationPeer>();
-            children[0].As<C1AutomationPeer>().Owner.Should().BeSameAs(c1);
-            children[1].Should().BeOfType<FE1AutomationPeer>();
-            children[1].As<FE1AutomationPeer>().Owner.Should().BeSameAs(fe2);
+            Assert.AreEqual(children.Count, 2);
+            Assert.IsInstanceOfType<C1AutomationPeer>(children[0]);
+            Assert.AreSame(children[0].As<C1AutomationPeer>().Owner, c1);
+            Assert.IsInstanceOfType<FE1AutomationPeer>(children[1]);
+            Assert.AreSame(children[1].As<FE1AutomationPeer>().Owner, fe2);
         }
 
         private class FE1 : FrameworkElement

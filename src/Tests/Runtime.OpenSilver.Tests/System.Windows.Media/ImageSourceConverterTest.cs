@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
@@ -28,17 +27,17 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(Uri)).Should().BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(Uri)));
         }
 
         [TestMethod]
         public void CanConvertTo_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(string)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(bool)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(int)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(Uri)).Should().BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(string)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(int)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(Uri)));
         }
 
         [TestMethod]
@@ -46,19 +45,14 @@ namespace System.Windows.Media.Tests
         {
             string source = "ms-appx:/Images/Logo1.png";
 
-            Converter.ConvertFrom(source)
-                .Should()
-                .BeOfType<BitmapImage>()
-                .Which
-                .UriSource
-                .Should()
-                .NotBeNull()
-                .And
-                .Subject
-                .As<Uri>()
-                .AbsoluteUri
-                .Should()
-                .Be(source);
+            object value = Converter.ConvertFrom(source);
+
+            Assert.IsInstanceOfType<BitmapImage>(value);
+
+            BitmapImage bmi = value as BitmapImage;
+
+            Assert.IsNotNull(bmi.UriSource);
+            Assert.AreEqual(bmi.UriSource.AbsoluteUri, source);
         }
 
         [TestMethod]

@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,33 +26,25 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
@@ -63,18 +54,18 @@ namespace System.Windows.Media.Tests
 
             var pg = (PathGeometry)test;
 
-            pg.Figures.Count.Should().Be(1);
-            pg.Figures[0].Segments.Count.Should().Be(1);
-            pg.Figures[0].Segments[0].Should().BeOfType<PolyLineSegment>();
+            Assert.AreEqual(pg.Figures.Count, 1);
+            Assert.AreEqual(pg.Figures[0].Segments.Count, 1);
+            Assert.IsInstanceOfType<PolyLineSegment>(pg.Figures[0].Segments[0]);
 
             var segments = (PolyLineSegment)pg.Figures[0].Segments[0];
             
-            segments.Points.Count.Should().Be(5);
-            segments.Points[0].Should().Be(new Point(20, 0));
-            segments.Points[1].Should().Be(new Point(20, 10));
-            segments.Points[2].Should().Be(new Point(50, 30));
-            segments.Points[3].Should().Be(new Point(50, 40));
-            segments.Points[4].Should().Be(new Point(20, 40));
+            Assert.AreEqual(segments.Points.Count, 5);
+            Assert.AreEqual(segments.Points[0], new Point(20, 0));
+            Assert.AreEqual(segments.Points[1], new Point(20, 10));
+            Assert.AreEqual(segments.Points[2], new Point(50, 30));
+            Assert.AreEqual(segments.Points[3], new Point(50, 40));
+            Assert.AreEqual(segments.Points[4], new Point(20, 40));
         }
 
         [TestMethod]
@@ -98,9 +89,7 @@ namespace System.Windows.Media.Tests
         {
             var geo = new PathGeometry();
             
-            Converter.ConvertTo(geo, typeof(string))
-                .Should()
-                .Be(geo.ToString());
+            Assert.AreEqual(Converter.ConvertTo(geo, typeof(string)), geo.ToString());
         }
 
         [TestMethod]

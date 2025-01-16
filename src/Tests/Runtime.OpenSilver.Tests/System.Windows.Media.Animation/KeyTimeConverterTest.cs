@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Animation.Tests
@@ -27,48 +26,38 @@ namespace System.Windows.Media.Animation.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_KeyTime()
         {
-            Converter.ConvertFrom("3")
-                .Should()
-                .Be(KeyTime.FromTimeSpan(TimeSpan.FromDays(3)));
+            Assert.AreEqual(Converter.ConvertFrom("3"), KeyTime.FromTimeSpan(TimeSpan.FromDays(3)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_KeyTime_Uniform()
         {
-            Converter.ConvertFrom("Uniform").Should().Be(KeyTime.Uniform);
-            Converter.ConvertFrom("  Uniform   ").Should().Be(KeyTime.Uniform);
+            Assert.AreEqual(Converter.ConvertFrom("Uniform"), KeyTime.Uniform);
+            Assert.AreEqual(Converter.ConvertFrom("  Uniform   "), KeyTime.Uniform);
         }
 
         [TestMethod]
@@ -106,9 +95,7 @@ namespace System.Windows.Media.Animation.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(KeyTime.FromTimeSpan(TimeSpan.FromDays(3)), typeof(string))
-                .Should()
-                .Be("3.00:00:00");
+            Assert.AreEqual(Converter.ConvertTo(KeyTime.FromTimeSpan(TimeSpan.FromDays(3)), typeof(string)), "3.00:00:00");
         }
 
         [TestMethod]

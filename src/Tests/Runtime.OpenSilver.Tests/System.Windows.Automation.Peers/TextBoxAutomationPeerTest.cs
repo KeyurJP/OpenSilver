@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
@@ -27,11 +26,11 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox { Text = "Some text" };
             var peer = new TextBoxAutomationPeer(textbox);
 
-            peer.GetName().Should().Be("Some text");
+            Assert.AreEqual(peer.GetName(), "Some text");
 
             AutomationProperties.SetName(textbox, "Some name");
             
-            peer.GetName().Should().Be("Some name");
+            Assert.AreEqual(peer.GetName(), "Some name");
         }
 
         [TestMethod] 
@@ -40,7 +39,8 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox { IsEnabled = false };
             var peer = new TextBoxAutomationPeer(textbox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.SetValue("Some text"));
         }
 
@@ -50,7 +50,8 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox { IsReadOnly = true };
             var peer = new TextBoxAutomationPeer(textbox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.SetValue("Some text"));
         }
 
@@ -60,7 +61,8 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox();
             var peer = new TextBoxAutomationPeer(textbox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ArgumentNullException>(() => provider.SetValue(null));
         }
 
@@ -70,9 +72,12 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox();
             var peer = new TextBoxAutomationPeer(textbox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
+
             provider.SetValue("Some text");
-            textbox.Text.Should().Be("Some text");
+
+            Assert.AreEqual(textbox.Text, "Some text");
         }
 
         [TestMethod]
@@ -81,8 +86,9 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox { Text = "Some text" };
             var peer = new TextBoxAutomationPeer(textbox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
-            provider.Value.Should().Be("Some text");
+
+            Assert.IsNotNull(provider);
+            Assert.AreEqual(provider.Value, "Some text");
         }
 
         [TestMethod]
@@ -91,13 +97,16 @@ namespace System.Windows.Automation.Peers.Tests
             var textbox = new TextBox();
             var peer = new TextBoxAutomationPeer(textbox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             textbox.IsReadOnly = false;
-            provider.IsReadOnly.Should().BeFalse();
+
+            Assert.IsFalse(provider.IsReadOnly);
 
             textbox.IsReadOnly = true;
-            provider.IsReadOnly.Should().BeTrue();
+
+            Assert.IsTrue(provider.IsReadOnly);
         }
     }
 }

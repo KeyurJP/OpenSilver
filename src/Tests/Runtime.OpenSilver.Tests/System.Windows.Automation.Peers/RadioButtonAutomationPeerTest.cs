@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
@@ -27,14 +26,17 @@ namespace System.Windows.Automation.Peers.Tests
             var radio = new RadioButton { IsThreeState = true };
             var peer = new RadioButtonAutomationPeer(radio);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
 
             radio.IsChecked = true;
-            provider.IsSelected.Should().BeTrue();
+            Assert.IsTrue(provider.IsSelected);
+
             radio.IsChecked = false;
-            provider.IsSelected.Should().BeFalse();
+            Assert.IsFalse(provider.IsSelected);
+
             radio.IsChecked = null;
-            provider.IsSelected.Should().BeFalse();
+            Assert.IsFalse(provider.IsSelected);
         }
 
         [TestMethod]
@@ -42,8 +44,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new RadioButtonAutomationPeer(new RadioButton());
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
-            provider.SelectionContainer.Should().BeNull();
+
+            Assert.IsNotNull(provider);
+            Assert.IsNull(provider.SelectionContainer);
         }
 
         [TestMethod]
@@ -51,7 +54,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new RadioButtonAutomationPeer(new RadioButton { IsChecked = true });
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<InvalidOperationException>(() => provider.RemoveFromSelection());
         }
 
@@ -60,7 +64,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new RadioButtonAutomationPeer(new RadioButton { IsChecked = false });
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<InvalidOperationException>(() => provider.AddToSelection());
         }
 
@@ -69,7 +74,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new RadioButtonAutomationPeer(new RadioButton { IsEnabled = false });
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Select());
         }
 
@@ -79,9 +85,12 @@ namespace System.Windows.Automation.Peers.Tests
             var radio = new RadioButton { IsChecked = false };
             var peer = new RadioButtonAutomationPeer(radio);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider)
+                ;
             provider.Select();
-            radio.IsChecked.Should().BeTrue();
+
+            Assert.IsTrue(radio.IsChecked);
         }
     }
 }

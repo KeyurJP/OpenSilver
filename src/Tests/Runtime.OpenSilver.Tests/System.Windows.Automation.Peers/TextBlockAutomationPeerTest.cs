@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
 using System.Windows.Controls;
 
 namespace System.Windows.Automation.Peers.Tests
@@ -26,11 +25,11 @@ namespace System.Windows.Automation.Peers.Tests
             var textblock = new TextBlock { Text = "Some text" };
             var peer = new TextBlockAutomationPeer(textblock);
 
-            peer.GetName().Should().Be("Some text");
+            Assert.AreEqual(peer.GetName(), "Some text");
 
             AutomationProperties.SetName(textblock, "Some name");
 
-            peer.GetName().Should().Be("Some name");
+            Assert.AreEqual(peer.GetName(), "Some name");
         }
 
         [TestMethod]
@@ -39,11 +38,11 @@ namespace System.Windows.Automation.Peers.Tests
             var textblock = new TextBlock();
             var peer = new TextBlockAutomationPeer(textblock);
 
-            peer.IsControlElement().Should().BeTrue();
+            Assert.IsTrue(peer.IsControlElement());
 
             textblock.SetTemplatedParent(new(new Button()));
 
-            peer.IsControlElement().Should().BeFalse();
+            Assert.IsFalse(peer.IsControlElement());
         }
     }
 }

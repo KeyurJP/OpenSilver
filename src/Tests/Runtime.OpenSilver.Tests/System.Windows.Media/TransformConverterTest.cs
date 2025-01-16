@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,69 +26,61 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_MatrixTransform_1()
         {
-            Converter.ConvertFrom("1,2,3,4,5,6")
-                .Should()
-                .BeOfType<MatrixTransform>()
-                .Which
-                .Matrix
-                .Should()
-                .Be(new Matrix(1, 2, 3, 4, 5, 6));
+            object value = Converter.ConvertFrom("1,2,3,4,5,6");
+
+            Assert.IsInstanceOfType<MatrixTransform>(value);
+
+            MatrixTransform transform = value as MatrixTransform;
+
+            Assert.AreEqual(transform.Matrix, new Matrix(1, 2, 3, 4, 5, 6));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_MatrixTransform_2()
         {
-            Converter.ConvertFrom("1 2 3 4 5 6")
-                .Should()
-                .BeOfType<MatrixTransform>()
-                .Which
-                .Matrix
-                .Should()
-                .Be(new Matrix(1, 2, 3, 4, 5, 6));
+            object value = Converter.ConvertFrom("1 2 3 4 5 6");
+
+            Assert.IsInstanceOfType<MatrixTransform>(value);
+
+            MatrixTransform transform = value as MatrixTransform;
+
+            Assert.AreEqual(transform.Matrix, new Matrix(1, 2, 3, 4, 5, 6));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_MatrixTransform_3()
         {
-            Converter.ConvertFrom("  1 ,2,3, 4  5, 6  ")
-                .Should()
-                .BeOfType<MatrixTransform>()
-                .Which
-                .Matrix
-                .Should()
-                .Be(new Matrix(1, 2, 3, 4, 5, 6));
+            object value = Converter.ConvertFrom("  1 ,2,3, 4  5, 6  ");
+
+            Assert.IsInstanceOfType<MatrixTransform>(value);
+
+            MatrixTransform transform = value as MatrixTransform;
+
+            Assert.AreEqual(transform.Matrix, new Matrix(1, 2, 3, 4, 5, 6));
         }
 
         [TestMethod]
@@ -113,9 +104,7 @@ namespace System.Windows.Media.Tests
         {
             var transform = new MatrixTransform();
 
-            Converter.ConvertTo(transform, typeof(string))
-                .Should()
-                .Be(transform.ToString());
+            Assert.AreEqual(Converter.ConvertTo(transform, typeof(string)), transform.ToString());
         }
 
         [TestMethod]

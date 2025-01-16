@@ -10,7 +10,6 @@
 *  
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -30,15 +29,15 @@ namespace System.Windows.Tests
                 new Setter(Control.BackgroundProperty, new SolidColorBrush(Colors.Red)),
             };
 
-            sbc.IsSealed.Should().BeFalse();
+            Assert.IsFalse(sbc.IsSealed);
 
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
+            Assert.IsTrue(sbc.IsSealed);
 
             foreach (var setter in sbc)
             {
-                setter.IsSealed.Should().BeTrue();
+                Assert.IsTrue(setter.IsSealed);
             }
         }
 
@@ -48,6 +47,7 @@ namespace System.Windows.Tests
         public void SetterBaseCollection_Add_Null()
         {
             var sbc = new SetterBaseCollection();
+
             Assert.ThrowsException<ArgumentNullException>(() => sbc.Add(null));
         }
 
@@ -55,6 +55,7 @@ namespace System.Windows.Tests
         public void SetterBaseCollection_Insert_Null()
         {
             var sbc = new SetterBaseCollection();
+
             Assert.ThrowsException<ArgumentNullException>(() => sbc.Insert(0, null));
         }
 
@@ -63,6 +64,7 @@ namespace System.Windows.Tests
         {
             var sbc = new SetterBaseCollection();
             sbc.Add(new Setter(Control.PaddingProperty, new Thickness(20d)));
+
             Assert.ThrowsException<ArgumentNullException>(() => sbc[0] = null);
         }
 
@@ -76,7 +78,7 @@ namespace System.Windows.Tests
             var sbc = new SetterBaseCollection();
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
+            Assert.IsTrue(sbc.IsSealed);
 
             var setter = new Setter(Control.PaddingProperty, new Thickness(20d));
 
@@ -89,8 +91,7 @@ namespace System.Windows.Tests
             var sbc = new SetterBaseCollection();
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
-
+            Assert.IsTrue(sbc.IsSealed);
             Assert.ThrowsException<InvalidOperationException>(() => sbc.Clear());
         }
 
@@ -100,7 +101,7 @@ namespace System.Windows.Tests
             var sbc = new SetterBaseCollection();
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
+            Assert.IsTrue(sbc.IsSealed);
 
             var setter = new Setter(Control.PaddingProperty, new Thickness(20d));
 
@@ -114,8 +115,7 @@ namespace System.Windows.Tests
             sbc.Add(new Setter(Control.IsTabStopProperty, false));
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
-
+            Assert.IsTrue(sbc.IsSealed);
             Assert.ThrowsException<InvalidOperationException>(() => sbc.RemoveAt(0));
         }
 
@@ -128,8 +128,7 @@ namespace System.Windows.Tests
 
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
-
+            Assert.IsTrue(sbc.IsSealed);
             Assert.ThrowsException<InvalidOperationException>(() => sbc.Remove(setter));
         }
 
@@ -140,7 +139,7 @@ namespace System.Windows.Tests
             sbc.Add(new Setter(Control.PaddingProperty, new Thickness(20d)));
             sbc.Seal();
 
-            sbc.IsSealed.Should().BeTrue();
+            Assert.IsTrue(sbc.IsSealed);
 
             var setter = new Setter(Control.IsTabStopProperty, false);
 

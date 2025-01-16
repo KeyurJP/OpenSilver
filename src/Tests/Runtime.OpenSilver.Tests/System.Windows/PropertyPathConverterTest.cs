@@ -13,8 +13,8 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenSilver.Internal.Helpers;
 
 namespace System.Windows.Tests
 {
@@ -27,51 +27,42 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(string)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(int)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(bool)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(double)).Should().BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(string)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(int)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(double)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_PropertyPath_1()
         {
             string path = "Test.Path";
-            Converter.ConvertFrom(path)
-                .Should()
-                .BeOfType<PropertyPath>()
-                .Which
-                .Path
-                .Should()
-                .Be(path);
+
+            object value = Converter.ConvertFrom(path);
+
+            Assert.IsInstanceOfType<PropertyPath>(value);
+            Assert.AreEqual(value.As<PropertyPath>().Path, path);
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_PropertyPath_2()
         {
-            Converter.ConvertFrom(null)
-                .Should()
-                .BeOfType<PropertyPath>()
-                .Which
-                .Path
-                .Should()
-                .BeNull();
+            object value = Converter.ConvertFrom(null);
+
+            Assert.IsInstanceOfType<PropertyPath>(value);
+            Assert.IsNull(value.As<PropertyPath>().Path);
         }
 
         [TestMethod]

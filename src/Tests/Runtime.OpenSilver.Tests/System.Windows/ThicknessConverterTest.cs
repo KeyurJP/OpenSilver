@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,110 +26,90 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(decimal)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(float)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(double)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(short)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(int)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(long)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(ushort)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(uint)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(ulong)).Should().BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(decimal)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(float)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(double)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(short)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(int)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(long)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(ushort)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(uint)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(ulong)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_1()
         {
-            Converter.ConvertFrom("1")
-                .Should()
-                .Be(new Thickness(1));
+            Assert.AreEqual(Converter.ConvertFrom("1"), new Thickness(1));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_2()
         {
-            Converter.ConvertFrom("  1 ")
-                .Should()
-                .Be(new Thickness(1));
+            Assert.AreEqual(Converter.ConvertFrom("  1 "), new Thickness(1));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_3()
         {
-            Converter.ConvertFrom("1,2")
-                .Should()
-                .Be(new Thickness(1, 2, 1, 2));
+            Assert.AreEqual(Converter.ConvertFrom("1,2"), new Thickness(1, 2, 1, 2));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_4()
         {
-            Converter.ConvertFrom("1 2")
-                .Should()
-                .Be(new Thickness(1, 2, 1, 2));
+            Assert.AreEqual(Converter.ConvertFrom("1 2"), new Thickness(1, 2, 1, 2));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_5()
         {
-            Converter.ConvertFrom(" 1   ,2  ")
-                .Should()
-                .Be(new Thickness(1, 2, 1, 2));
+            Assert.AreEqual(Converter.ConvertFrom(" 1   ,2  "), new Thickness(1, 2, 1, 2));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_6()
         {
-            Converter.ConvertFrom("1,2,3,4")
-                .Should()
-                .Be(new Thickness(1, 2, 3, 4));
+            Assert.AreEqual(Converter.ConvertFrom("1,2,3,4"), new Thickness(1, 2, 3, 4));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_7()
         {
-            Converter.ConvertFrom("1 2 3 4")
-                .Should()
-                .Be(new Thickness(1, 2, 3, 4));
+            Assert.AreEqual(Converter.ConvertFrom("1 2 3 4"), new Thickness(1, 2, 3, 4));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Thickness_8()
         {
-            Converter.ConvertFrom("   1,2  3  , 4  ")
-                .Should()
-                .Be(new Thickness(1, 2, 3, 4));
+            Assert.AreEqual(Converter.ConvertFrom("   1,2  3  , 4  "), new Thickness(1, 2, 3, 4));
         }
 
         [TestMethod]
         public void ConvertFrom_Numeric_Types_Return_Thickness()
         {
-            Converter.ConvertFrom(100m).Should().Be(new Thickness(100));
-            Converter.ConvertFrom(100f).Should().Be(new Thickness(100));
-            Converter.ConvertFrom(100d).Should().Be(new Thickness(100));
-            Converter.ConvertFrom((short)100).Should().Be(new Thickness(100));
-            Converter.ConvertFrom(100).Should().Be(new Thickness(100));
-            Converter.ConvertFrom(100L).Should().Be(new Thickness(100));
-            Converter.ConvertFrom((ushort)100).Should().Be(new Thickness(100));
-            Converter.ConvertFrom(100U).Should().Be(new Thickness(100));
-            Converter.ConvertFrom(100UL).Should().Be(new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100m), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100f), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100d), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom((short)100), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100L), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom((ushort)100), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100U), new Thickness(100));
+            Assert.AreEqual(Converter.ConvertFrom(100UL), new Thickness(100));
         }
 
         [TestMethod]
@@ -152,9 +131,7 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(new Thickness(1), typeof(string))
-                .Should()
-                .Be("1,1,1,1");
+            Assert.AreEqual(Converter.ConvertTo(new Thickness(1), typeof(string)), "1,1,1,1");
         }
 
         [TestMethod]

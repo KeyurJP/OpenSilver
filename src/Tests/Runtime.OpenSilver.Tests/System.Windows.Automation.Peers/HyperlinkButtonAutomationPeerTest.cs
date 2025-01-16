@@ -11,7 +11,6 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
@@ -31,8 +30,7 @@ namespace System.Windows.Automation.Peers.Tests
             var peer = new HyperlinkButtonAutomationPeer(hyperlink);
             var provider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
 
-            provider.Should().NotBeNull();
-
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Invoke());
         }
 
@@ -47,9 +45,12 @@ namespace System.Windows.Automation.Peers.Tests
             };
             var peer = new HyperlinkButtonAutomationPeer(hyperlink);
             var provider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
+
             provider.Invoke();
-            buttonClicked.Should().BeTrue();
+
+            Assert.IsTrue(buttonClicked);
         }
     }
 }

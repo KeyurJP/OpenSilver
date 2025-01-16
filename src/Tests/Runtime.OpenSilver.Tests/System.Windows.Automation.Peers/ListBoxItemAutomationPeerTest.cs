@@ -12,7 +12,7 @@
 \*====================================================================================*/
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluentAssertions;
+using OpenSilver.Internal.Helpers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 
@@ -26,10 +26,10 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             listboxItem.IsEnabled = false;
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.Select());
         }
 
@@ -38,11 +38,11 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
             provider.Select();
-            listboxItem.IsSelected.Should().BeTrue();
+            Assert.IsTrue(listboxItem.IsSelected);
         }
 
         [TestMethod]
@@ -50,10 +50,10 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             listboxItem.IsEnabled = false;
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.AddToSelection());
         }
 
@@ -62,12 +62,12 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
-            listboxItem.IsSelected.Should().BeFalse();
+            Assert.IsNotNull(provider);
+            Assert.IsFalse(listboxItem.IsSelected);
             provider.AddToSelection();
-            listboxItem.IsSelected.Should().BeTrue();
+            Assert.IsTrue(listboxItem.IsSelected);
         }
 
         [TestMethod]
@@ -75,9 +75,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
             listboxItem.IsEnabled = false;
             listboxItem.IsSelected = true;
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.RemoveFromSelection());
@@ -88,14 +88,14 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
             ListBox listbox = peer.ItemsControlAutomationPeer.Owner.As<ListBox>();
-            listbox.Should().NotBeNull();
+            Assert.IsNotNull(listbox);
             listbox.SelectedItem = listboxItem;
             provider.RemoveFromSelection();
-            listbox.SelectedItem.Should().BeNull();
+            Assert.IsNull(listbox.SelectedItem);
         }
 
         [TestMethod]
@@ -103,15 +103,15 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
             ListBox listbox = peer.ItemsControlAutomationPeer.Owner.As<ListBox>();
-            listbox.Should().NotBeNull();
+            Assert.IsNotNull(listbox);
             listbox.SelectedItem = null;
-            provider.IsSelected.Should().BeFalse();
+            Assert.IsFalse(provider.IsSelected);
             listbox.SelectedItem = listboxItem;
-            provider.IsSelected.Should().BeTrue();
+            Assert.IsTrue(provider.IsSelected);
         }
 
         [TestMethod]
@@ -119,13 +119,13 @@ namespace System.Windows.Automation.Peers.Tests
         {
             ListBoxItemAutomationPeer peer = CreatePeer();
             ListBoxItem listboxItem = peer.Owner.As<ListBoxItem>();
-            listboxItem.Should().NotBeNull();
+            Assert.IsNotNull(listboxItem);
             var provider = peer.GetPattern(PatternInterface.SelectionItem) as ISelectionItemProvider;
-            provider.Should().NotBeNull();
+            Assert.IsNotNull(provider);
 
             IRawElementProviderSimple container = provider.SelectionContainer;
-            container.Should().NotBeNull();
-            container.Peer.Should().BeSameAs(peer.ItemsControlAutomationPeer);
+            Assert.IsNotNull(container);
+            Assert.AreSame(container.Peer, peer.ItemsControlAutomationPeer);
         }
 
         private static ListBoxItemAutomationPeer CreatePeer()

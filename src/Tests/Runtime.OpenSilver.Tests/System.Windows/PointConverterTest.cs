@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Tests
@@ -27,57 +26,43 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Point_1()
         {
-            Converter.ConvertFrom("1,1")
-                .Should()
-                .Be(new Point(1, 1));
+            Assert.AreEqual(Converter.ConvertFrom("1,1"), new Point(1, 1));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Point_2()
         {
-            Converter.ConvertFrom("  1, 1  ")
-                .Should()
-                .Be(new Point(1, 1));
+            Assert.AreEqual(Converter.ConvertFrom("  1, 1  "), new Point(1, 1));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_Point_3()
         {
-            Converter.ConvertFrom("  1   1")
-                .Should()
-                .Be(new Point(1, 1));
+            Assert.AreEqual(Converter.ConvertFrom("  1   1"), new Point(1, 1));
         }
 
         [TestMethod]
@@ -107,9 +92,7 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(new Point(1, 1), typeof(string))
-                .Should()
-                .Be("1,1");
+            Assert.AreEqual(Converter.ConvertTo(new Point(1, 1), typeof(string)), "1,1");
         }
 
         [TestMethod]

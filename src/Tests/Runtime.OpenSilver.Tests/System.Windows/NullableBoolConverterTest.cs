@@ -13,8 +13,8 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenSilver.Internal.Helpers;
 
 namespace System.Windows.Tests
 {
@@ -27,109 +27,91 @@ namespace System.Windows.Tests
         [TestMethod]
         public void CanConvertFrom_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(bool)).Should().BeTrue();
-            Converter.CanConvertFrom(typeof(bool?)).Should().BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(bool)));
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(bool?)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Int32_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(int))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(int)));
         }
 
         [TestMethod]
         public void CanConvertTo_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(string)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(int)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(bool)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(bool?)).Should().BeFalse();
-            Converter.CanConvertTo(typeof(long)).Should().BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(string)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(int)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool?)));
+            Assert.IsFalse(Converter.CanConvertTo(typeof(long)));
         }
 
         [TestMethod]
         public void ConvertFrom_Null()
         {
-            Converter.ConvertFrom(null)
-                .Should()
-                .BeNull();
+            Assert.IsNull(Converter.ConvertFrom(null));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Empty()
         {
-            Converter.ConvertFrom(string.Empty)
-                .Should()
-                .BeNull();
+            Assert.IsNull(Converter.ConvertFrom(string.Empty));
         }
 
         [TestMethod]
         public void ConvertFrom_String_True_1()
         {
-            Converter.ConvertFrom("true")
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeTrue();
+            bool? value = Converter.ConvertFrom("true").As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsTrue(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_String_True_2()
         {
-            Converter.ConvertFrom("  true   ")
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeTrue();
+            bool? value = Converter.ConvertFrom("  true   ").As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsTrue(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_String_True_3()
         {
-            Converter.ConvertFrom("   trUe    ")
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeTrue();
+            bool? value = Converter.ConvertFrom("   trUe    ").As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsTrue(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_String_False_1()
         {
-            Converter.ConvertFrom("false")
-              .As<bool?>()
-              .Should()
-              .HaveValue()
-              .And
-              .BeFalse();
+            bool? value = Converter.ConvertFrom("false").As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsFalse(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_String_False_2()
         {
-            Converter.ConvertFrom(" false   ")
-              .As<bool?>()
-              .Should()
-              .HaveValue()
-              .And
-              .BeFalse();
+            bool? value = Converter.ConvertFrom(" false   ").As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsFalse(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_String_False_3()
         {
-            Converter.ConvertFrom("   FAlse    ")
-              .As<bool?>()
-              .Should()
-              .HaveValue()
-              .And
-              .BeFalse();
+            bool? value = Converter.ConvertFrom("   FAlse    ").As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsFalse(value.Value);
         }
 
         [TestMethod]
@@ -151,45 +133,37 @@ namespace System.Windows.Tests
         [TestMethod]
         public void ConvertFrom_Bool_True()
         {
-            Converter.ConvertFrom(true)
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeTrue();
+            bool? value = Converter.ConvertFrom(true).As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsTrue(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_Bool_False()
         {
-            Converter.ConvertFrom(false)
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeFalse();
+            bool? value = Converter.ConvertFrom(false).As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsFalse(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_Nullable_Of_Bool_True()
         {
-            Converter.ConvertFrom((bool?)true)
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeTrue();
+            bool? value = Converter.ConvertFrom((bool?)true).As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsTrue(value.Value);
         }
 
         [TestMethod]
         public void ConvertFrom_Nullable_Of_Bool_False()
         {
-            Converter.ConvertFrom((bool?)false)
-                .As<bool?>()
-                .Should()
-                .HaveValue()
-                .And
-                .BeFalse();
+            bool? value = Converter.ConvertFrom((bool?)false).As<bool?>();
+
+            Assert.IsTrue(value.HasValue);
+            Assert.IsFalse(value.Value);
         }
 
         [TestMethod]

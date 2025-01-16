@@ -11,7 +11,6 @@
 *
 \*====================================================================================*/
 
-using FluentAssertions;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -24,7 +23,7 @@ namespace System.Windows.Automation.Peers.Tests
         [TestMethod]
         public void IsPassword_Should_Return_True()
         {
-            new PasswordBoxAutomationPeer(new PasswordBox()).IsPassword().Should().BeTrue();
+            Assert.IsTrue(new PasswordBoxAutomationPeer(new PasswordBox()).IsPassword());
         }
 
         [TestMethod]
@@ -36,7 +35,8 @@ namespace System.Windows.Automation.Peers.Tests
             };
             var peer = new PasswordBoxAutomationPeer(passwordBox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ElementNotEnabledException>(() => provider.SetValue("password"));
         }
 
@@ -46,7 +46,8 @@ namespace System.Windows.Automation.Peers.Tests
             var passwordBox = new PasswordBox();
             var peer = new PasswordBoxAutomationPeer(passwordBox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<ArgumentNullException>(() => provider.SetValue(null));
         }
 
@@ -56,9 +57,12 @@ namespace System.Windows.Automation.Peers.Tests
             var passwordBox = new PasswordBox();
             var peer = new PasswordBoxAutomationPeer(passwordBox);
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
+
             provider.SetValue("password");
-            passwordBox.Password.Should().Be("password");
+
+            Assert.AreEqual(passwordBox.Password, "password");
         }
 
         [TestMethod]
@@ -66,7 +70,8 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new PasswordBoxAutomationPeer(new PasswordBox());
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
+
+            Assert.IsNotNull(provider);
             Assert.ThrowsException<InvalidOperationException>(() => provider.Value);
         }
 
@@ -75,8 +80,9 @@ namespace System.Windows.Automation.Peers.Tests
         {
             var peer = new PasswordBoxAutomationPeer(new PasswordBox());
             var provider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
-            provider.Should().NotBeNull();
-            provider.IsReadOnly.Should().BeFalse();
+
+            Assert.IsNotNull(provider);
+            Assert.IsFalse(provider.IsReadOnly);
         }
     }
 }

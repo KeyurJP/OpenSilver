@@ -13,7 +13,6 @@
 
 using System.ComponentModel;
 using OpenSilver.Tests;
-using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.Windows.Media.Tests
@@ -27,49 +26,37 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void CanConvertFrom_String_Should_Return_True()
         {
-            Converter.CanConvertFrom(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertFrom(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertFrom_Bool_Should_Return_False()
         {
-            Converter.CanConvertFrom(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertFrom(typeof(bool)));
         }
 
         [TestMethod]
         public void CanConvertTo_String_Should_Return_True()
         {
-            Converter.CanConvertTo(typeof(string))
-                .Should()
-                .BeTrue();
+            Assert.IsTrue(Converter.CanConvertTo(typeof(string)));
         }
 
         [TestMethod]
         public void CanConvertTo_Bool_Should_Return_False()
         {
-            Converter.CanConvertTo(typeof(bool))
-                .Should()
-                .BeFalse();
+            Assert.IsFalse(Converter.CanConvertTo(typeof(bool)));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_BitmapCache_1()
         {
-            Converter.ConvertFrom("BitmapCache")
-                .Should()
-                .BeOfType(typeof(BitmapCache));
+            Assert.IsInstanceOfType<BitmapCache>(Converter.ConvertFrom("BitmapCache"));
         }
 
         [TestMethod]
         public void ConvertFrom_String_Should_Return_BitmapCache_2()
         {
-            Converter.ConvertFrom("bitmapcache")
-                .Should()
-                .BeOfType(typeof(BitmapCache));
+            Assert.IsInstanceOfType<BitmapCache>(Converter.ConvertFrom("bitmapcache"));
         }
 
         [TestMethod]
@@ -99,9 +86,7 @@ namespace System.Windows.Media.Tests
         [TestMethod]
         public void ConvertTo_String()
         {
-            Converter.ConvertTo(new BitmapCache(), typeof(string))
-                .Should()
-                .Be(typeof(BitmapCache).FullName);
+            Assert.AreEqual(Converter.ConvertTo(new BitmapCache(), typeof(string)), typeof(BitmapCache).FullName);
         }
 
         [TestMethod]
