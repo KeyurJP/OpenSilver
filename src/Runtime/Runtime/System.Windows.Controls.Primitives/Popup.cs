@@ -453,163 +453,224 @@ namespace System.Windows.Controls.Primitives
             UpdateTransform();
 
             Point offset;
+            PlacementMode placement = Placement;
 
-            if (PlacementTarget is FrameworkElement target && INTERNAL_VisualTreeManager.IsElementInVisualTree(target))
+            if (IsAbsolutePlacementMode(placement))
             {
-                offset = PerformPlacement(target);
+                offset = PerformAbsolutePlacement(placement);
+            }
+            else if (PlacementTarget is FrameworkElement target && INTERNAL_VisualTreeManager.IsElementInVisualTree(target))
+            {
+                offset = PerformRelativePlacement(target, placement);
+            }
+            else if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
+            {
+                // In Silverlight, when a popup is in the visual tree, it always position the Child relative
+                // to the popup's top left corner.
+                offset = GetRelativeTransform(null).Transform(new Point(0, 0));
+                offset.Offset(HorizontalOffset, VerticalOffset);
             }
             else
             {
-                PlacementMode placement = Placement;
+                // Nothing worked, use absolute placement
+                offset = new Point(HorizontalOffset, VerticalOffset);
+            }
 
-                if (placement == PlacementMode.Mouse)
-                {
+            _popupRoot.SetPosition(offset.X, offset.Y);
+        }
+
+        private static bool IsAbsolutePlacementMode(PlacementMode placement)
+        {
+            return placement == PlacementMode.Mouse
+                || placement == PlacementMode.MousePoint;
+        }
+
+        private static bool IsRelativePlacementMode(PlacementMode placement)
+        {
+            return placement == PlacementMode.Bottom
+                || placement == PlacementMode.Right
+                || placement == PlacementMode.Left
+                || placement == PlacementMode.Top;
+        }
+
+        private Point PerformAbsolutePlacement(PlacementMode placement)
+        {
+            Debug.Assert(IsAbsolutePlacementMode(placement));
+
+            if (Child is not UIElement child)
+            {
+                return new Point(HorizontalOffset, VerticalOffset);
+            }
+
+            Point offset;
+
+            switch (placement)
+            {
+                case PlacementMode.Mouse:
                     offset = PopupService.MousePosition;
                     offset.Y += _cursorOffsetY;
-                }
-                else if (placement == PlacementMode.MousePoint)
-                {
+                    break;
+                case PlacementMode.MousePoint:
                     offset = PopupService.MousePosition;
-                }
-                else if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
+                    break;
+                default:
+                    Debug.Assert(false, $"Unexpected absolute placement mode: '{placement}'.");
+                    offset = new Point(0, 0);
+                    break;
+            }
+
+            offset.Offset(HorizontalOffset, VerticalOffset);
+
+            if (StaysWithinScreenBounds)
+            {
+                var root = Application.Current.Host.Content;
+                var windowBounds = new Size(root.ActualWidth, root.ActualHeight);
+                InterestPoints childInterestPoints = GetInterestPoints(child, _popupRoot.InternalGetVisualChild(0));
+
+                offset = PutInScreenBounds(offset, windowBounds, childInterestPoints);
+            }
+
+            return offset;
+        }
+
+        private Point PerformRelativePlacement(UIElement placementTarget, PlacementMode placement)
+        {
+            Debug.Assert(IsRelativePlacementMode(placement));
+
+            if (Child is not UIElement child)
+            {
+                return new Point(HorizontalOffset, VerticalOffset);
+            }
+
+            var root = Application.Current.Host.Content;
+            var windowBounds = new Size(root.ActualWidth, root.ActualHeight);
+            InterestPoints targetInterestPoints = GetInterestPoints(placementTarget, Window.GetWindow(placementTarget));
+            InterestPoints childInterestPoints = GetInterestPoints(child, _popupRoot.InternalGetVisualChild(0));
+            double hOffset = HorizontalOffset;
+            double vOffset = VerticalOffset;
+
+            Point offset = GetCandidateOffset(placement, targetInterestPoints, childInterestPoints, hOffset, vOffset);
+            Rect childBounds = GetBounds(childInterestPoints);
+            childBounds.Offset(childInterestPoints.TopLeft.X + offset.X, childInterestPoints.TopLeft.Y + offset.Y);
+
+            if (childBounds.Y + childBounds.Height > windowBounds.Height)
+            {
+                if (placement == PlacementMode.Bottom)
                 {
-                    offset = GetRelativeTransform(null).Transform(new Point(0, 0));
+                    offset = GetCandidateOffset(PlacementMode.Top, targetInterestPoints, childInterestPoints, hOffset, vOffset);
                 }
                 else
                 {
-                    offset = new Point(0, 0);
+                    offset.Y -= childBounds.Y + childBounds.Height - windowBounds.Height;
+                }
+            }
+            else if (childBounds.Y < 0)
+            {
+                if (placement == PlacementMode.Top)
+                {
+                    offset = GetCandidateOffset(PlacementMode.Bottom, targetInterestPoints, childInterestPoints, hOffset, vOffset);
+                }
+                else
+                {
+                    offset.Y -= childBounds.Y;
                 }
             }
 
-            _popupRoot.SetPosition(offset.X + HorizontalOffset, offset.Y + VerticalOffset);
-        }
+            childBounds = GetBounds(childInterestPoints);
+            childBounds.Offset(childInterestPoints.TopLeft.X + offset.X, childInterestPoints.TopLeft.Y + offset.Y);
 
-        private Point PerformPlacement(UIElement placementTarget)
-        {
-            var point = new Point();
-
-            if (Child is UIElement child)
+            if (childBounds.X + childBounds.Width > windowBounds.Width)
             {
-                PlacementMode placement = Placement;
-                var root = Application.Current.Host.Content;
-                var windowBounds = new Size(root.ActualWidth, root.ActualHeight);
-                InterestPoints targetInterestPoints = GetInterestPoints(placementTarget, Window.GetWindow(placementTarget));
-                InterestPoints childInterestPoints = GetInterestPoints(child, _popupRoot.InternalGetVisualChild(0));
+                if (placement == PlacementMode.Right)
+                {
+                    offset = GetCandidateOffset(PlacementMode.Left, targetInterestPoints, childInterestPoints, hOffset, vOffset);
+                }
+                else
+                {
+                    offset.X -= childBounds.X + childBounds.Width - windowBounds.Width;
+                }
+            }
+            else if (childBounds.X < 0)
+            {
+                if (placement == PlacementMode.Left)
+                {
+                    offset = GetCandidateOffset(PlacementMode.Right, targetInterestPoints, childInterestPoints, hOffset, vOffset);
+                }
+                else
+                {
+                    offset.X -= childBounds.X;
+                }
+            }
+
+            if (StaysWithinScreenBounds)
+            {
+                offset = PutInScreenBounds(offset, windowBounds, childInterestPoints);
+            }
+
+            return offset;
+
+            static Point GetCandidateOffset(PlacementMode placement,
+                InterestPoints targetInterestPoints,
+                InterestPoints childInterestPoints,
+                double hOffset,
+                double vOffset)
+            {
+                Point offset;
 
                 switch (placement)
                 {
-                    case PlacementMode.Mouse:
-                        point.X = PopupService.MousePosition.X;
-                        point.Y = PopupService.MousePosition.Y + _cursorOffsetY;
-                        break;
-                    case PlacementMode.MousePoint:
-                        point = PopupService.MousePosition;
-                        break;
                     case PlacementMode.Top:
-                        point.X = targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.BottomLeft.X;
-                        point.Y = targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.BottomLeft.Y;
+                        offset = new Point(
+                            targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.BottomLeft.X,
+                            targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.BottomLeft.Y);
                         break;
                     case PlacementMode.Bottom:
-                        point.X = targetInterestPoints.BottomLeft.X;
-                        point.Y = targetInterestPoints.BottomLeft.Y;
+                        offset = new Point(targetInterestPoints.BottomLeft.X, targetInterestPoints.BottomLeft.Y);
                         break;
                     case PlacementMode.Left:
-                        point.X = targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.TopRight.X;
-                        point.Y = targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.TopRight.Y;
+                        offset = new Point(
+                            targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.TopRight.X,
+                            targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.TopRight.Y);
                         break;
                     case PlacementMode.Right:
-                        point.X = targetInterestPoints.TopRight.X;
-                        point.Y = targetInterestPoints.TopRight.Y;
+                        offset = new Point(targetInterestPoints.TopRight.X, targetInterestPoints.TopRight.Y);
                         break;
                     default:
-                        throw new NotSupportedException($"PlacementMode '{placement}' is not supported");
+                        Debug.Assert(false, $"Unexpected relative placement mode: '{placement}'.");
+                        offset = new Point(0, 0);
+                        break;
                 }
 
-                Rect childBounds = GetBounds(childInterestPoints);
-                childBounds.X += childInterestPoints.TopLeft.X + point.X;
-                childBounds.Y += childInterestPoints.TopLeft.Y + point.Y;
+                offset.Offset(hOffset, vOffset);
 
-                if (childBounds.Y + childBounds.Height > windowBounds.Height)
-                {
-                    if (placement == PlacementMode.Bottom)
-                    {
-                        point.X = targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.BottomLeft.X;
-                        point.Y = targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.BottomLeft.Y;
-                    }
-                    else
-                    {
-                        point.Y -= childBounds.Y + childBounds.Height - windowBounds.Height;
-                    }
-                }
-                else if (childBounds.Y < 0)
-                {
-                    if (placement == PlacementMode.Top)
-                    {
-                        point.X = targetInterestPoints.BottomLeft.X;
-                        point.Y = targetInterestPoints.BottomLeft.Y;
-                    }
-                    else
-                    {
-                        point.Y -= childBounds.Y;
-                    }
-                }
+                return offset;
+            }
+        }
 
-                childBounds = GetBounds(childInterestPoints);
-                childBounds.X += childInterestPoints.TopLeft.X + point.X;
-                childBounds.Y += childInterestPoints.TopLeft.Y + point.Y;
+        private static Point PutInScreenBounds(Point offset, Size windowBounds, InterestPoints childInterestPoints)
+        {
+            Rect childBounds = GetBounds(childInterestPoints);
+            childBounds.Offset(childInterestPoints.TopLeft.X + offset.X, childInterestPoints.TopLeft.Y + offset.Y);
 
-                if (childBounds.X + childBounds.Width > windowBounds.Width)
-                {
-                    if (placement == PlacementMode.Right)
-                    {
-                        point.X = targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.TopRight.X;
-                        point.Y = targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.TopRight.Y;
-                    }
-                    else
-                    {
-                        point.X -= childBounds.X + childBounds.Width - windowBounds.Width;
-                    }
-                }
-                else if (childBounds.X < 0)
-                {
-                    if (placement == PlacementMode.Left)
-                    {
-                        point.X = targetInterestPoints.TopRight.X;
-                        point.Y = targetInterestPoints.TopRight.Y;
-                    }
-                    else
-                    {
-                        point.X -= childBounds.X;
-                    }
-                }
-
-                childBounds = GetBounds(childInterestPoints);
-                childBounds.X += childInterestPoints.TopLeft.X + point.X;
-                childBounds.Y += childInterestPoints.TopLeft.Y + point.Y;
-
-                if (StaysWithinScreenBounds)
-                {
-                    if (childBounds.Y + childBounds.Height > windowBounds.Height)
-                    {
-                        point.Y -= childBounds.Y + childBounds.Height - windowBounds.Height;
-                    }
-                    else if (childBounds.Y < 0)
-                    {
-                        point.Y -= childBounds.Y;
-                    }
-
-                    if (childBounds.X + childBounds.Width > windowBounds.Width)
-                    {
-                        point.X -= childBounds.X + childBounds.Width - windowBounds.Width;
-                    }
-                    else if (childBounds.X < 0)
-                    {
-                        point.X -= childBounds.X;
-                    }
-                }
+            if (childBounds.Y + childBounds.Height > windowBounds.Height)
+            {
+                offset.Y -= childBounds.Y + childBounds.Height - windowBounds.Height;
+            }
+            else if (childBounds.Y < 0)
+            {
+                offset.Y -= childBounds.Y;
             }
 
-            return point;
+            if (childBounds.X + childBounds.Width > windowBounds.Width)
+            {
+                offset.X -= childBounds.X + childBounds.Width - windowBounds.Width;
+            }
+            else if (childBounds.X < 0)
+            {
+                offset.X -= childBounds.X;
+            }
+
+            return offset;
         }
 
         private struct InterestPoints
@@ -622,7 +683,7 @@ namespace System.Windows.Controls.Primitives
 
         private static InterestPoints GetInterestPoints(UIElement element, UIElement relativeTo)
         {
-            var transform = element.TransformToVisual(relativeTo);
+            var transform = element.GetRelativeTransform(relativeTo);
 
             return new InterestPoints
             {
@@ -874,7 +935,7 @@ namespace System.Windows.Controls.Primitives
         private void UpdatePositionTracker()
         {
             if (!IsOpen ||
-                Placement == PlacementMode.Mouse ||
+                IsAbsolutePlacementMode(Placement) ||
                 PlacementTarget is not UIElement placementTarget ||
                 !INTERNAL_VisualTreeManager.IsElementInVisualTree(placementTarget))
             {
