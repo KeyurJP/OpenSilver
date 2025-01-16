@@ -128,7 +128,8 @@ namespace System.Windows.Controls.Primitives
         private static bool IsValidPlacementMode(object o)
         {
             PlacementMode value = (PlacementMode)o;
-            return value == PlacementMode.Bottom
+            return value == PlacementMode.Absolute
+                || value == PlacementMode.Bottom
                 || value == PlacementMode.Right
                 || value == PlacementMode.Mouse
                 || value == PlacementMode.MousePoint
@@ -473,7 +474,7 @@ namespace System.Windows.Controls.Primitives
             else
             {
                 // Nothing worked, use absolute placement
-                offset = new Point(HorizontalOffset, VerticalOffset);
+                offset = PerformAbsolutePlacement(PlacementMode.Absolute);
             }
 
             _popupRoot.SetPosition(offset.X, offset.Y);
@@ -481,7 +482,8 @@ namespace System.Windows.Controls.Primitives
 
         private static bool IsAbsolutePlacementMode(PlacementMode placement)
         {
-            return placement == PlacementMode.Mouse
+            return placement == PlacementMode.Absolute
+                || placement == PlacementMode.Mouse
                 || placement == PlacementMode.MousePoint;
         }
 
@@ -506,6 +508,9 @@ namespace System.Windows.Controls.Primitives
 
             switch (placement)
             {
+                case PlacementMode.Absolute:
+                    offset = new Point(0, 0);
+                    break;
                 case PlacementMode.Mouse:
                     offset = PopupService.MousePosition;
                     offset.Y += _cursorOffsetY;
