@@ -1,5 +1,4 @@
 ﻿
-
 /*===================================================================================
 * 
 *   Copyright (c) Userware (OpenSilver.net, CSHTML5.com)
@@ -13,52 +12,38 @@
 *  
 \*====================================================================================*/
 
-
-
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using System.Security;
+using System.Text.RegularExpressions;
 
-namespace OpenSilver.Compiler
+namespace OpenSilver.Compiler;
+
+internal static class ProcessingHtmlPresenterNodes
 {
-    internal static class ProcessingHtmlPresenterNodes
+    //------------------------------------------------------------
+    // This class process the "HtmlPresenter" nodes in order to
+    // "escape" its content so that it is not processed during
+    // the rest of the compilation, and it is instead considered
+    // like plain text.
+    //------------------------------------------------------------
+
+    public static string Process(string xaml)
     {
-        //------------------------------------------------------------
-        // This class process the "HtmlPresenter" nodes in order to
-        // "escape" its content so that it is not processed during
-        // the rest of the compilation, and it is instead considered
-        // like plain text.
-        //------------------------------------------------------------
-
-        public static string Process(string xaml)
-        {
-            return global::System.Text.RegularExpressions.Regex.Replace(xaml, @"(?:(<native:HtmlPresenter[^>]*?\/>)|(<[^<:>\/]+:HtmlPresenter[\s\S]*?>)([\s\S]*?)(<\/[^<:>\/]+:HtmlPresenter>))",
-                new global::System.Text.RegularExpressions.MatchEvaluator((global::System.Text.RegularExpressions.Match match) =>
+        return Regex.Replace(xaml,
+            @"(?:(<\w+:HtmlPresenter[^>]*?/>)|(<\w+:HtmlPresenter[\s\S]*?>)([\s\S]*?)(</\w+:HtmlPresenter\s*>))",
+            match =>
+            {
+                if (match.Groups.Count >= 3 && !string.IsNullOrEmpty(match.Groups[4].Value))
                 {
-                    if (match.Groups.Count >= 3 && !string.IsNullOrEmpty(match.Groups[4].Value))
+                    string content = match.Groups[3].Value;
+                    ReadOnlySpan<char> span = content.AsSpan().Trim();
+                    if (!span.StartsWith("<![CDATA[".AsSpan()))
                     {
-                        string htmlPresenterContent = match.Groups[3].Value;
-
-                        // Replace characters:
-                        string escapedContent = htmlPresenterContent
-                            .Replace("&", "&amp;") // Note: it's important that this line be the first replacement, otherwise it replaces the replaced characters again that contain a "&".
-                            .Replace("'", "&apos;")
-                            .Replace("\"", "&quot;")
-                            .Replace("<", "&lt;")
-                            .Replace(">", "&gt;");
-                        //.Replace(" ", "&#160;");
-
-                        return match.Groups[2].Value + escapedContent + match.Groups[4].Value;
+                        return match.Groups[2].Value + SecurityElement.Escape(content) + match.Groups[4].Value;
                     }
-                    else
-                    {
-                        return match.Value;
-                    }
+                }
 
-                }));
-        }
+                return match.Value;
+            });
     }
 }
