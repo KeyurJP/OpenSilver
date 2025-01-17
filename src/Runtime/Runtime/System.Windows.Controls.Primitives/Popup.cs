@@ -21,6 +21,7 @@ using System.Windows.Media;
 using CSHTML5.Internal;
 using OpenSilver.Internal;
 using OpenSilver.Internal.Controls;
+using OpenSilver.Internal.Controls.Primitives;
 
 namespace System.Windows.Controls.Primitives
 {
@@ -39,10 +40,10 @@ namespace System.Windows.Controls.Primitives
         private PopupRoot _popupRoot;
         private bool _isMonitoringPosition;
 
-        public Popup()
-        {
-            PopupService.SetRootVisual();
-        }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Popup"/> class.
+        /// </summary>
+        public Popup() { }
 
         internal Popup ParentPopup { get; private set; }
 

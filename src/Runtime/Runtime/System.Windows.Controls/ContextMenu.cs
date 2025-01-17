@@ -8,6 +8,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
 using OpenSilver.Internal;
+using OpenSilver.Internal.Controls.Primitives;
 
 namespace System.Windows.Controls;
 
@@ -362,7 +363,7 @@ public class ContextMenu : MenuBase
 
             if (ReadLocalValue(DataContextProperty) == DependencyProperty.UnsetValue)
             {
-                DependencyObject dataContextSource = Owner ?? PopupService.RootVisual;
+                DependencyObject dataContextSource = Owner ?? Application.Current?.RootVisual;
                 SetBinding(DataContextProperty, new Binding("DataContext") { Source = dataContextSource });
             }
         }

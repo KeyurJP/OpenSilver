@@ -11,33 +11,26 @@
 *  
 \*====================================================================================*/
 
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
 
-namespace System.Windows.Controls.Primitives;
+namespace OpenSilver.Internal.Controls.Primitives;
 
 internal static class PopupService
 {
-    internal static FrameworkElement RootVisual { get; private set; }
-
     /// <summary>
     /// Place the Popup relative to this point 
     /// </summary>
     internal static Point MousePosition { get; private set; }
 
-    internal static void SetRootVisual()
+    internal static void TrackMousePosition(Window owner)
     {
-        if (RootVisual == null && Application.Current != null)
-        {
-            RootVisual = Application.Current.RootVisual as FrameworkElement;
-            if (RootVisual != null)
-            {
-                // keep caching mouse position because we can't query it from Silverlight 
-                RootVisual.MouseMove += new MouseEventHandler(OnRootMouseMove);
-            }
-        }
+        Debug.Assert(owner is not null);
+        owner.AddHandler(UIElement.MouseMoveEvent, new MouseEventHandler(OnMouseMove), true);
     }
 
     internal static void OnMouseEvent(MouseEventArgs e) => MousePosition = e.GetPosition(null);
 
-    private static void OnRootMouseMove(object sender, MouseEventArgs e) => OnMouseEvent(e);
+    private static void OnMouseMove(object sender, MouseEventArgs e) => OnMouseEvent(e);
 }

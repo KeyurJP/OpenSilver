@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
+using OpenSilver.Internal.Controls.Primitives;
 
 namespace System.Windows.Controls
 {

@@ -18,6 +18,7 @@ using System.Windows.Markup;
 using System.Windows.Input;
 using CSHTML5.Internal;
 using OpenSilver.Internal;
+using OpenSilver.Internal.Controls.Primitives;
 
 namespace System.Windows
 {
@@ -45,6 +46,8 @@ namespace System.Windows
             {
                 app.Windows.Add(this);
             }
+
+            PopupService.TrackMousePosition(this);
 
             if (hookUpEvents)
             {
