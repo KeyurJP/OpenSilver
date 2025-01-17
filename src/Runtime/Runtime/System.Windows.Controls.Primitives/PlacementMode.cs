@@ -14,7 +14,7 @@
 namespace System.Windows.Controls.Primitives;
 
 /// <summary>
-/// Specifies the preferred location for positioning a ToolTip relative to a visual element.
+/// Describes the placement of where a <see cref="Popup"/> control appears on the screen.
 /// </summary>
 public enum PlacementMode
 {
@@ -25,6 +25,14 @@ public enum PlacementMode
     /// itself to align with the edge.
     /// </summary>
     Absolute = 0,
+
+    /// <summary>
+    /// A position of the <see cref="Popup"/> control relative to the upper-left corner of the <see cref="Popup.PlacementTarget"/> 
+    /// and at an offset that is defined by the <see cref="Popup.HorizontalOffset"/> and <see cref="Popup.VerticalOffset"/> 
+    /// property values. If the screen edge obscures the <see cref="Popup"/>, the control repositions itself to align 
+    /// with the screen edge.
+    /// </summary>
+    Relative = 1,
 
     /// <summary>
     /// A position of the <see cref="Popup"/> control where the control aligns its upper edge with

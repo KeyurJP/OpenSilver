@@ -129,6 +129,7 @@ namespace System.Windows.Controls.Primitives
         {
             PlacementMode value = (PlacementMode)o;
             return value == PlacementMode.Absolute
+                || value == PlacementMode.Relative
                 || value == PlacementMode.Bottom
                 || value == PlacementMode.Right
                 || value == PlacementMode.Mouse
@@ -489,7 +490,8 @@ namespace System.Windows.Controls.Primitives
 
         private static bool IsRelativePlacementMode(PlacementMode placement)
         {
-            return placement == PlacementMode.Bottom
+            return placement == PlacementMode.Relative
+                || placement == PlacementMode.Bottom
                 || placement == PlacementMode.Right
                 || placement == PlacementMode.Left
                 || placement == PlacementMode.Top;
@@ -624,6 +626,9 @@ namespace System.Windows.Controls.Primitives
 
                 switch (placement)
                 {
+                    case PlacementMode.Relative:
+                        offset = targetInterestPoints.TopLeft;
+                        break;
                     case PlacementMode.Top:
                         offset = new Point(
                             targetInterestPoints.TopLeft.X + childInterestPoints.TopLeft.X - childInterestPoints.BottomLeft.X,
@@ -638,7 +643,7 @@ namespace System.Windows.Controls.Primitives
                             targetInterestPoints.TopLeft.Y + childInterestPoints.TopLeft.Y - childInterestPoints.TopRight.Y);
                         break;
                     case PlacementMode.Right:
-                        offset = new Point(targetInterestPoints.TopRight.X, targetInterestPoints.TopRight.Y);
+                        offset = targetInterestPoints.TopRight;
                         break;
                     default:
                         Debug.Assert(false, $"Unexpected relative placement mode: '{placement}'.");
