@@ -1094,17 +1094,7 @@ document.createTextviewManager = function (inputCallback, scrollCallback) {
             if (!parent) return;
 
             const view = document._createLayout('textarea', id, true);
-            view.style.fontSize = 'inherit';
-            view.style.fontFamily = 'inherit';
-            view.style.color = 'inherit';
-            view.style.letterSpacing = 'inherit';
-            view.style.resize = 'none';
-            view.style.border = 'none';
-            view.style.background = 'transparent';
-            view.style.cursor = 'text';
-            view.style.overflow = 'hidden';
-            view.style.tabSize = '4';
-            view.style.padding = '0px';
+            view.classList.add('opensilver-textboxview');
 
             view.setAttribute('tabindex', -1);
 
@@ -1134,13 +1124,7 @@ document.createTextviewManager = function (inputCallback, scrollCallback) {
             if (!parent) return;
 
             const view = document._createLayout('input', id, true);
-            view.style.border = 'none';
-            view.style.background = 'transparent';
-            view.style.fontFamily = 'inherit';
-            view.style.fontSize = 'inherit';
-            view.style.color = 'inherit';
-            view.style.letterSpacing = 'inherit';
-            view.style.padding = '0px';
+            view.classList.add('opensilver-passwordboxview');
 
             view.setAttribute('type', 'password');
             view.setAttribute('tabindex', -1);

@@ -120,6 +120,40 @@ body {
     background-clip: padding-box !important;
 }
 
+.opensilver-textboxview {
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    border: none;
+    background: transparent;
+    padding: 0;
+    resize: none;
+    cursor: text;
+    overflow: hidden;
+    tab-size: 4;
+}
+
+    .opensilver-textboxview:focus::selection {
+        color: var(--selection-color, HighlightText);
+        background-color: var(--selection-bg-color, Highlight);
+    }
+
+.opensilver-passwordboxview {
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+    .opensilver-passwordboxview:focus::selection {
+        color: var(--selection-color, HighlightText);
+        background-color: var(--selection-bg-color, Highlight);
+    }
+
 /* Media query used for printing (cf. "CSHTML5.Native.Html.Printing.PrintManager") */
 @media print {
     body {

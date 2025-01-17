@@ -111,7 +111,7 @@ namespace System.Windows.Controls
                 nameof(AcceptsTab),
                 typeof(bool),
                 typeof(TextBox),
-                new PropertyMetadata(false));
+                new PropertyMetadata(BooleanBoxes.FalseBox));
 
         /// <summary>
         /// Gets or sets the text that is displayed in the control until the value is changed by a user action or some other operation.
@@ -245,6 +245,74 @@ namespace System.Windows.Controls
         private static void OnCaretBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((TextBox)d)._textViewHost?.View.SetCaretBrush((Brush)e.NewValue);
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="SelectionForeground"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SelectionForegroundProperty =
+            DependencyProperty.Register(
+                nameof(SelectionForeground),
+                typeof(Brush),
+                typeof(TextBox),
+                new PropertyMetadata((object)null)
+                {
+                    MethodToUpdateDom2 = static (d, oldValue, newValue) =>
+                    {
+                        ((TextBox)d).OuterDiv.Style.setProperty(
+                            "--selection-color",
+                            newValue switch
+                            {
+                                SolidColorBrush scb => scb.ToHtmlString(),
+                                _ => string.Empty,
+                            });
+                    },
+                });
+
+        /// <summary>
+        /// Gets or sets the brush used for the selected text in the text box.
+        /// </summary>
+        /// <returns>
+        /// The brush used for the selected text in the text box.
+        /// </returns>
+        public Brush SelectionForeground
+        {
+            get => (Brush)GetValue(SelectionForegroundProperty);
+            set => SetValueInternal(SelectionForegroundProperty, value);
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="SelectionBackground"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SelectionBackgroundProperty =
+            DependencyProperty.Register(
+                nameof(SelectionBackground),
+                typeof(Brush),
+                typeof(TextBox),
+                new PropertyMetadata((object)null)
+                {
+                    MethodToUpdateDom2 = static (d, oldValue, newValue) =>
+                    {
+                        ((TextBox)d).OuterDiv.Style.setProperty(
+                            "--selection-bg-color",
+                            newValue switch
+                            {
+                                SolidColorBrush scb => scb.ToHtmlString(),
+                                _ => string.Empty,
+                            });
+                    }
+                });
+
+        /// <summary>
+        /// Gets or sets the brush that fills the background of the selected text.
+        /// </summary>
+        /// <returns>
+        /// The brush that fills the background of the selected text.
+        /// </returns>
+        public Brush SelectionBackground
+        {
+            get => (Brush)GetValue(SelectionBackgroundProperty);
+            set => SetValueInternal(SelectionBackgroundProperty, value);
         }
 
         /// <summary>
@@ -413,18 +481,27 @@ namespace System.Windows.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the value that determines if the user can change the text in the text box.
+        /// </summary>
+        /// <returns>
+        /// true if the text box is read-only; otherwise, false. The default is false.
+        /// </returns>
         public bool IsReadOnly
         {
-            get { return (bool)GetValue(IsReadOnlyProperty); }
-            set { SetValueInternal(IsReadOnlyProperty, value); }
+            get => (bool)GetValue(IsReadOnlyProperty);
+            set => SetValueInternal(IsReadOnlyProperty, value);
         }
 
+        /// <summary>
+        /// The identifier for the <see cref="IsReadOnly"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register(
                 nameof(IsReadOnly),
                 typeof(bool),
                 typeof(TextBox),
-                new PropertyMetadata(false, OnIsReadOnlyChanged));
+                new PropertyMetadata(BooleanBoxes.FalseBox, OnIsReadOnlyChanged));
 
         private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -459,7 +536,7 @@ namespace System.Windows.Controls
                 nameof(IsSpellCheckEnabled),
                 typeof(bool),
                 typeof(TextBox),
-                new PropertyMetadata(false, OnIsSpellCheckEnabledChanged));
+                new PropertyMetadata(BooleanBoxes.FalseBox, OnIsSpellCheckEnabledChanged));
 
         private static void OnIsSpellCheckEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -846,38 +923,11 @@ namespace System.Windows.Controls
             }
         }
 
+        /// <summary>
+        /// Occurs when the text selection has changed.
+        /// </summary>
         [OpenSilver.NotImplemented]
         public event RoutedEventHandler SelectionChanged;
-
-        [OpenSilver.NotImplemented]
-        public static readonly DependencyProperty SelectionForegroundProperty =
-            DependencyProperty.Register(
-                nameof(SelectionForeground),
-                typeof(Brush),
-                typeof(TextBox),
-                null);
-
-        [OpenSilver.NotImplemented]
-        public Brush SelectionForeground
-        {
-            get { return (Brush)GetValue(SelectionForegroundProperty); }
-            set { SetValueInternal(SelectionForegroundProperty, value); }
-        }
-
-        [OpenSilver.NotImplemented]
-        public static readonly DependencyProperty SelectionBackgroundProperty =
-            DependencyProperty.Register(
-                nameof(SelectionBackground),
-                typeof(Brush),
-                typeof(TextBox),
-                null);
-
-        [OpenSilver.NotImplemented]
-        public Brush SelectionBackground
-        {
-            get { return (Brush)GetValue(SelectionBackgroundProperty); }
-            set { SetValueInternal(SelectionBackgroundProperty, value); }
-        }
 
         /// <summary>
         /// Returns a rectangle for the leading edge of the character at the specified index.
