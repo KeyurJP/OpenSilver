@@ -38,11 +38,15 @@ body {
     -webkit-user-select: text; /* 'none' prevents copy paste. 'text' allows it. */
 }
 
-.opensilver-mouse-captured {
+.opensilver-pointer-captured {
     -moz-user-select: none; /* Firefox */
     -webkit-user-select: none; /* Chrome, Safari, and Opera */
     -ms-user-select: none; /* Internet Explorer/Edge */
     user-select: none;
+}
+
+.opensilver-root-element {
+    touch-action: none; /* prevents the browser from cancelling pointermove events */
 }
 
 .uielement-collapsed {

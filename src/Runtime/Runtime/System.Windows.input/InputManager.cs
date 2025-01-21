@@ -26,24 +26,21 @@ internal sealed class InputManager
     // Make sure to change both files if you update this !
     private enum EVENTS
     {
-        MOUSE_MOVE = 0,
-        MOUSE_LEFT_DOWN = 1,
-        MOUSE_LEFT_UP = 2,
-        MOUSE_RIGHT_DOWN = 3,
-        MOUSE_RIGHT_UP = 4,
-        MOUSE_ENTER = 5,
-        MOUSE_LEAVE = 6,
+        POINTER_MOVE = 0,
+        POINTER_LEFT_DOWN = 1,
+        POINTER_LEFT_UP = 2,
+        POINTER_RIGHT_DOWN = 3,
+        POINTER_RIGHT_UP = 4,
+        POINTER_ENTER = 5,
+        POINTER_LEAVE = 6,
         WHEEL = 7,
         KEYDOWN = 8,
         KEYUP = 9,
         KEYPRESS = 10,
-        TOUCH_START = 11,
-        TOUCH_END = 12,
-        TOUCH_MOVE = 13,
-        FOCUS_MANAGED = 14,
-        FOCUS_UNMANAGED = 15,
-        WINDOW_FOCUS = 16,
-        WINDOW_BLUR = 17,
+        FOCUS_MANAGED = 11,
+        FOCUS_UNMANAGED = 12,
+        WINDOW_FOCUS = 13,
+        WINDOW_BLUR = 14,
     }
 
     private enum MouseButton
@@ -179,7 +176,7 @@ internal sealed class InputManager
             Pointer.Captured = uie;
 
             string sDiv = OpenSilver.Interop.GetVariableStringForJS(uie.OuterDiv);
-            OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.captureMouse({sDiv});");
+            OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.capturePointer({sDiv})");
 
             return true;
         }
@@ -192,7 +189,7 @@ internal sealed class InputManager
         if (Pointer.Captured == uie)
         {
             Pointer.Captured = null;
-            OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.releaseMouseCapture();");
+            OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.releasePointerCapture()");
 
             RaiseUserInitiatedEvent(uie, new MouseEventArgs
             {
@@ -326,16 +323,16 @@ internal sealed class InputManager
     {
         switch (eventType)
         {
-            case EVENTS.MOUSE_LEFT_DOWN:
+            case EVENTS.POINTER_LEFT_DOWN:
                 _mouseLeftDown = true;
                 RefreshClickCount(null, MouseButton.Left, Environment.TickCount, new Point());
                 break;
 
-            case EVENTS.MOUSE_RIGHT_DOWN:
+            case EVENTS.POINTER_RIGHT_DOWN:
                 RefreshClickCount(null, MouseButton.Right, Environment.TickCount, new Point());
                 break;
 
-            case EVENTS.MOUSE_LEFT_UP:
+            case EVENTS.POINTER_LEFT_UP:
                 _mouseLeftDown = false;
                 ReleaseMouseCapture();
                 break;
@@ -425,35 +422,33 @@ internal sealed class InputManager
     {
         switch (eventType)
         {
-            case EVENTS.MOUSE_MOVE:
-            case EVENTS.TOUCH_MOVE:
+            case EVENTS.POINTER_MOVE:
                 ProcessOnMouseMove(uie, jsEventArg);
                 break;
 
-            case EVENTS.MOUSE_LEFT_DOWN:
-            case EVENTS.TOUCH_START:
+            case EVENTS.POINTER_LEFT_DOWN:
                 _mouseLeftDown = true;
                 ProcessOnMouseLeftButtonDown(uie, jsEventArg);
                 break;
 
-            case EVENTS.MOUSE_LEFT_UP:
+            case EVENTS.POINTER_LEFT_UP:
                 _mouseLeftDown = false;
                 ProcessOnMouseLeftButtonUp(uie, jsEventArg);
                 break;
 
-            case EVENTS.MOUSE_RIGHT_DOWN:
+            case EVENTS.POINTER_RIGHT_DOWN:
                 ProcessOnMouseRightButtonDown(uie, jsEventArg);
                 break;
 
-            case EVENTS.MOUSE_RIGHT_UP:
+            case EVENTS.POINTER_RIGHT_UP:
                 ProcessOnMouseRightButtonUp(uie, jsEventArg);
                 break;
 
-            case EVENTS.MOUSE_ENTER:
+            case EVENTS.POINTER_ENTER:
                 ProcessOnMouseEnter(uie, jsEventArg);
                 break;
 
-            case EVENTS.MOUSE_LEAVE:
+            case EVENTS.POINTER_LEAVE:
                 ProcessOnMouseLeave(uie, jsEventArg);
                 break;
 
@@ -471,10 +466,6 @@ internal sealed class InputManager
 
             case EVENTS.KEYPRESS:
                 ProcessOnKeyPress(uie, jsEventArg);
-                break;
-
-            case EVENTS.TOUCH_END:
-                ProcessOnTouchEndEvent(uie, jsEventArg);
                 break;
 
             case EVENTS.FOCUS_UNMANAGED:
@@ -762,22 +753,6 @@ internal sealed class InputManager
         };
 
         e.FillEventArgs(uie, jsEventArg);
-        RaiseUserInitiatedEvent(uie, e);
-    }
-
-    private void ProcessOnTouchEndEvent(
-        UIElement uie,
-        object jsEventArg)
-    {
-        var e = new MouseButtonEventArgs()
-        {
-            RoutedEvent = UIElement.MouseLeftButtonUpEvent,
-            OriginalSource = uie,
-            UIEventArg = jsEventArg,
-        };
-
-        e.FillEventArgs(uie, jsEventArg);
-
         RaiseUserInitiatedEvent(uie, e);
     }
 

@@ -12,7 +12,6 @@
 \*====================================================================================*/
 
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows.Controls.Primitives;
 using CSHTML5.Internal;
 using OpenSilver.Internal;
@@ -80,51 +79,22 @@ public class MouseEventArgs : RoutedEventArgs
 
     protected internal void SetPointerAbsolutePosition(object jsEventArg, Window window)
     {
-        {
-            // Hack to improve the Simulator performance by making only one interop call rather than two:
-            string sEvent = OpenSilver.Interop.GetVariableStringForJS(jsEventArg);
-            string type = OpenSilver.Interop.ExecuteJavaScriptString($"{sEvent}.type");
-            IsTouchEvent = type.StartsWith("touch");
-            string concatenated = IsTouchEvent ? OpenSilver.Interop.ExecuteJavaScriptString($"{sEvent}.changedTouches[0].pageX + '|' + {sEvent}.changedTouches[0].pageY")
-                                               : OpenSilver.Interop.ExecuteJavaScriptString($"{sEvent}.pageX + '|' + {sEvent}.pageY");
-            int sepIndex = concatenated.IndexOf('|');
-            string pointerAbsoluteXAsString = concatenated.Substring(0, sepIndex);
-            string pointerAbsoluteYAsString = concatenated.Substring(sepIndex + 1);
-            _pointerAbsoluteX = double.Parse(pointerAbsoluteXAsString, CultureInfo.InvariantCulture); //todo: verify that the locale is OK. I think that JS by default always produces numbers in invariant culture (with "." separator).
-            _pointerAbsoluteY = double.Parse(pointerAbsoluteYAsString, CultureInfo.InvariantCulture); //todo: read note above
-        }
+        string sEvent = OpenSilver.Interop.GetVariableStringForJS(jsEventArg);
+        IsTouchEvent = OpenSilver.Interop.ExecuteJavaScriptBoolean($"{sEvent}.pointerType === 'touch'", false);
+        _pointerAbsoluteX = OpenSilver.Interop.ExecuteJavaScriptDouble($"{sEvent}.pageX", false);
+        _pointerAbsoluteY = OpenSilver.Interop.ExecuteJavaScriptDouble($"{sEvent}.pageY", false);
 
         //---------------------------------------
         // Adjust the absolute coordinates to take into account the fact that the XAML Window is not necessary un the top-left corner of the HTML page:
         //---------------------------------------
         if (window != null)
         {
-            // Get the XAML Window root position relative to the page:
+            // Get the XAML Window root position relative to the page and substracts it
             string sElement = OpenSilver.Interop.GetVariableStringForJS(window.OuterDiv);
-
-            double windowRootLeft;
-            double windowRootTop;
-
-            // Hack to improve the Simulator performance by making only one interop call rather than two:
-            string concatenated = OpenSilver.Interop.ExecuteJavaScriptString(
-                $"({sElement}.getBoundingClientRect().left - document.body.getBoundingClientRect().left) + '|' + ({sElement}.getBoundingClientRect().top - document.body.getBoundingClientRect().top)");
-            int sepIndex = concatenated.IndexOf('|');
-            if (sepIndex > -1)
-            {
-                string windowRootLeftAsString = concatenated.Substring(0, sepIndex);
-                string windowRootTopAsString = concatenated.Substring(sepIndex + 1);
-                windowRootLeft = double.Parse(windowRootLeftAsString, CultureInfo.InvariantCulture);
-                windowRootTop = double.Parse(windowRootTopAsString, CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                windowRootLeft = Double.NaN;
-                windowRootTop = Double.NaN;
-            }
-
-            // Substract the XAML Window position, to get the pointer position relative to the XAML Window root:
-            _pointerAbsoluteX -= windowRootLeft;
-            _pointerAbsoluteY -= windowRootTop;
+            _pointerAbsoluteX -= OpenSilver.Interop.ExecuteJavaScriptDouble(
+                $"{sElement}.getBoundingClientRect().left - document.body.getBoundingClientRect().left", false);
+            _pointerAbsoluteY -= OpenSilver.Interop.ExecuteJavaScriptDouble(
+                $"{sElement}.getBoundingClientRect().top - document.body.getBoundingClientRect().top", false);
         }
     }
 

@@ -408,24 +408,21 @@ document.createInputManager = function (callback) {
     // This must remain synchronyzed with the EVENTS enum defined in InputManager.cs.
     // Make sure to change both files if you update this !
     const EVENTS = {
-        MOUSE_MOVE: 0,
-        MOUSE_LEFT_DOWN: 1,
-        MOUSE_LEFT_UP: 2,
-        MOUSE_RIGHT_DOWN: 3,
-        MOUSE_RIGHT_UP: 4,
-        MOUSE_ENTER: 5,
-        MOUSE_LEAVE: 6,
+        POINTER_MOVE: 0,
+        POINTER_LEFT_DOWN: 1,
+        POINTER_LEFT_UP: 2,
+        POINTER_RIGHT_DOWN: 3,
+        POINTER_RIGHT_UP: 4,
+        POINTER_ENTER: 5,
+        POINTER_LEAVE: 6,
         WHEEL: 7,
         KEYDOWN: 8,
         KEYUP: 9,
         KEYPRESS: 10,
-        TOUCH_START: 11,
-        TOUCH_END: 12,
-        TOUCH_MOVE: 13,
-        FOCUS_MANAGED: 14,
-        FOCUS_UNMANAGED: 15,
-        WINDOW_FOCUS: 16,
-        WINDOW_BLUR: 17,
+        FOCUS_MANAGED: 11,
+        FOCUS_UNMANAGED: 12,
+        WINDOW_FOCUS: 13,
+        WINDOW_BLUR: 14,
     };
 
     const MODIFIERKEYS = {
@@ -473,9 +470,8 @@ document.createInputManager = function (callback) {
     })();
 
     let _modifiers = MODIFIERKEYS.NONE;
-    let _mouseCapture = null;
+    let _pointerCapture = null;
     let _suppressContextMenu = false;
-    let _lastTouchEndTimeStamp = 0;
 
     function setModifiers(e) {
         _modifiers = MODIFIERKEYS.NONE;
@@ -502,57 +498,47 @@ document.createInputManager = function (callback) {
         return '';
     };
 
-    function shouldIgnoreMouseEvent(e) {
-        return e.timeStamp - _lastTouchEndTimeStamp < 500;
-    };
-
-    function isTouchDevice() {
-        return (('ontouchstart' in window) ||
-            (navigator.maxTouchPoints > 0) ||
-            (navigator.msMaxTouchPoints > 0));
-    };
-
     function initDom() {
-        document.addEventListener('mousedown', function (e) {
+        document.addEventListener('pointerdown', function (e) {
             if (!e.isHandled) {
                 switch (e.button) {
                     case 0:
-                        callback('', EVENTS.MOUSE_LEFT_DOWN, e);
+                        callback('', EVENTS.POINTER_LEFT_DOWN, e);
                         break;
                     case 2:
-                        callback('', EVENTS.MOUSE_RIGHT_DOWN, e);
+                        callback('', EVENTS.POINTER_RIGHT_DOWN, e);
                         break;
                 }
             }
         });
 
-        document.addEventListener('mouseup', function (e) {
+        document.addEventListener('pointerup', function (e) {
             if (!e.isHandled) {
-                const target = _mouseCapture;
+                const target = _pointerCapture;
                 switch (e.button) {
                     case 0:
-                        callback(getClosestElementId(target), EVENTS.MOUSE_LEFT_UP, e);
+                        callback(getClosestElementId(target), EVENTS.POINTER_LEFT_UP, e);
                         break;
                     case 2:
-                        callback(getClosestElementId(target), EVENTS.MOUSE_RIGHT_UP, e);
+                        callback(getClosestElementId(target), EVENTS.POINTER_RIGHT_UP, e);
                         break;
                 }
             }
         });
 
-        document.addEventListener('mousemove', function (e) {
+        document.addEventListener('pointermove', function (e) {
             if (!e.isHandled) {
                 setModifiers(e);
-                const target = _mouseCapture;
+                const target = _pointerCapture;
                 if (target !== null) {
-                    callback(getClosestElementId(target), EVENTS.MOUSE_MOVE, e);
+                    callback(getClosestElementId(target), EVENTS.POINTER_MOVE, e);
                 }
             }
         });
 
         document.addEventListener('contextmenu', function (e) {
             if (_suppressContextMenu ||
-                (_mouseCapture !== null && this !== _mouseCapture)) {
+                (_pointerCapture !== null && this !== _pointerCapture)) {
                 _suppressContextMenu = false;
                 e.preventDefault();
             }
@@ -576,6 +562,8 @@ document.createInputManager = function (callback) {
         registerRoot: function (root) {
             // Make sure the root div is keyboard focusable, so that we can tab into the app.
             root.tabIndex = Math.max(root.tabIndex, 0);
+
+            root.classList.add('opensilver-root-element');
 
             root.addEventListener('focusin', function (e) {
                 if (FocusManager.isManagingFocus) return;
@@ -604,13 +592,11 @@ document.createInputManager = function (callback) {
                 }
             });
 
-            root.addEventListener('mousemove', function (e) {
-                if (shouldIgnoreMouseEvent(e)) return;
-
+            root.addEventListener('pointermove', function (e) {
                 e.isHandled = true;
                 setModifiers(e);
-                const target = _mouseCapture || e.target;
-                callback(getClosestElementId(target), EVENTS.MOUSE_MOVE, e);
+                const target = _pointerCapture || e.target;
+                callback(getClosestElementId(target), EVENTS.POINTER_MOVE, e);
             });
 
             root.addEventListener('wheel', function (e) {
@@ -618,37 +604,33 @@ document.createInputManager = function (callback) {
                 if (e.ctrlKey) return;
                 e.isHandled = true;
                 setModifiers(e);
-                const target = _mouseCapture || e.target;
+                const target = _pointerCapture || e.target;
                 callback(getClosestElementId(target), EVENTS.WHEEL, e);
             });
 
-            root.addEventListener('mousedown', function (e) {
-                if (shouldIgnoreMouseEvent(e)) return;
-
+            root.addEventListener('pointerdown', function (e) {
                 e.isHandled = true;
                 setModifiers(e);
-                let id = (_mouseCapture === null || e.target === _mouseCapture) ? getClosestElementId(e.target) : '';
+                const id = (_pointerCapture === null || e.target === _pointerCapture) ? getClosestElementId(e.target) : '';
                 switch (e.button) {
                     case 0:
-                        callback(id, EVENTS.MOUSE_LEFT_DOWN, e);
+                        callback(id, EVENTS.POINTER_LEFT_DOWN, e);
                         break;
                     case 2:
-                        callback(id, EVENTS.MOUSE_RIGHT_DOWN, e);
+                        callback(id, EVENTS.POINTER_RIGHT_DOWN, e);
                         break;
                 }
             });
 
-            root.addEventListener('mouseup', function (e) {
-                if (shouldIgnoreMouseEvent(e)) return;
-
+            root.addEventListener('pointerup', function (e) {
                 e.isHandled = true;
-                const target = _mouseCapture || e.target;
+                const target = _pointerCapture || e.target;
                 switch (e.button) {
                     case 0:
-                        callback(getClosestElementId(target), EVENTS.MOUSE_LEFT_UP, e);
+                        callback(getClosestElementId(target), EVENTS.POINTER_LEFT_UP, e);
                         break;
                     case 2:
-                        callback(getClosestElementId(target), EVENTS.MOUSE_RIGHT_UP, e);
+                        callback(getClosestElementId(target), EVENTS.POINTER_RIGHT_UP, e);
                         break;
                 }
             });
@@ -656,43 +638,19 @@ document.createInputManager = function (callback) {
         addListeners: function (view, isFocusable) {
             if (!view) return;
 
-            view.addEventListener('mouseenter', function (e) {
-                if (_mouseCapture === null || this === _mouseCapture) {
+            view.addEventListener('pointerenter', function (e) {
+                if (_pointerCapture === null || this === _pointerCapture) {
                     setModifiers(e);
-                    callback(getClosestElementId(this), EVENTS.MOUSE_ENTER, e);
+                    callback(getClosestElementId(this), EVENTS.POINTER_ENTER, e);
                 }
             });
 
-            view.addEventListener('mouseleave', function (e) {
-                if (_mouseCapture === null || this === _mouseCapture) {
+            view.addEventListener('pointerleave', function (e) {
+                if (_pointerCapture === null || this === _pointerCapture) {
                     setModifiers(e);
-                    callback(getClosestElementId(this), EVENTS.MOUSE_LEAVE, e);
+                    callback(getClosestElementId(this), EVENTS.POINTER_LEAVE, e);
                 }
             });
-
-            if (isTouchDevice()) {
-                view.addEventListener('touchstart', function (e) {
-                    if (!e.isHandled) {
-                        e.isHandled = true;
-                        callback(getClosestElementId(this), EVENTS.TOUCH_START, e);
-                    }
-                }, { passive: true });
-
-                view.addEventListener('touchend', function (e) {
-                    if (!e.isHandled) {
-                        e.isHandled = true;
-                        callback(getClosestElementId(this), EVENTS.TOUCH_END, e);
-                        _lastTouchEndTimeStamp = e.timeStamp;
-                    }
-                });
-
-                view.addEventListener('touchmove', function (e) {
-                    if (!e.isHandled) {
-                        e.isHandled = true;
-                        callback(getClosestElementId(this), EVENTS.TOUCH_MOVE, e);
-                    }
-                }, { passive: true });
-            }
 
             if (isFocusable) {
                 view.addEventListener('keypress', function (e) {
@@ -722,13 +680,13 @@ document.createInputManager = function (callback) {
         getModifiers: function () {
             return _modifiers;
         },
-        captureMouse: function (element) {
-            _mouseCapture = element;
-            document.body.classList.add('opensilver-mouse-captured');
+        capturePointer: function (element) {
+            _pointerCapture = element;
+            document.body.classList.add('opensilver-pointer-captured');
         },
-        releaseMouseCapture: function () {
-            _mouseCapture = null;
-            document.body.classList.remove('opensilver-mouse-captured');
+        releasePointerCapture: function () {
+            _pointerCapture = null;
+            document.body.classList.remove('opensilver-pointer-captured');
         },
         suppressContextMenu: function (value) {
             _suppressContextMenu = value;
