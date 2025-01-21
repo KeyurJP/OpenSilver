@@ -13,7 +13,6 @@
 
 using System.Diagnostics;
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows.Markup;
 using System.Windows.Input;
 using CSHTML5.Internal;
@@ -52,15 +51,15 @@ namespace System.Windows
             if (hookUpEvents)
             {
                 new DOMEventManager(
-                    Application.Current.GetWindow, 
+                    INTERNAL_HtmlDomManager.GetHtmlWindow, 
                     "beforeunload", 
                     ProcessOnClosing)
                 .AttachToDomEvents();
 
                 new DOMEventManager(
-                    () => INTERNAL_HtmlDomManager.GetHtmlWindow(), 
+                    INTERNAL_HtmlDomManager.GetHtmlWindow, 
                     "resize", 
-                    ProcessOnWindowSizeChanged)
+                    OnWindowSizeChanged)
                 .AttachToDomEvents();
             }
 
@@ -176,29 +175,19 @@ namespace System.Windows
         /// </summary>
         public new event WindowSizeChangedEventHandler SizeChanged;
 
-        void ProcessOnWindowSizeChanged(object jsEventArg)
+        private void OnWindowSizeChanged(object jsEventArg)
         {
-            double width;
-            double height;
-            string sElement = OpenSilver.Interop.GetVariableStringForJS(this.OuterDiv);
-            // Hack to improve the Simulator performance by making only one interop call rather than two:
-            string concatenated = OpenSilver.Interop.ExecuteJavaScriptString($"{sElement}.offsetWidth + '|' + {sElement}.offsetHeight");
-            int sepIndex = concatenated.IndexOf('|');
-            string widthAsString = concatenated.Substring(0, sepIndex);
-            string heightAsString = concatenated.Substring(sepIndex + 1);
-            width = double.Parse(widthAsString, CultureInfo.InvariantCulture); //todo: verify that the locale is OK. I think that JS by default always produces numbers in invariant culture (with "." separator).
-            height = double.Parse(heightAsString, CultureInfo.InvariantCulture); //todo: read note above
-
-            var eventArgs = new WindowSizeChangedEventArgs()
+            if (SizeChanged is WindowSizeChangedEventHandler handler)
             {
-                Size = new Size(width, height)
-            };
-            OnWindowSizeChanged(eventArgs);
-        }
+                string sElement = OpenSilver.Interop.GetVariableStringForJS(OuterDiv);
+                double width = OpenSilver.Interop.ExecuteJavaScriptDouble($"{sElement}.offsetWidth");
+                double height = OpenSilver.Interop.ExecuteJavaScriptDouble($"{sElement}.offsetHeight");
 
-        void OnWindowSizeChanged(WindowSizeChangedEventArgs eventArgs)
-        {
-            SizeChanged?.Invoke(this, eventArgs);
+                handler(this, new WindowSizeChangedEventArgs
+                {
+                    Size = new Size(width, height),
+                });
+            }
         }
 
         /// <summary>
@@ -283,7 +272,7 @@ namespace System.Windows
 
         public override object CreateDomElement(object parentRef, out object domElementWhereToPlaceChildren)
         {
-            throw new InvalidOperationException("\"CreateDomElement\" should not be called for the Window object.");
+            throw new InvalidOperationException("'CreateDomElement' should not be called for the Window object.");
         }
 
         #region Closing event

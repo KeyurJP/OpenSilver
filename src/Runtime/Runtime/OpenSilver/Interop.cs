@@ -230,6 +230,12 @@ public static partial class Interop
         return ConvertJSResultToInt32(value);
     }
 
+    internal static uint ExecuteJavaScriptUInt32(string javascript, bool flushQueue = true)
+    {
+        object value = ExecuteJavaScriptSync(javascript, -1, true, flushQueue);
+        return ConvertJSResultToUInt32(value);
+    }
+
     internal static string ExecuteJavaScriptString(string javascript, bool flushQueue = true)
     {
         object value = ExecuteJavaScriptSync(javascript, -1, true, flushQueue);

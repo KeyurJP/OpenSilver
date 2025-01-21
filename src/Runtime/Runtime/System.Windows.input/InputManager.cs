@@ -573,9 +573,6 @@ internal sealed class InputManager
 
             e.FillEventArgs(mouseTarget, jsEventArg);
 
-            // fill the Mouse Wheel delta:
-            e.Delta = MouseWheelEventArgs.GetPointerWheelDelta(jsEventArg);
-
             RaiseUserInitiatedEvent(mouseTarget, e);
 
             if (e.Handled)
@@ -609,14 +606,21 @@ internal sealed class InputManager
 
     private void ProcessOnKeyDown(UIElement uie, object jsEventArg)
     {
-        UIElement keyboardTarget = uie.KeyboardTarget;
-        if (keyboardTarget is null || !int.TryParse(OpenSilver.Interop.ExecuteJavaScriptString(
-            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.keyCode"), out int keyCode))
+        if (uie.KeyboardTarget is not UIElement keyboardTarget)
         {
             return;
         }
 
-        keyCode = VirtualKeysHelpers.FixKeyCodeForSilverlight(keyCode);
+        uint nativeKeyCode = OpenSilver.Interop.ExecuteJavaScriptUInt32(
+            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.keyCode", false);
+
+        if (nativeKeyCode > int.MaxValue)
+        {
+            return;
+        }
+
+        int keyCode = VirtualKeysHelpers.FixKeyCodeForSilverlight((int)nativeKeyCode);
+
         var e = new KeyEventArgs()
         {
             RoutedEvent = UIElement.KeyDownEvent,
@@ -641,15 +645,21 @@ internal sealed class InputManager
 
     private void ProcessOnKeyUp(UIElement uie, object jsEventArg)
     {
-        UIElement keyboardTarget = uie.KeyboardTarget;
-
-        if (keyboardTarget is null || !int.TryParse(OpenSilver.Interop.ExecuteJavaScriptString(
-            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.keyCode"), out int keyCode))
+        if (uie.KeyboardTarget is not UIElement keyboardTarget)
         {
             return;
         }
 
-        keyCode = VirtualKeysHelpers.FixKeyCodeForSilverlight(keyCode);
+        uint nativeKeyCode = OpenSilver.Interop.ExecuteJavaScriptUInt32(
+            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.keyCode", false);
+
+        if (nativeKeyCode > int.MaxValue)
+        {
+            return;
+        }
+
+        int keyCode = VirtualKeysHelpers.FixKeyCodeForSilverlight((int)nativeKeyCode);
+
         var e = new KeyEventArgs()
         {
             RoutedEvent = UIElement.KeyUpEvent,
@@ -706,14 +716,20 @@ internal sealed class InputManager
 
     private void ProcessOnKeyPress(UIElement uie, object jsEventArg)
     {
-        UIElement keyboardTarget = uie.KeyboardTarget;
-        if (keyboardTarget is null || !int.TryParse(OpenSilver.Interop.ExecuteJavaScriptString(
-            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.keyCode"), out int keyCode))
+        if (uie.KeyboardTarget is not UIElement keyboardTarget)
         {
             return;
         }
 
-        string text = ((char)keyCode).ToString();
+        uint nativeKeyCode = OpenSilver.Interop.ExecuteJavaScriptUInt32(
+            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.keyCode", false);
+
+        if (nativeKeyCode > ushort.MaxValue)
+        {
+            return;
+        }
+
+        string text = ((char)nativeKeyCode).ToString();
 
         var textInputStartArgs = new TextCompositionEventArgs
         {

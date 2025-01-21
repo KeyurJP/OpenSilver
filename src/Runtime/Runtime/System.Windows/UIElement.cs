@@ -1230,23 +1230,6 @@ namespace System.Windows
 
 #endregion
 
-        /// <summary>
-        /// Use this method for better performance in the Simulator compared to 
-        /// requesting the ActualWidth and ActualHeight separately.
-        /// </summary>
-        /// <returns>
-        /// The actual size of the element.
-        /// </returns>
-        internal Size GetBoundingClientSize()
-        {
-            if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
-            {
-                return INTERNAL_HtmlDomManager.GetBoundingClientSize(OuterDiv);
-            }
-
-            return new Size();
-        }
-
         internal bool IsDescendantOf(DependencyObject ancestor)
         {
             if (ancestor is null)

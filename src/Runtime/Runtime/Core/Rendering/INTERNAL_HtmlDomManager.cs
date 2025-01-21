@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
 using System.Diagnostics;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -647,19 +646,13 @@ namespace CSHTML5.Internal // IMPORTANT: if you change this namespace, make sure
             if (domRef is not null)
             {
                 string sElement = OpenSilver.Interop.GetVariableStringForJS(domRef);
-                string concatenated = OpenSilver.Interop.ExecuteJavaScriptString(
-                    $"(function() {{ var v = {sElement}.getBoundingClientRect(); return v.width.toFixed(3) + '|' + v.height.toFixed(3) }})()");
-                int sepIndex = concatenated != null ? concatenated.IndexOf('|') : -1;
-                if (sepIndex > -1)
-                {
-                    string widthStr = concatenated.Substring(0, sepIndex);
-                    string heightStr = concatenated.Substring(sepIndex + 1);
-                    if (double.TryParse(widthStr, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double width)
-                        && double.TryParse(heightStr, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out double height))
-                    {
-                        return new Size(width, height);
-                    }
-                }
+
+                double width = OpenSilver.Interop.ExecuteJavaScriptGetResult<double>(
+                    $"Math.round({sElement}.getBoundingClientRect().width * 1000) / 1000");
+                double height = OpenSilver.Interop.ExecuteJavaScriptGetResult<double>(
+                    $"Math.round({sElement}.getBoundingClientRect().height * 1000) / 1000");
+
+                return new Size(width, height);
             }
 
             return new Size();

@@ -191,11 +191,11 @@ public partial class UIElement
 
         string sOuterDivOfControl = OpenSilver.Interop.GetVariableStringForJS(OuterDiv);
         string sOuterDivOfReferenceVisual = OpenSilver.Interop.GetVariableStringForJS(otherVisual.OuterDiv);
-        string s = OpenSilver.Interop.ExecuteJavaScriptString(
-            $"({sOuterDivOfControl}.getBoundingClientRect().left - {sOuterDivOfReferenceVisual}.getBoundingClientRect().left) + '|' + ({sOuterDivOfControl}.getBoundingClientRect().top - {sOuterDivOfReferenceVisual}.getBoundingClientRect().top)");
-        int index = s.IndexOf('|');
-        double offsetLeft = double.Parse(s.Substring(0, index), CultureInfo.InvariantCulture);
-        double offsetTop = double.Parse(s.Substring(index + 1), CultureInfo.InvariantCulture);
+
+        double offsetLeft = OpenSilver.Interop.ExecuteJavaScriptDouble(
+            $"{sOuterDivOfControl}.getBoundingClientRect().left - {sOuterDivOfReferenceVisual}.getBoundingClientRect().left");
+        double offsetTop = OpenSilver.Interop.ExecuteJavaScriptDouble(
+            $"{sOuterDivOfControl}.getBoundingClientRect().top - {sOuterDivOfReferenceVisual}.getBoundingClientRect().top");
 
         return new Matrix(1, 0, 0, 1, offsetLeft, offsetTop);
     }

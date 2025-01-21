@@ -30,19 +30,15 @@ public class MouseWheelEventArgs : MouseEventArgs
     /// An integer value that provides a factor of how much the mouse wheel rotated. This value can 
     /// be a negative integer.
     /// </returns>
-    public new int Delta { get; internal set; }
+    public int Delta { get; private set; }
 
-    internal static int GetPointerWheelDelta(object jsEventArg)
+    internal new void FillEventArgs(UIElement element, object jsEventArg)
     {
-        string sJsArg = OpenSilver.Interop.GetVariableStringForJS(jsEventArg);
-        return OpenSilver.Interop.ExecuteJavaScriptInt32(
-            $"(function (wheelArg) {{ if (wheelArg.wheelDelta != undefined) return wheelArg.wheelDelta; else return (wheelArg.delta || 0); }})({sJsArg})");
+        base.FillEventArgs(element, jsEventArg);
 
-        // Note: wheelDelta originated from the js mousewheel event which is deprecated. It still exists in the js wheel event but should still be considered deprecated (it also has never existed on FireFox).
-        // We're using it because I could not find another way of getting the values in the same way as was returned in Silverlight.
-        // What happens is as follows:
-        // Scroll on the physical device --> A certain scroll value --> value translated in the impact value (depends on settings - see below) --> impact value registered in the js eventArgs.
-        //                            SL returns this ↑, wheelDelta (deprecated) as well                                                              delta returns this ↑
-        // If we change the mouse settings in Windows so the mouse wheel scrolls more or fewer lines, wheelDelta WILL NOT change, delta WILL change.
+        double deltaY = OpenSilver.Interop.ExecuteJavaScriptDouble(
+            $"{OpenSilver.Interop.GetVariableStringForJS(jsEventArg)}.deltaY", false);
+
+        Delta = deltaY > 0 ? -120 : 120;
     }
 }

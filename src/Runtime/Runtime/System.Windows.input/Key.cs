@@ -545,7 +545,7 @@ namespace System.Windows.Input
 
         internal static bool IsUnknownKey(int intValue)
         {
-            return intValue < 0 || intValue > 165 || _unknownKeys.Contains(intValue);
+            return intValue > 165 || _unknownKeys.Contains(intValue);
         }
 
         internal static Key GetKeyFromKeyCode(int keyCode)
@@ -554,9 +554,7 @@ namespace System.Windows.Input
             {
                 keyCode = 190;
             }
-            var key = (IsUnknownKey(keyCode) ? Key.Unknown : (Key)keyCode);
-
-            return key;
+            return IsUnknownKey(keyCode) ? Key.Unknown : (Key)keyCode;
         }
 
         internal static int FixKeyCodeForSilverlight(int keycode)

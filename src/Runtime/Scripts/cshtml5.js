@@ -602,6 +602,8 @@ document.createInputManager = function (callback) {
             root.addEventListener('wheel', function (e) {
                 // Zoom in/out request, takes priority over opensilver
                 if (e.ctrlKey) return;
+                // Only support vertical scroll
+                if (e.deltaY === 0) return;
                 e.isHandled = true;
                 setModifiers(e);
                 const target = _pointerCapture || e.target;

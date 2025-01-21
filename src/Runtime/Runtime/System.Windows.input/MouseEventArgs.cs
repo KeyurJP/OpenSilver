@@ -11,10 +11,8 @@
 *  
 \*====================================================================================*/
 
-using System.ComponentModel;
 using System.Windows.Controls.Primitives;
 using CSHTML5.Internal;
-using OpenSilver.Internal;
 
 namespace System.Windows.Input;
 
@@ -155,9 +153,4 @@ public class MouseEventArgs : RoutedEventArgs
 
         return new Point(0.0, 0.0);
     }
-
-    [OpenSilver.NotImplemented]
-    [Obsolete(Helper.ObsoleteMemberMessage)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public int Delta { get; private set; }
 }

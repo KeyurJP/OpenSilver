@@ -53,43 +53,28 @@ namespace Runtime.OpenSilver.Tests
             }
 
             // Mocks Simulator portion of UIElement.TransformToVisual
-            // JS code example is:
-            // document.callScriptSafe("154","(document.getElementByIdSafe(\"id31\").getBoundingClientRect().left -
-            // document.getElementByIdSafe(\"id1\").getBoundingClientRect().left) + '|' +
-            // (document.getElementByIdSafe(\"id31\").getBoundingClientRect().top -
-            // document.getElementByIdSafe(\"id1\").getBoundingClientRect().top)",108)
-            if (Regex.Matches(param, @"\(.+getBoundingClientRect\(\).left - .+.getBoundingClientRect\(\).left\) \+ '\|' \+ \(.+getBoundingClientRect\(\).top - .+.getBoundingClientRect\(\).top\)").Count == 1)
+            if (Regex.IsMatch(param, @".+?\.getBoundingClientRect\(\)\.left - .+?\.getBoundingClientRect\(\)\.left") ||
+                Regex.IsMatch(param, @".+?\.getBoundingClientRect\(\)\.top - .+?\.getBoundingClientRect\(\)\.top"))
             {
-                return JsonDocument.Parse(@"""0|0""").RootElement;
+                return 0;
             }
-            var patternFocus = @"document\.inputManager\.focus\(document\.getElementByIdSafe\(""([^""]*)""\)\);";
-            if (Regex.IsMatch(param, patternFocus))
+
+            if (Regex.IsMatch(param, @"document\.inputManager\.focus\(document\.getElementByIdSafe\(""([^""]*)""\)\)"))
             {
                 return true;
             }
 
-            var patternCreateMeasurement = @"document\.createMeasurementService\(document\.getElementByIdSafe\(""([^""]*)""\)\);";
-            var matchesCreateMeasurement = Regex.Matches(param, patternCreateMeasurement);
-            if (matchesCreateMeasurement.Count > 0)
-            {
-                var parentId = matchesCreateMeasurement[0].Groups[1].Value;
-                return parentId + "-msr";
-            }
-
-            var patternOffsetWidth = @"document\.getElementByIdSafe\(""([^""]*)""\)\.offsetWidth";
-            if (Regex.IsMatch(param, patternOffsetWidth))
+            if (Regex.IsMatch(param, @"document\.getElementByIdSafe\(""([^""]*)""\)\.offsetWidth"))
             {
                 return 0;
             }
 
-            var patternOffsetHeight = @"document\.getElementByIdSafe\(""([^""]*)""\)\.offsetHeight";
-            if (Regex.IsMatch(param, patternOffsetHeight))
+            if (Regex.IsMatch(param, @"document\.getElementByIdSafe\(""([^""]*)""\)\.offsetHeight"))
             {
                 return 0;
             }
 
-            var patternGetBox = @"document\.getBBox\(document\.getElementByIdSafe\(""([^""]*)""\)\);";
-            if (Regex.IsMatch(param, patternGetBox))
+            if (Regex.IsMatch(param, @"document\.getBBox\(document\.getElementByIdSafe\(""([^""]*)""\)\)"))
             {
                 return JsonDocument.Parse("{\"x\":0,\"y\":0,\"width\":0,\"height\":0}").RootElement;
             }
