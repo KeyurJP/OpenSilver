@@ -27,7 +27,7 @@
     <file src="../../src/Maui/Hybrid/bin/$Configuration$/net9.0/OpenSilver.MauiHybrid.dll" target="lib/net9.0/OpenSilver.MauiHybrid.dll" />
 
     <!-- Targets -->
-    <file src="../../src/Targets/OpenSilver.WebAssembly.targets" target="build/OpenSilver.MauiHybrid.targets" />
+    <file src="../../src/Targets/OpenSilver.MauiHybrid.targets" target="build/OpenSilver.MauiHybrid.targets" />
     <file src="../../src/Compiler/Compiler.SharedBuildTasks/bin/$Configuration$/netstandard2.0/OpenSilver.SharedBuildTasks.Config.targets" target="build/OpenSilver.SharedBuildTasks.Config.targets" />
 
     <!-- Tools -->
