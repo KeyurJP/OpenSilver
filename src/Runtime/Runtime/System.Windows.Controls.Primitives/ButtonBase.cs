@@ -570,13 +570,12 @@ namespace System.Windows.Controls.Primitives
         }
 
         /// <summary>
-        /// Fetches the value of the IsEnabled property
+        /// Gets a value that becomes the return value of <see cref="UIElement.IsEnabled"/> in derived classes.
         /// </summary>
-        /// <remarks>
-        /// The reason this property is overridden is so that Button
-        /// can infuse the value for CanExecute into it.
-        /// </remarks>
-        internal override bool IsEnabledCore => base.IsEnabledCore && CanExecute;
+        /// <returns>
+        /// true if the element is enabled; otherwise, false.
+        /// </returns>
+        protected override bool IsEnabledCore => base.IsEnabledCore && CanExecute;
 
         private bool CanExecute
         {

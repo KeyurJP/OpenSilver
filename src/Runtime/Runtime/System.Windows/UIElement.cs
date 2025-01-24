@@ -461,15 +461,12 @@ namespace System.Windows
         #region IsEnabled
 
         /// <summary>
-        /// Fetches the value that IsEnabled should be coerced to.
+        /// Gets a value that becomes the return value of <see cref="IsEnabled"/> in derived classes.
         /// </summary>
-        /// <remarks>
-        /// This method is virtual is so that controls derived from UIElement
-        /// can combine additional requirements into the coersion logic.
-        /// It is important for anyone overriding this property to also
-        /// call CoerceValue when any of their dependencies change.
-        /// </remarks>
-        internal virtual bool IsEnabledCore => true;
+        /// <returns>
+        /// true if the element is enabled; otherwise, false.
+        /// </returns>
+        protected virtual bool IsEnabledCore => true;
 
         /// <summary>
         /// Identifies the <see cref="IsEnabled"/> dependency property.
