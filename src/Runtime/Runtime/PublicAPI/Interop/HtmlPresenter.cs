@@ -209,14 +209,25 @@ namespace CSHTML5.Native.Html.Controls
         /// <inheritdoc />
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
-            base.OnMouseWheel(e);
-
-            string sElement = OpenSilver.Interop.GetVariableStringForJS(OuterDiv);
-            string sArgs = OpenSilver.Interop.GetVariableStringForJS(e.UIEventArg);
-            if (OpenSilver.Interop.ExecuteJavaScriptBoolean($"document.htmlPresenterHelpers.onWheelNative({sElement}, {sArgs})"))
+            if (e.Handled)
             {
-                e.Handled = true;
-                e.Cancellable = false;
+                return;
+            }
+
+            if (ScrollMode != ScrollMode.Disabled)
+            {
+                string sElement = OpenSilver.Interop.GetVariableStringForJS(OuterDiv);
+                string sArgs = OpenSilver.Interop.GetVariableStringForJS(e.UIEventArg);
+                if (OpenSilver.Interop.ExecuteJavaScriptBoolean($"document.htmlPresenterHelpers.onWheelNative({sElement}, {sArgs})"))
+                {
+                    e.Handled = true;
+                    e.Cancellable = false;
+                }
+            }
+
+            if (!e.Handled)
+            {
+                base.OnMouseWheel(e);
             }
         }
 
