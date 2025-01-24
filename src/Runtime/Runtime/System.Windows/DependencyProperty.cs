@@ -553,7 +553,7 @@ namespace System.Windows
             }
 
             // Force all base classes to register their metadata
-            dType = DependencyObjectType.FromSystemType(forType);
+            dType = DependencyObjectType.FromSystemTypeInternal(forType);
 
             // Get metadata for the base type
             baseMetadata = GetMetadata(dType.BaseType);
@@ -735,7 +735,7 @@ namespace System.Windows
         /// <exception cref="ArgumentNullException">
         /// <paramref name="dependencyObject"/> is null.
         /// </exception>
-        internal PropertyMetadata GetMetadata(DependencyObject dependencyObject)
+        public PropertyMetadata GetMetadata(DependencyObject dependencyObject)
         {
             if (dependencyObject == null)
             {
@@ -755,7 +755,7 @@ namespace System.Windows
         /// <returns>
         /// A property metadata object.
         /// </returns>
-        internal PropertyMetadata GetMetadata(DependencyObjectType dependencyObjectType)
+        public PropertyMetadata GetMetadata(DependencyObjectType dependencyObjectType)
         {
             // All static constructors for this DType and all base types have already
             // been run. If no overriden metadata was provided, then look up base types.

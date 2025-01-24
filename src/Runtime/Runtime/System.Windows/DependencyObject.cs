@@ -52,9 +52,12 @@ namespace System.Windows
         internal int EffectiveValuesCount => _effectiveValues?.Count ?? 0;
 
         /// <summary>
-        /// Returns the DType that represents the CLR type of this instance
+        /// Gets the <see cref="Windows.DependencyObjectType"/> that wraps the CLR type of this instance.
         /// </summary>
-        internal DependencyObjectType DependencyObjectType =>
+        /// <returns>
+        /// A <see cref="Windows.DependencyObjectType"/> that wraps the CLR type of this instance.
+        /// </returns>
+        public DependencyObjectType DependencyObjectType =>
             _dType ??= DependencyObjectType.FromSystemTypeInternal(GetType());
 
         internal bool CanBeInheritanceContext { get; set; }

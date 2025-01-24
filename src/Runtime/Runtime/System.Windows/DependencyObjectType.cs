@@ -2,34 +2,24 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows;
+using OpenSilver.Internal;
 
-namespace OpenSilver.Internal;
+namespace System.Windows;
 
 /// <summary>
 /// Implements an underlying type cache for all <see cref="DependencyObject"/> derived types.
 /// </summary>
 /// <remarks>
-/// Every <see cref="DependencyObject"/> stores a reference to its DependencyObjectType.
-/// This is an object that represents a specific system (CLR) Type.<para/>
-///
-/// DTypes have 2 purposes:
-/// <list type="number">
-///     <item>
-///         More performant type operations (especially for Expressions that
-///         rely heavily on type inspection)
-///     </item>
-///     <item>
-///         Forces static constructors of base types to always run first. This
-///         consistancy is necessary for components (such as Expressions) that
-///         rely on static construction order for correctness.
-///     </item>
-/// </list>
+/// <see cref="DependencyObjectType"/> represents a specific underlying system (CLR) <see cref="Type"/> 
+/// of a <see cref="DependencyObject"/>. <see cref="DependencyObjectType"/> is essentially a wrapper for 
+/// the (CLR) <see cref="Type"/> so that it can extend some of its capabilities.
+/// This class has no public constructor. Instances of this class can only be obtained through properties 
+/// on other objects (such as <see cref="DependencyObject.DependencyObjectType"/>), or through the static 
+/// method <see cref="FromSystemType"/>.
 /// </remarks>
-internal sealed class DependencyObjectType
+public sealed class DependencyObjectType
 {
     /// <summary>
     /// Returns a <see cref="DependencyObjectType"/> that represents a given system
@@ -43,7 +33,7 @@ internal sealed class DependencyObjectType
     /// </returns>
     public static DependencyObjectType FromSystemType(Type systemType)
     {
-        if (systemType == null)
+        if (systemType is null)
         {
             throw new ArgumentNullException(nameof(systemType));
         }

@@ -60,7 +60,6 @@
     <Compile Include="OpenSilver\Internal\Controls\TextBoxView.cs" />
     <Compile Include="OpenSilver\Internal\Controls\PasswordBoxView.cs" />
     <Compile Include="OpenSilver\Internal\DefaultValueFactory.cs" />
-    <Compile Include="OpenSilver\Internal\DependencyObjectType.cs" />
     <Compile Include="OpenSilver\Internal\KnownBoxes.cs" />
     <Compile Include="OpenSilver\Internal\Media\Animation\AnimatedTypeHelpers.cs" />
     <Compile Include="OpenSilver\Internal\Media\Animation\AnimationManager.cs" />
@@ -914,6 +913,7 @@
     <Compile Include="System.Windows\CornerRadius.cs" />
     <Compile Include="System.Windows\DataTemplate.cs" />
     <Compile Include="System.Windows\DependencyObject.cs" />
+    <Compile Include="System.Windows\DependencyObjectType.cs" />
     <Compile Include="System.Windows\DependencyProperty.cs" />
     <Compile Include="System.Windows\DependencyPropertyChangedEventArgs.cs" />
     <Compile Include="System.Windows\DependencyPropertyChangedEventHandler.cs" />
