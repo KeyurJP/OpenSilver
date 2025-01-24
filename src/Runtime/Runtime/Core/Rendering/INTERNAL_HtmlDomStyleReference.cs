@@ -162,7 +162,7 @@ namespace CSHTML5.Internal
 
         private string GetCSSProperty(string propertyName) =>
             OpenSilver.Interop.ExecuteJavaScriptString(
-                $"document.getElementById('{Uid}').style.{propertyName};");
+                $"document.getElementById('{Uid}').style.{propertyName}");
 
         //-----------------------------------------------------------------------
         // Usage stats for To-Do Calendar (number of types each property is set):

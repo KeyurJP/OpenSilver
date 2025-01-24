@@ -107,7 +107,7 @@ namespace OpenSilver.Controls
                         reader.readAsDataURL(file);
                     }
                     readNext(0);
-                });", flushQueue:false, _inputElement, onFileChanged,
+                })", flushQueue: false, _inputElement, onFileChanged,
                     _windowFocusCallback, onFinishedReading);
         }
 
@@ -139,11 +139,11 @@ namespace OpenSilver.Controls
             // Apply the filter:
             if (!string.IsNullOrWhiteSpace(filtersInHtml5))
             {
-                Interop.ExecuteJavaScriptVoid(@"$0.accept = $1", flushQueue:false, _inputElement, filtersInHtml5);
+                Interop.ExecuteJavaScriptVoid("$0.accept = $1", flushQueue: false, _inputElement, filtersInHtml5);
             }
             else
             {
-                Interop.ExecuteJavaScriptVoid(@"$0.accept = """"", flushQueue:false, _inputElement);
+                Interop.ExecuteJavaScriptVoid(@"$0.accept = ''", flushQueue: false, _inputElement);
             }
         }
 
@@ -165,7 +165,7 @@ namespace OpenSilver.Controls
 
                 if (_multiselect)
                 {
-                    Interop.ExecuteJavaScriptVoid(@"$0.multiple = 'multiple';", flushQueue:false, _inputElement);
+                    Interop.ExecuteJavaScriptVoid("$0.multiple = 'multiple'", flushQueue: false, _inputElement);
                 }
             }
         }
@@ -247,7 +247,7 @@ namespace OpenSilver.Controls
             // Triggers 'click' on <input>, even though it is not on the DOM
             Interop.ExecuteJavaScriptVoid(@"
                 window.isOpenFileDialogOpen = true;
-                $0.dispatchEvent(new MouseEvent(""click""));", flushQueue:false, _inputElement);
+                $0.dispatchEvent(new MouseEvent(""click""))", flushQueue: false, _inputElement);
 
             return showDialogTaskCompletionSource.Task;
         }

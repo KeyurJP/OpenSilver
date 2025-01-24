@@ -104,7 +104,7 @@ namespace OpenSilver.Internal
                 string sText = Interop.GetVariableStringForJS(text);
 
                 Interop.ExecuteJavaScriptVoid(
-                    $"navigator.clipboard.writeText({sText}).then(() => {sCallback}(true), () => {sCallback}(false));",
+                    $"navigator.clipboard.writeText({sText}).then(() => {sCallback}(true), () => {sCallback}(false))",
                     false);
 
                 return tcs.Task;
@@ -131,7 +131,7 @@ namespace OpenSilver.Internal
                     }));
 
                 Interop.ExecuteJavaScriptVoid(
-                    $"navigator.clipboard.readText().then(text => {sCallback}(text, true), () => {sCallback}('', false));",
+                    $"navigator.clipboard.readText().then(text => {sCallback}(text, true), () => {sCallback}('', false))",
                     false);
 
                 return tcs.Task;
@@ -148,7 +148,7 @@ namespace OpenSilver.Internal
                     JavaScriptCallbackHelper.CreateSelfDisposedJavaScriptCallback<bool>(b => tcs.SetResult(b)));
 
                 Interop.ExecuteJavaScriptVoid(
-                    $"navigator.clipboard.readText().then(text => {sCallback}(!!text), () => {sCallback}(false));",
+                    $"navigator.clipboard.readText().then(text => {sCallback}(!!text), () => {sCallback}(false))",
                     false);
 
                 return tcs.Task;
@@ -162,25 +162,28 @@ namespace OpenSilver.Internal
         {
             static ExecCommandClipboard()
             {
-                Interop.ExecuteJavaScriptVoid(@"_opensilver.clipboard = {
-    writeText : function (data) {
-        const input = document.createElement('input');
-        document.body.appendChild(input);
-        input.value = data;
-        input.select();
-        document.execCommand('copy');
-    },
+                Interop.ExecuteJavaScriptVoid(
+                    """
+                    _opensilver.clipboard = {
+                        writeText : function (data) {
+                            const input = document.createElement('input');
+                            document.body.appendChild(input);
+                            input.value = data;
+                            input.select();
+                            document.execCommand('copy');
+                        },
 
-    readText : function () {
-        const input = document.createElement('input');
-        document.body.appendChild(input);
-        input.focus();
-        document.execCommand('paste');
-        const text = input.value;
-        input.remove();
-        return text;
-    }
-};");
+                        readText : function () {
+                            const input = document.createElement('input');
+                            document.body.appendChild(input);
+                            input.focus();
+                            document.execCommand('paste');
+                            const text = input.value;
+                            input.remove();
+                            return text;
+                        }
+                    }
+                    """);
             }
 
             public void SetText(string text)

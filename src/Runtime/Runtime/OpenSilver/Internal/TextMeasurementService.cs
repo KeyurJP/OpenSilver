@@ -41,7 +41,7 @@ internal sealed class TextMeasurementService
         Debug.Assert(owner.OuterDiv is not null);
 
         string sOwner = Interop.GetVariableStringForJS(owner.OuterDiv);
-        Interop.ExecuteJavaScriptVoid($"document.attachMeasurementService({sOwner});");
+        Interop.ExecuteJavaScriptVoid($"document.attachMeasurementService({sOwner})");
     }
 
     public Size MeasureView(string id,

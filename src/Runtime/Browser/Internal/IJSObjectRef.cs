@@ -53,6 +53,6 @@ internal sealed class JSObjectRef : IJSObjectRef
     public void Dispose()
     {
         ScriptObject.UnregisterScriptObject(_jsRef);
-        OpenSilver.Interop.ExecuteJavaScriptVoid($"document.browserService.releaseObject('{_jsRef}');");
+        OpenSilver.Interop.ExecuteJavaScriptVoid($"document.browserService.releaseObject('{_jsRef}')");
     }
 }

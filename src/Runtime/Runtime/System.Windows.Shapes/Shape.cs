@@ -775,7 +775,7 @@ namespace System.Windows.Shapes
                 string sDiv = OpenSilver.Interop.GetVariableStringForJS(SvgElement);
 
                 SVGRect bbox = JsonSerializer.Deserialize<SVGRect>(
-                    OpenSilver.Interop.ExecuteJavaScriptString($"document.getBBox({sDiv});"));
+                    OpenSilver.Interop.ExecuteJavaScriptString($"document.getBBox({sDiv})"));
                 return new Rect(bbox.X, bbox.Y, bbox.Width, bbox.Height);
             }
 

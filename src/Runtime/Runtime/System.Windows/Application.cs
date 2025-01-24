@@ -173,7 +173,7 @@ namespace System.Windows
             {
                 string sElement = OpenSilver.Interop.GetVariableStringForJS(_rootDiv);
                 paramsArray = JsonSerializer.Deserialize<HTMLParam[]>(
-                    OpenSilver.Interop.ExecuteJavaScriptString($"document.getAppParams({sElement});"));
+                    OpenSilver.Interop.ExecuteJavaScriptString($"document.getAppParams({sElement})"));
             }
             catch
             {

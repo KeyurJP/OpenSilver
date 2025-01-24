@@ -153,7 +153,7 @@ namespace System.Windows.Browser
         {
             string sScriptKey = OpenSilver.Interop.GetVariableStringForJS(scriptKey);
 
-            OpenSilver.Interop.ExecuteJavaScriptVoid($"window[{sScriptKey}]={{}};");
+            OpenSilver.Interop.ExecuteJavaScriptVoid($"window[{sScriptKey}]={{}}");
 
             var methods = instance.GetType().GetMethods()
                 .Where(m => m.GetCustomAttributes(typeof(ScriptableMemberAttribute), false).Length > 0)

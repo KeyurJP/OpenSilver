@@ -123,7 +123,7 @@ internal sealed class PasswordBoxView : TextViewBase
         if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this) && OuterDiv is not null)
         {
             string sElement = Interop.GetVariableStringForJS(OuterDiv);
-            Interop.ExecuteJavaScriptVoid($"{sElement}.select();");
+            Interop.ExecuteJavaScriptVoid($"{sElement}.select()");
         }
     }
 
@@ -156,7 +156,7 @@ internal sealed class PasswordBoxView : TextViewBase
         {
             string sElement = Interop.GetVariableStringForJS(OuterDiv);
             Interop.ExecuteJavaScriptVoid(
-                $"{sElement}.value = \"{INTERNAL_HtmlDomManager.EscapeStringForUseInJavaScript(text)}\";");
+                $"{sElement}.value = \"{INTERNAL_HtmlDomManager.EscapeStringForUseInJavaScript(text)}\"");
 
             InvalidateMeasure();
         }
@@ -167,7 +167,7 @@ internal sealed class PasswordBoxView : TextViewBase
         if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this) && OuterDiv is not null)
         {
             string sElement = Interop.GetVariableStringForJS(OuterDiv);
-            return Interop.ExecuteJavaScriptString($"{sElement}.value;") ?? string.Empty;
+            return Interop.ExecuteJavaScriptString($"{sElement}.value") ?? string.Empty;
         }
 
         return string.Empty;

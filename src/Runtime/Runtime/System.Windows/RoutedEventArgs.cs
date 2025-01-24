@@ -147,7 +147,7 @@ public class RoutedEventArgs : EventArgs
         if (UIEventArg != null)
         {
             OpenSilver.Interop.ExecuteJavaScriptVoid(
-                $"{OpenSilver.Interop.GetVariableStringForJS(UIEventArg)}.preventDefault();");
+                $"{OpenSilver.Interop.GetVariableStringForJS(UIEventArg)}.preventDefault()");
         }
     }
 }

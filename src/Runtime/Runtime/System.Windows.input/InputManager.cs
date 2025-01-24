@@ -149,7 +149,7 @@ internal sealed class InputManager
         if (Current == null)
         {
             string sHandler = OpenSilver.Interop.GetVariableStringForJS(_handler);
-            OpenSilver.Interop.ExecuteJavaScriptVoid($"document.createInputManager({sHandler});");
+            OpenSilver.Interop.ExecuteJavaScriptVoid($"document.createInputManager({sHandler})");
         }
     }
 
@@ -161,12 +161,12 @@ internal sealed class InputManager
     internal void RegisterRoot(INTERNAL_HtmlDomElementReference element)
     {
         string sElement = OpenSilver.Interop.GetVariableStringForJS(element);
-        OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.registerRoot({sElement});");
+        OpenSilver.Interop.ExecuteJavaScriptVoid($"document.inputManager.registerRoot({sElement})");
     }
 
     internal ModifierKeys GetKeyboardModifiers()
     {
-        return (ModifierKeys)OpenSilver.Interop.ExecuteJavaScriptInt32("document.inputManager.getModifiers();", false);
+        return (ModifierKeys)OpenSilver.Interop.ExecuteJavaScriptInt32("document.inputManager.getModifiers()", false);
     }
 
     internal bool CaptureMouse(UIElement uie)
@@ -231,7 +231,7 @@ internal sealed class InputManager
     internal static bool SetFocusNative(INTERNAL_HtmlDomElementReference domElement)
     {
         string sDiv = OpenSilver.Interop.GetVariableStringForJS(domElement);
-        return OpenSilver.Interop.ExecuteJavaScriptBoolean($"document.inputManager.focus({sDiv});");
+        return OpenSilver.Interop.ExecuteJavaScriptBoolean($"document.inputManager.focus({sDiv})");
     }
 
     internal static void ClearTabIndex(UIElement uie)
@@ -535,7 +535,7 @@ internal sealed class InputManager
 
             if (handled)
             {
-                OpenSilver.Interop.ExecuteJavaScriptVoid("document.inputManager.suppressContextMenu(true);");
+                OpenSilver.Interop.ExecuteJavaScriptVoid("document.inputManager.suppressContextMenu(true)");
             }
         }
     }

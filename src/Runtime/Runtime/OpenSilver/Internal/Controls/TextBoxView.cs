@@ -126,7 +126,7 @@ internal sealed class TextBoxView : TextViewBase
         {
             string sElement = Interop.GetVariableStringForJS(OuterDiv);
             Interop.ExecuteJavaScriptVoid(
-                $"{sElement}.value = \"{INTERNAL_HtmlDomManager.EscapeStringForUseInJavaScript(text)}\";");
+                $"{sElement}.value = \"{INTERNAL_HtmlDomManager.EscapeStringForUseInJavaScript(text)}\"");
 
             InvalidateMeasure();
         }
@@ -320,7 +320,7 @@ internal sealed class TextBoxView : TextViewBase
         {
             string sElement = Interop.GetVariableStringForJS(OuterDiv);
             Interop.ExecuteJavaScriptVoid(
-                $"{sElement}.setSelectionRange({start.ToInvariantString()}, {end.ToInvariantString()});");
+                $"{sElement}.setSelectionRange({start.ToInvariantString()}, {end.ToInvariantString()})");
         }
     }
 
@@ -329,7 +329,7 @@ internal sealed class TextBoxView : TextViewBase
         if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this) && OuterDiv is not null)
         {
             string sElement = Interop.GetVariableStringForJS(OuterDiv);
-            return Interop.ExecuteJavaScriptString($"{sElement}.value;") ?? string.Empty;
+            return Interop.ExecuteJavaScriptString($"{sElement}.value") ?? string.Empty;
         }
 
         return string.Empty;

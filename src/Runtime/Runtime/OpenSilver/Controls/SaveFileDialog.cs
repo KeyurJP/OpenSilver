@@ -403,7 +403,7 @@ public sealed class SaveFileDialog
             }
             else
             {
-                _writableStream = Interop.ExecuteJavaScript("[];");
+                _writableStream = Interop.ExecuteJavaScript("[]");
                 _filename = fallbackFilename;
             }
 

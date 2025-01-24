@@ -244,7 +244,7 @@ namespace System.Windows.Printing
   	  window.print();
   	}
   };
-})();");
+})()");
         }
     }
 }

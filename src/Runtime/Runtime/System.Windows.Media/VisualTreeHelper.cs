@@ -242,7 +242,7 @@ namespace System.Windows.Media
             {
                 string[] ids = JsonSerializer.Deserialize<string[]>(
                     OpenSilver.Interop.ExecuteJavaScriptString(
-                        $"document.elementsFromPointOpenSilver({intersectingPoint.X.ToInvariantString()}, {intersectingPoint.Y.ToInvariantString()});"));
+                        $"document.elementsFromPointOpenSilver({intersectingPoint.X.ToInvariantString()}, {intersectingPoint.Y.ToInvariantString()})"));
 
                 var hashset = new HashSet<UIElement>();
                 foreach (string id in ids)

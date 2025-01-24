@@ -340,7 +340,7 @@ namespace System
 
         internal static void ConsoleLog_JSOnly(string message)
         {
-            OpenSilver.Interop.ExecuteJavaScriptVoid($"console.log({OpenSilver.Interop.GetVariableStringForJS(message)});");
+            OpenSilver.Interop.ExecuteJavaScriptVoid($"console.log({OpenSilver.Interop.GetVariableStringForJS(message)})");
         }
 
         internal static void SendRequest(object xmlHttpRequest, string address, string method, bool isAsync, string body)
