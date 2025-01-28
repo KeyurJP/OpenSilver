@@ -1812,6 +1812,99 @@ document.createUIDispatcher = function (callback) {
     };
 };
 
+document.openFileDialog = (function () {
+    const _dialogs = new Map();
+
+    return {
+        createDialog: function (id, changeCallback, changeCompleteCallback, cancelCallback) {
+            if (_dialogs.has(id)) {
+                throw new Error(`A dialog with id '${id}' has already been registered.`)
+            }
+
+            const dialog = document.createElement('input');
+            dialog.type = 'file';
+
+            dialog.addEventListener('change', function () {
+                if (dialog.files.length === 0) {
+                    changeCompleteCallback();
+                    return;
+                }
+
+                const reader = new FileReader();
+
+                // Reading each file sequentially, some results were null when running concurrently
+                function readNext(i) {
+                    const file = dialog.files[i];
+
+                    reader.onload = function () {
+                        changeCallback(file.name, reader.result.substr(reader.result.indexOf(',') + 1));
+
+                        if (dialog.files.length > i + 1) {
+                            readNext(i + 1);
+                        } else {
+                            // Triggers finished callback
+                            changeCompleteCallback();
+                        }
+                    };
+
+                    // For performance improvements, readAsArrayBuffer could be used and Uint8Array sent to C#,
+                    // this has been optimized in .NET 6. However, this would require changes to the C# callback method,
+                    // the array cannot be received as object (must be byte[]).
+                    reader.readAsDataURL(file);
+                }
+
+                readNext(0);
+            });
+
+            dialog.addEventListener('cancel', function () {
+                cancelCallback();
+            });
+
+            _dialogs.set(id, dialog);
+        },
+        deleteDialog: function (id) {
+            _dialogs.delete(id);
+        },
+        showDialog: function (id) {
+            const dialog = _dialogs.get(id);
+            if (!dialog) {
+                throw new Error(`Cannot find a dialog associated with id '${id}'.`);
+            }
+
+            try {
+                dialog.showPicker();
+                return '';
+            } catch (error) {
+                return error.message;
+            }
+        },
+        setMultiple: function (id, value) {
+            const dialog = _dialogs.get(id);
+            if (!dialog) {
+                throw new Error(`Cannot find a dialog associated with id '${id}'.`);
+            }
+
+            if (value) {
+                dialog.setAttribute('multiple', 'multiple');
+            } else {
+                dialog.removeAttribute('multiple');
+            }
+        },
+        setAccept: function (id, value) {
+            const dialog = _dialogs.get(id);
+            if (!dialog) {
+                throw new Error(`Cannot find a dialog associated with id '${id}'.`);
+            }
+
+            if (value) {
+                dialog.setAttribute('accept', value);
+            } else {
+                dialog.removeAttribute('accept');
+            }
+        },
+    };
+})();
+
 document.browserService = (function () {
     const JSTYPE = {
         ERROR: -1,
