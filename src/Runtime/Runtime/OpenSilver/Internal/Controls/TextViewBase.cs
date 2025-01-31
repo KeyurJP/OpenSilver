@@ -15,12 +15,66 @@ using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+using CSHTML5.Internal;
 
 namespace OpenSilver.Internal.Controls;
 
 internal abstract partial class TextViewBase : FrameworkElement
 {
+    static TextViewBase()
+    {
+        TextElement.CharacterSpacingProperty.AddOwner(
+            typeof(TextViewBase),
+            new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
+            {
+                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextViewBase)d).SetCharacterSpacing((int)newValue),
+            });
+
+        TextElement.FontFamilyProperty.AddOwner(
+            typeof(TextViewBase),
+            new FrameworkPropertyMetadata(FontFamily.Default, FrameworkPropertyMetadataOptions.Inherits, OnFontFamilyChanged)
+            {
+                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextViewBase)d).SetFontFamily((FontFamily)newValue),
+            });
+
+        TextElement.FontSizeProperty.AddOwner(
+            typeof(TextViewBase),
+            new FrameworkPropertyMetadata(11d, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
+            {
+                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextViewBase)d).SetFontSize((double)newValue),
+            });
+
+        TextElement.FontStyleProperty.AddOwner(
+            typeof(TextViewBase),
+            new FrameworkPropertyMetadata(FontStyles.Normal, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
+            {
+                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextViewBase)d).SetFontStyle((FontStyle)newValue),
+            });
+
+        TextElement.FontWeightProperty.AddOwner(
+           typeof(TextViewBase),
+           new FrameworkPropertyMetadata(FontWeights.Normal, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
+           {
+               MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextViewBase)d).SetFontWeight((FontWeight)newValue),
+           });
+
+        TextElement.ForegroundProperty.AddOwner(
+            typeof(TextViewBase),
+            new FrameworkPropertyMetadata(
+                TextElement.ForegroundProperty.DefaultMetadata.DefaultValue,
+                FrameworkPropertyMetadataOptions.Inherits,
+                OnForegroundChanged)
+            {
+                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextViewBase)d).SetForeground(oldValue as Brush, (Brush)newValue),
+            });
+
+        IsHitTestableProperty.OverrideMetadata(typeof(TextViewBase), new PropertyMetadata(BooleanBoxes.TrueBox));
+    }
+
     private Size _contentSize;
+    private WeakEventListener<TextViewBase, Brush, EventArgs> _foregroundChangedListener;
 
     internal TextViewBase(UIElement host)
     {
@@ -69,5 +123,40 @@ internal abstract partial class TextViewBase : FrameworkElement
         ArrangeScrollData(finalSize);
 
         return finalSize;
+    }
+
+    private static void OnFontFamilyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        UIElementHelpers.InvalidateMeasureOnFontFamilyChanged((TextViewBase)d, (FontFamily)e.NewValue);
+    }
+
+    private static void OnForegroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        var view = (TextViewBase)d;
+
+        if (view._foregroundChangedListener != null)
+        {
+            view._foregroundChangedListener.Detach();
+            view._foregroundChangedListener = null;
+        }
+
+        if (e.NewValue is Brush newBrush)
+        {
+            view._foregroundChangedListener = new(view, newBrush)
+            {
+                OnEventAction = static (instance, sender, args) => instance.OnForegroundChanged(sender, args),
+                OnDetachAction = static (listener, source) => source.Changed -= listener.OnEvent,
+            };
+            newBrush.Changed += view._foregroundChangedListener.OnEvent;
+        }
+    }
+
+    private void OnForegroundChanged(object sender, EventArgs e)
+    {
+        if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
+        {
+            var foreground = (Brush)sender;
+            this.SetForeground(foreground, foreground);
+        }
     }
 }

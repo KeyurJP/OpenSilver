@@ -49,51 +49,6 @@ internal sealed class RichTextBoxView : TextViewBase
 
     static RichTextBoxView()
     {
-        TextElement.CharacterSpacingProperty.AddOwner(
-            typeof(RichTextBoxView),
-            new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
-            {
-                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((RichTextBoxView)d).SetCharacterSpacing((int)newValue),
-            });
-
-        TextElement.FontFamilyProperty.AddOwner(
-            typeof(RichTextBoxView),
-            new FrameworkPropertyMetadata(FontFamily.Default, FrameworkPropertyMetadataOptions.Inherits, OnFontFamilyChanged)
-            {
-                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((RichTextBoxView)d).SetFontFamily((FontFamily)newValue),
-            });
-
-        TextElement.FontSizeProperty.AddOwner(
-            typeof(RichTextBoxView),
-            new FrameworkPropertyMetadata(11d, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
-            {
-                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((RichTextBoxView)d).SetFontSize((double)newValue),
-            });
-
-        TextElement.FontStyleProperty.AddOwner(
-            typeof(RichTextBoxView),
-            new FrameworkPropertyMetadata(FontStyles.Normal, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
-            {
-                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((TextBoxView)d).SetFontStyle((FontStyle)newValue),
-            });
-
-        TextElement.FontWeightProperty.AddOwner(
-           typeof(RichTextBoxView),
-           new FrameworkPropertyMetadata(FontWeights.Normal, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
-           {
-               MethodToUpdateDom2 = static (d, oldValue, newValue) => ((RichTextBoxView)d).SetFontWeight((FontWeight)newValue),
-           });
-
-        TextElement.ForegroundProperty.AddOwner(
-            typeof(RichTextBoxView),
-            new FrameworkPropertyMetadata(
-                TextElement.ForegroundProperty.DefaultMetadata.DefaultValue,
-                FrameworkPropertyMetadataOptions.Inherits,
-                OnForegroundChanged)
-            {
-                MethodToUpdateDom2 = static (d, oldValue, newValue) => ((RichTextBoxView)d).SetForeground(oldValue as Brush, (Brush)newValue),
-            });
-
         Block.LineHeightProperty.AddOwner(
             typeof(RichTextBoxView),
             new FrameworkPropertyMetadata(0.0, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.AffectsMeasure)
@@ -107,11 +62,9 @@ internal sealed class RichTextBoxView : TextViewBase
             {
                 MethodToUpdateDom2 = static (d, oldValue, newValue) => ((RichTextBoxView)d).SetTextAlignment((TextAlignment)newValue),
             });
-        IsHitTestableProperty.OverrideMetadata(typeof(RichTextBoxView), new PropertyMetadata(BooleanBoxes.TrueBox));
     }
 
     private DispatcherOperation _refreshOp;
-    private WeakEventListener<RichTextBoxView, Brush, EventArgs> _foregroundChangedListener;
 
     public RichTextBoxView(RichTextBox rtb)
         : base(rtb)
@@ -889,41 +842,6 @@ internal sealed class RichTextBoxView : TextViewBase
 
     private void SetAcceptsTab(bool value) =>
         Interop.ExecuteJavaScriptVoidAsync($"document.richTextViewManager.setAcceptsTab('{OuterDiv.UniqueIdentifier}', '{(value ? "true" : "false")}')");
-
-    private static void OnFontFamilyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        UIElementHelpers.InvalidateMeasureOnFontFamilyChanged((RichTextBoxView)d, (FontFamily)e.NewValue);
-    }
-
-    private static void OnForegroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var view = (RichTextBoxView)d;
-
-        if (view._foregroundChangedListener != null)
-        {
-            view._foregroundChangedListener.Detach();
-            view._foregroundChangedListener = null;
-        }
-
-        if (e.NewValue is Brush newBrush)
-        {
-            view._foregroundChangedListener = new(view, newBrush)
-            {
-                OnEventAction = static (instance, sender, args) => instance.OnForegroundChanged(sender, args),
-                OnDetachAction = static (listener, source) => source.Changed -= listener.OnEvent,
-            };
-            newBrush.Changed += view._foregroundChangedListener.OnEvent;
-        }
-    }
-
-    private void OnForegroundChanged(object sender, EventArgs e)
-    {
-        if (INTERNAL_VisualTreeManager.IsElementInVisualTree(this))
-        {
-            var foreground = (Brush)sender;
-            this.SetForeground(foreground, foreground);
-        }
-    }
 
     private void OnContentChanged(bool invalidateModel)
     {
