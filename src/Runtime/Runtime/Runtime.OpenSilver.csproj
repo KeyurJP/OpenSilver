@@ -922,7 +922,6 @@
     <Compile Include="System.Windows\ExceptionRoutedEventArgs.cs" />
     <Compile Include="System.Windows\ExceptionRoutedEventHandler.cs" />
     <Compile Include="System.Windows\FrameworkElement.cs" />
-    <Compile Include="System.Windows\FrameworkElement_HandlingSizeAndAlignment.cs" />
     <Compile Include="System.Windows\FrameworkTemplate.cs" />
     <Compile Include="System.Windows\GridLength.cs" />
     <Compile Include="System.Windows\GridUnitType.cs" />
